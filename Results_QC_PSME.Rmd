@@ -1,0 +1,136 @@
+---
+title: "QC_Results"
+output: 
+  html_document:
+    theme:
+      bootswatch: simplex
+date: "2023-10-12"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, error = TRUE)
+library(stringr)
+library(outliers)
+library(EnvStats)
+library(tidyverse)
+library(miniUI)
+library(bslib)
+library(dplyr)
+library(knitr)
+library(DT)
+library(xtable)
+library(openxlsx)
+```
+
+### Setting Working Directory
+
+
+```{r}
+rm(list = ls())
+#knitr::opts_knit$set(root.dir="C:/Users/edeegan/OneDrive - DOI/Fire_project/Fire_project/tmp")
+
+```
+
+## Reading in data {.tabset}
+
+
+
+```{r}
+setwd("C:/Users/edeegan/OneDrive - DOI/Fire_project/Fire_project/")
+mtype="PSME"
+source("QAQC/datacleaningfunctions.R")
+samp=read.csv("PsME_data/SAGU_SampleEventReport.csv")
+cover=read.csv("PSME_data/PSME_Cover - Species Composition (metric)_XPT.csv", na.strings=c("","NA"))
+fuel1000=read.csv("PSME_data/PSME_Surface Fuels - 1000Hr_XPT.csv", na.strings=c("","NA"))
+duff=read.csv("PSME_data/PSME_Surface Fuels - Duff_Litter_XPT.csv", na.strings=c("","NA"))
+fine=read.csv("PSME_data/PSME_Surface Fuels - Fine_XPT.csv", na.strings=c("","NA"))
+saps=read.csv("PSME_data/PSME_Trees - Saplings (Diameter Class) (metric)_XPT.csv", na.strings=c("","NA"))
+seeds=read.csv("PSME_data/PSME_Trees - Seedlings (Height Class) (metric)_XPT.csv")
+tree=read.csv("PSME_data/PSME_Trees - Individuals (metric)_XPT.csv")
+
+flags=c()
+```
+
+### Sample Events 
+```{r}
+sample_event_qc(samp, mtype)[1]
+flags=sample_event_qc(samp, mtype)[2]
+ggsave("historical_data_viz.png", width=10, height=5)
+
+
+```
+
+### Cover - Species Composition
+```{r}
+flags=cover_qc(cover)
+
+flags=cover_uvs_qc(cover)
+```
+
+### Protocol: Surface Fuels - 1000Hr 
+```{r}
+flags=fuel1000_qc(fuel1000)
+```
+
+```{r}
+flags=transect_slope_azimuth_qc(fuel1000,fine)
+```
+
+### Protocol: Surface Fuels - Duff Litter
+```{r}
+flags=duff_qc(duff)
+```
+
+### Protocol: Surface Fuels - Fine Litter 
+```{r}
+flags=fine_fuels_qc(fine)
+```
+
+### Trees - Saplings protocol: 
+```{r}
+flags=saplings_qc(saps)
+```
+
+### Trees - Seedlings protocol: 
+
+```{r}
+flags=seedlings_qc(seeds)
+```
+
+### Trees - Individuals protocol: 
+
+```{r}
+
+flags=tree_CBH_qc(tree)
+
+flags=tree_crown_class_qc(tree)
+
+flags=tree_damage_qc(tree)
+
+flags=tree_dbh_qc(tree)
+
+flags=tree_dd_qc(tree)
+
+flags=tree_fract_qc(tree)
+
+flags=tree_header_qc(tree)
+
+flags=tree_height_qc(tree)
+
+flags=tree_severity_qc(tree)
+
+flags=tree_status_lifeform_qc(tree)
+
+flags=tree_duplicates_qc(tree)
+
+flags=tree_dead_to_alive_DBH_change_qc(tree)
+```
+
+
+### Flags 
+
+```{r linewidth=60}
+comments_list=comments(cover, fuel1000, duff, fine, saps, seeds, tree)
+
+format_flags(flags, samp, mtype, comments)
+```
