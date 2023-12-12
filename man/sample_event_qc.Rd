@@ -2,9 +2,7 @@
 % Please edit documentation in R/datacleaningfunctions.R
 \name{sample_event_qc}
 \alias{sample_event_qc}
-\title{Sample event quality control checks
-This function requires a csv file exported from FFI with the list of sample events.
-The second argument is mtype which is the filter on the sample events (monitoring type).}
+\title{Sample event quality control checks}
 \usage{
 sample_event_qc(samp, mtype)
 }
@@ -15,9 +13,12 @@ sample_event_qc(samp, mtype)
 A list of flags or data issues in the sample events csv
 }
 \description{
-Sample event quality control checks
-This function requires a csv file exported from FFI with the list of sample events.
-The second argument is mtype which is the filter on the sample events (monitoring type).
+The sample_event_qc function is designed to perform quality control checks on sample event data associated with different vegetation types.
+It takes two arguments, samples (a dataset containing sample event records) and mtype (the vegetation type to be checked).
+The function first filters the dataset to include only the specified vegetation type.
+It then checks for missing values (NAs) in the MonitoringStatus_Name, Protocols, and Visited columns.
+If any NAs are detected, they are added to a list of flags.
+Additionally, the function checks for mislabeled or missing monitoring statuses, protocols, and visited values.
 }
 \examples{
 sample_event_qc(samp, "PSME")
