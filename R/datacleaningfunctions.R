@@ -1,14 +1,19 @@
-###Data cleaning functions - need to verify all!
+###Data cleaning functions
 
-library(stringr)
-library(outliers)
-library(EnvStats)
-library(tidyverse)
-library(plotly)
-library(ggplot2)
-library(hrbrthemes)
 
 ##### sample event quality control #ready to be looked at by Windy - Eva 9/11
+#' Sample event quality control checks
+#' This function requires a csv file exported from FFI with the list of sample events. 
+#' The second argument is mtype which is the filter on the sample events (monitoring type). 
+#' @param samp 
+#' @param mtype 
+#'
+#' @return A list of flags or data issues in the sample events csv 
+#' @export 
+#'
+#' @examples
+#' sample_event_qc(samp, "PSME")
+#' 
 sample_event_qc <- function(samp, mtype) {
   
   samples <<- samp[which(samp$ProjectUnit_Name == mtype),] # filtering for vegetation type
@@ -49,10 +54,10 @@ sample_event_qc <- function(samp, mtype) {
   
   #ms check with years
   
-  #anything that says post should be the same years as a fire
+ # anything that says post should be the same years as a fire
   
   samples$SampleEvent_Date=as.Date(samples$SampleEvent_Date, "%m/%d/%Y")
-  samples$year=str_split_fixed(samples$SampleEvent_Date, "-",3)[,1]
+    samples$year=str_split_fixed(samples$SampleEvent_Date, "-",3)[,1]
   
   
   samples=samples%>%
@@ -60,7 +65,7 @@ sample_event_qc <- function(samp, mtype) {
   
   
   
-  post=samples[grep("Post", samples$MonitoringStatus_Name),]
+ post=samples[grep("Post", samples$MonitoringStatus_Name),]
   samples[grep("Post", samples$MonitoringStatus_Name),"fire"]="fire"
   
   
@@ -209,12 +214,20 @@ sample_event_qc <- function(samp, mtype) {
   
   
   
-  
-  return(p)
+  output<-list(p, flags)
+  return(output)
 }
 #end of function
 
 #####Protocol: Cover - species Composition (Metric) #verified 9/11 by Eva
+#' Cover - species composition (metric) checks
+#'
+#' @param cover 
+#'
+#' @return
+#' @export
+#'
+#' @examples
 cover_qc <- function(cover) {
   
   canopy <- cover[which(cover$Species.Symbol == "CANOPY"),]
@@ -239,7 +252,7 @@ cover_qc <- function(cover) {
     } else {
       ans <- setdiff(canopy[rows, 12], c("Q1", "Q2", "Q3", "Q4"))
       cat("Error in macroplot ", canopydates[1,i], " monitoring status ", canopydates[2,i], ans, " missing\n")
-      flags <<- c(flags, paste("Error in macroplot ", canopydates[1,i], " monitoring status ", canopydates[2,i], ans, " missing", sep = " "))
+      flags<- c(flags, paste("Error in macroplot ", canopydates[1,i], " monitoring status ", canopydates[2,i], ans, " missing", sep = " "))
       error_rows <- c(error_rows, paste(i))
       error_rows <- as.numeric(error_rows)
       
@@ -278,7 +291,7 @@ cover_uvs_qc <- function(cover) {
       cat("True\n")
     } else {
       cat(paste("False, values of", diff_values, "are not acceptable for", description, "\n"))
-      flags <<- c(flags, paste("Values of", diff_values, "are recorded for", description, "and are not acceptable", sep = " ") )
+      flags<- c(flags, paste("Values of", diff_values, "are recorded for", description, "and are not acceptable", sep = " ") )
     }
   }
   
@@ -308,7 +321,7 @@ cover_uvs_qc <- function(cover) {
       cat("True\n")
     } else {
       cat(paste("False,", desc_values, "is not an acceptable description for", description, "\n"))
-      flags <<- c(flags, paste(desc_values, "is written for", description, "and is not an acceptable description", sep = " ") )
+      flags<- c(flags, paste(desc_values, "is written for", description, "and is not an acceptable description", sep = " ") )
     }
   }
   
@@ -324,7 +337,7 @@ cover_uvs_qc <- function(cover) {
   cat("UV3 descriptions are correct...\n")
   uv_description_checks(cover$UV3Desc, "Count Code")
   cat("\n")
-  return(cat("\n"))
+  return(flags)
 } #end function
 
 
@@ -341,12 +354,12 @@ fuel1000_qc <- function(fuel1000) {
     
     if (length(invalid_indices) > 0) {
       # Prepare the error message including invalid values and their row details
-      error_msg <- paste(c(error_message, values[invalid_indices], 
-                           "in events/s", fuel1000[which(fuel1000[[column_name]] == values[invalid_indices]), c("MacroPlot.Name", "Monitoring.Status")]), collapse = " ")
+      error_msg <- paste(error_message, values[invalid_indices], 
+                         "in events/s", fuel1000[which(fuel1000[[column_name]] == values[invalid_indices]),"MacroPlot.Name"], fuel1000[which(fuel1000[[column_name]] == values[invalid_indices]), "Monitoring.Status"], collapse = " ")
       
       # Print the error message and add it to the flags vector
       cat(error_msg, "\n")
-      flags <<- c(flags, paste("Error:", error_msg))
+      flags<- c(flags, paste("Error:", error_msg))
     } else {
       cat("All", column_name, "values are valid: TRUE\n")
     }
@@ -376,12 +389,12 @@ fuel1000_qc <- function(fuel1000) {
     
     if (length(invalid_indices) > 0) {
       # Prepare the error message including invalid values and their row details
-      error_msg <- paste(c(error_message, values[invalid_indices], 
-                           "in events/s", fuel1000[which(fuel1000[[column_name]] == values[invalid_indices]), c("MacroPlot.Name", "Monitoring.Status")]), collapse = " ")
+      error_msg <- paste(error_message, values[invalid_indices], 
+                         "in events/s", fuel1000[which(fuel1000[[column_name]] == values[invalid_indices]), "MacroPlot.Name"], fuel1000[which(fuel1000[[column_name]] == values[invalid_indices]), "Monitoring.Status"], collapse = " ")
       
       # Print the error message and add it to the flags vector
       cat(error_msg, "\n")
-      flags <<- c(flags, paste("Error:", error_msg))
+      flags<- c(flags, paste("Error:", error_msg))
     } else {
       cat("All", column_name, "values are valid: TRUE\n")
     }
@@ -420,16 +433,16 @@ fuel1000_qc <- function(fuel1000) {
       cat("No\n")
     } else {
       # Print information about the detected outliers and their details
-      cat(paste(c("Yes, the outlier values according to a Rosner test are", outliers, ". They are in events",
-                  data[which(data[[column_name]] %in% outliers),c("MacroPlot.Name", "Monitoring.Status")], "of the data table. For reference, the max, min, and mean of",
-                  column_name, "are", max(column_values), min(column_values), mean(column_values), "respectively"),
+      cat(paste("Yes, the outlier values according to a Rosner test are", outliers, ". They are in events",
+                data[which(data[[column_name]] %in% outliers),"MacroPlot.Name"],data[which(data[[column_name]] %in% outliers),"Monitoring.Status"], "of the data table. For reference, the max, min, and mean of",
+                column_name, "are", max(column_values), min(column_values), mean(column_values), "respectively",
                 collapse = " "), "\n")
       
       # Add error messages about the detected outliers to the flags vector
-      flags <<- c(flags, paste(c("The", column_name, "has outlier values according to a Rosner test, which are", outliers,
-                                 ". They are in events", data[which(data[[column_name]] %in% outliers),c("MacroPlot.Name", "Monitoring.Status")],
-                                 "of the data table. The max, min, and mean of", column_name, "'s are", max(column_values),
-                                 min(column_values), mean(column_values), "respectively"), collapse = " "), "\n")
+      flags<- c(flags, paste("The", column_name, "has outlier values according to a Rosner test, which are", outliers,
+                             ". They are in events", data[which(data[[column_name]] %in% outliers),"MacroPlot.Name"],data[which(data[[column_name]] %in% outliers),"Monitoring.Status"],
+                             "of the data table. The max, min, and mean of", column_name, "'s are", max(column_values),
+                             min(column_values), mean(column_values), "respectively", collapse = " "), "\n")
     }
   }
   
@@ -439,7 +452,7 @@ fuel1000_qc <- function(fuel1000) {
   test_for_outliers(fuel1000, "Dia")
   
   
-} # end function
+  return(flags) } #end function
 
 
 ###
@@ -454,9 +467,9 @@ transect_slope_azimuth_qc <- function(fuel1000, fine) {
     cat("\n")
   } else {
     # Print an error message and update flags if there are differing plot names
-    flags <<- c(flags, "There is a plot that differs between 1000hr fuels and fine fuels - check this before running function \n")
+    flags<- c(flags, "There is a plot that differs between 1000hr fuels and fine fuels - check this before running function \n")
     return(cat("FALSE, there is a plot that differs between 1000hr fuels and fine fuels - check this before running function \n"))
-     }
+  }
   
   # Get unique MacroPlot names from 'fuel1000'
   plots <- unique(fuel1000$MacroPlot.Name)
@@ -491,7 +504,7 @@ transect_slope_azimuth_qc <- function(fuel1000, fine) {
         no_errors_s <- c(no_errors_s, 1)
         cat(paste(c("Error in macroplot", plots[plot], "transect", transects[transect], "1000hr fuels: multiple different values for slopes:",unique(transect_1000$Slope),  "\n"), collapse = " "))
         cat("\n")
-        flags <<- c(flags, paste(c("Error in macroplot", plots[plot], "transect", transects[transect], "1000hr fuels: multiple different values for slopes:",unique(transect_1000$Slope)), collapse = " "))
+        flags<- c(flags, paste(c("Error in macroplot", plots[plot], "transect", transects[transect], "1000hr fuels: multiple different values for slopes:",unique(transect_1000$Slope)), collapse = " "))
       }
       
       # Compare slope values within fine fuels
@@ -501,7 +514,7 @@ transect_slope_azimuth_qc <- function(fuel1000, fine) {
         no_errors_s <- c(no_errors_s, 1)
         cat(paste(c("Error in macroplot", plots[plot], "transect", transects[transect], "fine fuels: multiple different values for slopes:", unique(transect_fine$Slope), "\n"), collapse = " "))
         cat("\n")
-        flags <<- c(flags, paste(c("Error in macroplot", plots[plot], "transect", transects[transect], "fine fuels: multiple different values for slopes:", unique(transect_fine$Slope)), collapse = " "))
+        flags<- c(flags, paste(c("Error in macroplot", plots[plot], "transect", transects[transect], "fine fuels: multiple different values for slopes:", unique(transect_fine$Slope)), collapse = " "))
       }
       
       # Compare MacroPlot azimuth values within 1000Hr fuels
@@ -511,7 +524,7 @@ transect_slope_azimuth_qc <- function(fuel1000, fine) {
         no_errors_a <- c(no_errors_a, 1)
         cat(paste(c("Error in macroplot", plots[plot], "transect", transects[transect], "1000hr fuels: multiple different values for MacroPlot.Azimuths:", unique(transect_1000$MacroPlot.Azimuth), "\n"), collapse = " "))
         cat("\n")
-        flags <<- c(flags, paste(c("Error in macroplot", plots[plot], "transect", transects[transect], "1000hr fuels: multiple different values for MacroPlot.Azimuths:", unique(transect_1000$MacroPlot.Azimuth)), collapse = " "))
+        flags<- c(flags, paste(c("Error in macroplot", plots[plot], "transect", transects[transect], "1000hr fuels: multiple different values for MacroPlot.Azimuths:", unique(transect_1000$MacroPlot.Azimuth)), collapse = " "))
       }
       
       # Compare MacroPlot azimuth values within fine fuels
@@ -521,7 +534,7 @@ transect_slope_azimuth_qc <- function(fuel1000, fine) {
         no_errors_a <- c(no_errors_a, 1)
         cat(paste(c("Error in macroplot", plots[plot], "transect", transects[transect], "fine fuels: multiple different values for MacroPlot.Azimuths:", unique(transect_fine$MacroPlot.Azimuth),"\n"), collapse = " "))
         cat("\n")
-        flags <<- c(flags, paste(c("Error in macroplot", plots[plot], "transect", transects[transect], "fine fuels: multiple different values for MacroPlot.Azimuths:", unique(transect_fine$MacroPlot.Azimuth)), collapse = " "))
+        flags<- c(flags, paste(c("Error in macroplot", plots[plot], "transect", transects[transect], "fine fuels: multiple different values for MacroPlot.Azimuths:", unique(transect_fine$MacroPlot.Azimuth)), collapse = " "))
       }
       
       # Compare slope values between fine and 1000Hr fuels
@@ -532,7 +545,7 @@ transect_slope_azimuth_qc <- function(fuel1000, fine) {
           no_errors_s <- c(no_errors_s, 1)
           cat(paste(c("Error in macroplot", plots[plot], "transect", transects[transect], ": different values for fine (",unique(transect_fine$Slope),") and 1000hr (",unique(transect_1000$Slope),") slopes\n"), collapse = " "))
           cat("\n")
-          flags <<- c(flags, paste(c("Error in macroplot", plots[plot], "transect", transects[transect], ": different values for fine and 1000hr slopes"), collapse = " "))
+          flags<- c(flags, paste(c("Error in macroplot", plots[plot], "transect", transects[transect], ": different values for fine and 1000hr slopes"), collapse = " "))
         }
       } else if (length(unique(transect_fine$Slope)) == 0 | length(unique(transect_1000$Slope)) == 0) {
         # Cannot compare slope values between fine and 1000Hr fuels
@@ -550,7 +563,7 @@ transect_slope_azimuth_qc <- function(fuel1000, fine) {
           no_errors_a <- c(no_errors_a, 1)
           cat(paste(c("Error in macroplot", plots[plot], "transect", transects[transect], ": different values for fine (",unique(transect_fine$MacroPlot.Azimuth),")and 1000hr (",unique(transect_1000$MacroPlot.Azimuth),") MacroPlot.Azimuths\n"), collapse = " "))
           cat("\n")
-          flags <<- c(flags, paste(c("Error in macroplot", plots[plot], "transect", transects[transect], ": different values for fine and 1000hr MacroPlot.Azimuths"), collapse = " "))
+          flags<- c(flags, paste(c("Error in macroplot", plots[plot], "transect", transects[transect], ": different values for fine and 1000hr MacroPlot.Azimuths"), collapse = " "))
         }
       } else if (length(unique(transect_fine$MacroPlot.Azimuth)) == 0 | length(unique(transect_1000$MacroPlot.Azimuth)) == 0) {
         # Cannot compare MacroPlot azimuth values between fine and 1000Hr fuels
@@ -577,7 +590,9 @@ transect_slope_azimuth_qc <- function(fuel1000, fine) {
       cat("\n")
     }
   }
-}
+  
+  return(flags)
+} # end of function
 
 
 #####Protocol: Surface Fuels - Duff Litter #verified 9/11 by Eva
@@ -600,7 +615,7 @@ duff_qc <- function(duff) {
     )
     cat(message, "\n")
     cat("\n")
-    flags <<- c(flags, message)  # Add the error message to the 'flags' vector
+    flags<- c(flags, message)  # Add the error message to the 'flags' vector
   } else {
     cat("TRUE\n")
     cat("\n")
@@ -622,7 +637,7 @@ duff_qc <- function(duff) {
       
       cat("Error: Not all duff transect values match the expected pattern.\n")
       cat("Offending values: ", paste(off_values, collapse = ", "), "in sample event", paste(duffdates[, i]), "\n")
-      flags <<- c(flags, paste("Error: Not all duff transect values match the expected pattern", "Offending values: ", paste(off_values, collapse = ", "), "in sample event", paste(duffdates[, i]), "\n", sep = " "))
+      flags<- c(flags, paste("Error: Not all duff transect values match the expected pattern", "Offending values: ", paste(off_values, collapse = ", "), "in sample event", paste(duffdates[, i]), "\n"), sep = " ")
       no_errors_t <- c(no_errors_t, 1)
     } else {
       no_errors_t <- c(no_errors_t, 0)
@@ -636,7 +651,7 @@ duff_qc <- function(duff) {
       cat("Error: Not all duff sample locations match the expected pattern.\n")
       cat("Offending values: ", paste(off_values, collapse = ", "), "in sample event", paste(duffdates[, i]), "\n")
       no_errors_s <- c(no_errors_s, 1)
-      flags <<- c(flags, paste("Error: Not all duff Sample loc values match the expected pattern", "Offending values: ", paste(off_values, collapse = ", "), "in sample event", paste(duffdates[, i]), "\n", sep = " "))
+      flags<- c(flags, paste("Error: Not all duff Sample loc values match the expected pattern", "Offending values: ", paste(off_values, collapse = ", "), "in sample event", paste(duffdates[, i]), "\n"), sep = " ")
     } else {
       no_errors_s <- c(no_errors_s, 0)
     }
@@ -672,16 +687,16 @@ duff_qc <- function(duff) {
       mean_value <- mean(na.omit(data))
       
       message <- paste(
-        c("Yes, the outlier values according to a rosner test are", outliers,
-          ". They are in events", duff[outlier_indices, c("MacroPlot.Name", "Monitoring.Status")],"rows", outlier_indices,
-          "of the duff data table. For reference, the max, min, and mean of", variable_name,
-          "are", max_value, min_value, mean_value, "respectively"),
+        "Yes, the outlier values according to a rosner test are", outliers,
+        ". They are in events", duff[outlier_indices, "MacroPlot.Name"],duff[outlier_indices, "Monitoring.Status"],"rows", outlier_indices,
+        "of the duff data table. For reference, the max, min, and mean of", variable_name,
+        "are", max_value, min_value, mean_value, "respectively",
         collapse = " "
       )
       
       cat(message, "\n")
       cat("\n")
-      flags <<- c(flags, message)  # Add the outlier message to the 'flags' vector
+      flags<- c(flags, message)  # Add the outlier message to the 'flags' vector
     }
   }
   
@@ -708,21 +723,21 @@ duff_qc <- function(duff) {
       
       
       message <- paste(
-        c("Yes. They are in events", unique(duff[nulls, c("MacroPlot.Name", "Monitoring.Status")]),"transect and sample locations", unique(duff[nulls,c("Transect", "SampLoc")]), 
-          "of the duff data table. Comments say",unique(duff[nulls, c("SaComment", "Comment")])),
+        "Yes. They are in events", duff[nulls, "MacroPlot.Name"],duff[nulls, "Monitoring.Status"], "transect and sample locations", unique(duff[nulls,c("Transect", "SampLoc")]), 
+        "of the duff data table. Comments say",duff[nulls, c("SaComment", "Comment")],
         collapse = " "
       )
       
       cat(message, "\n")
       cat("\n")
-      flags <<- c(flags, message)  # Add the outlier message to the 'flags' vector
+      flags<- c(flags, message)  # Add the outlier message to the 'flags' vector
     }
   }
   
   check_nulls(duff$LittDep, "litter depth")
   check_nulls(duff$DuffDep, "duff depth")
-
-} # end function
+  
+  return(flags) } #end function
 
 #####Protocol: Surface Fuels - Fine Litter #verified 9/12 by Eva
 fine_fuels_qc <- function(fine) {
@@ -734,7 +749,7 @@ fine_fuels_qc <- function(fine) {
   } else {
     cat("FALSE, see rows:", which(fine$OneHrTranLen!=6), "\n")
     cat("\n")
-    flags <<- c(flags, paste("One Hour Transect Length is not always 6, see rows:", which(fine$OneHrTranLen!=6)))
+    flags<- c(flags, paste("One Hour Transect Length is not always 6, see rows:", which(fine$OneHrTranLen!=6)))
   }
   
   # Check if Ten Hour Transect Length is always 6
@@ -745,7 +760,7 @@ fine_fuels_qc <- function(fine) {
   } else {
     cat("FALSE,  see rows:", which(fine$TenHrTranLen!=6), "\n")
     cat("\n")
-    flags <<- c(flags, paste("Ten Hour Transect Length is not always 6, see rows:", which(fine$TenHrTranLen!=6)))
+    flags<- c(flags, paste("Ten Hour Transect Length is not always 6, see rows:", which(fine$TenHrTranLen!=6)))
   }
   
   # Check if Hundred Hour Transect Length is always 12
@@ -756,7 +771,7 @@ fine_fuels_qc <- function(fine) {
   } else {
     cat("FALSE, Hundred Hour Transect Length is not always 12, see rows:", which(fine$HunHrTranLen!=12), "\n")
     cat("\n")
-    flags <<- c(flags, paste("Hundred Hour Transect Length is not always 12, see rows:", which(fine$HunHrTranLen!=12)))
+    flags<- c(flags, paste("Hundred Hour Transect Length is not always 12, see rows:", which(fine$HunHrTranLen!=12)))
   }
   
   # Check for misplaced fuel values in transect length row
@@ -769,7 +784,7 @@ fine_fuels_qc <- function(fine) {
     
     cat("There are NAs for the transect for the following sample events: ", missing_events_str, "\n")
     cat("\n")
-    flags <<- c(flags, "There are NAs in the columns that should be specifying the transect in the fine fuels data", missing_events_str, "\n")
+    flags<- c(flags, "There are NAs in the columns that should be specifying the transect in the fine fuels data", missing_events_str, "\n")
   }else{
     cat("No")
     cat("\n")
@@ -796,17 +811,17 @@ fine_fuels_qc <- function(fine) {
         cat("\n")
         cat("Error: Not all fine transect values match the expected pattern.\n")
         cat("Transect: ", paste(off_values, collapse = ", "), "missing in sample event", paste(finedates[,i]),", comments say", unique(fine$Comment[rows]),unique(fine$SaComment[rows]),  "\n")
-        flags <<- c(flags, paste("Error: Not all fine transect values match the expected pattern", 
-                                 "Transect: ", paste(off_values, collapse = ", "), "missing in sample event"
-                                 , paste(finedates[, i]),", comments say", 
-                                 unique(fine$Comment[rows]),unique(fine$SaComment[rows]),  "\n"))
+        flags<- c(flags, paste("Error: Not all fine transect values match the expected pattern", 
+                               "Transect: ", paste(off_values, collapse = ", "), "missing in sample event"
+                               , paste(finedates[, i], collapse=","),", comments say", 
+                               paste(unique(fine$Comment[rows]),unique(fine$SaComment[rows]), collapse=","),  "\n", collapse=" "))
         no_errors <<- c(no_errors, 1)
       }else{
         off_values <- fine$Transect[weird_rows]
         cat("\n")
         cat("Error: Not all fine transect values match the expected pattern.\n")
         cat("Offending values: ", paste(off_values, collapse = ", "), "in sample event", paste(finedates[, i]), "\n")
-        flags <<- c(flags, paste("Error: Not all fine transect values match the expected pattern", "Offending values: ", paste(off_values, collapse = ", "), "in sample event", paste(finedates[, i]), "\n", sep = " "))
+        flags<- c(flags, paste("Error: Not all fine transect values match the expected pattern", "Offending values: ", paste(off_values, collapse = ", "), "in sample event", paste(finedates[, i]), "\n"), sep = " ")
         
       }
       
@@ -818,15 +833,15 @@ fine_fuels_qc <- function(fine) {
       cat("\n")
       cat("Error: Transect values are duplicated.\n")
       cat("Duplicated transect values: ", paste(duplicated_values, collapse = ", "), "in sample event", paste(finedates[, i]), "\n")
-      flags <<- c(flags, paste("Error: Transect values are duplicated", "Offending values: ", paste(duplicated_values, collapse = ", "), "in sample event", paste(finedates[, i]), "\n", sep = " "))
+      flags<- c(flags, paste("Error: Transect values are duplicated", "Offending values: ", paste(duplicated_values, collapse = ", "), "in sample event", paste(finedates[, i]), "\n"), sep = " ")
       no_errors <<- c(no_errors, 1)
       
-      }else{
-        no_errors <- c(no_errors, 0)
-      }
-      
+    }else{
+      no_errors <- c(no_errors, 0)
+    }
+    
   }
-
+  
   
   if (unique(no_errors) == 0) {
     cat("\n")
@@ -855,14 +870,14 @@ fine_fuels_qc <- function(fine) {
       
       
       message <- paste(
-        c("Yes. They are in events", unique(fine[nulls, c("MacroPlot.Name", "Monitoring.Status")]),"transects", unique(fine[nulls,"Transect"]), 
-          "of the fine data table. Comments say",unique(fine[nulls, c("SaComment", "Comment")])),
+        "Yes. They are in events", fine[nulls, "MacroPlot.Name"],fine[nulls, "Monitoring.Status"], "transects", unique(fine[nulls,"Transect"]), 
+        "of the fine data table. Comments say",fine[nulls, c("SaComment", "Comment")],
         collapse = " "
       )
       
       cat(message, "\n")
       cat("\n")
-      flags <<- c(flags, message)  # Add the outlier message to the 'flags' vector
+      flags<- c(flags, message)  # Add the outlier message to the 'flags' vector
     }
   }
   
@@ -876,7 +891,57 @@ fine_fuels_qc <- function(fine) {
       cat("Validation: fine transect values are correct.\n")
     }
   }
-} # end function
+  
+  test_for_outliers <- function(data, column_name) {
+    # Display a message indicating the test being performed
+    cat("Are there any outlier values in", column_name, "?\n")
+    
+    # Extract non-missing and non-NA/NaN/Inf values from the specified column
+    column_values <- na.omit(data[[column_name]])
+    
+    # Check if there are any valid values for testing
+    if (length(column_values) == 0) {
+      # Print a message if no valid values are available for testing
+      cat("No valid values to test\n")
+      return()  # Exit the function if there are no valid values
+    }
+    
+    # Perform Rosner test on the valid column values
+    test <- rosnerTest(column_values)
+    test <- test$all.stats
+    outliers <- test[which(test$Outlier == TRUE), 4]
+    
+    # Check if any outliers were detected
+    if (length(outliers) == 0) {
+      # Print a message if no outliers were detected
+      cat("No\n")
+    } else {
+      # Print information about the detected outliers and their details
+      cat(paste("Yes, the outlier values according to a Rosner test are", outliers, ". They are in events",
+                data[which(data[[column_name]] %in% outliers),"MacroPlot.Name"],data[which(data[[column_name]] %in% outliers),"Monitoring.Status"], "of the data table. For reference, the max, min, and mean of",
+                column_name, "are", max(column_values), min(column_values), mean(column_values), "respectively",
+                collapse = " "), "\n")
+      
+      # Add error messages about the detected outliers to the flags vector
+      flags<- c(flags, paste("The", column_name, "has outlier values according to a Rosner test, which are", outliers,
+                             ". They are in events", data[which(data[[column_name]] %in% outliers),"MacroPlot.Name"],data[which(data[[column_name]] %in% outliers),"Monitoring.Status"],
+                             "of the data table. The max, min, and mean of", column_name, "'s are", max(column_values),
+                             min(column_values), mean(column_values), "respectively", collapse = " "), "\n")
+    }
+    
+  }
+  # Perform outlier tests for the "Slope" and "Dia" columns in the fuel1000 dataset
+  test_for_outliers(fine, "OneHr")
+  cat("\n")
+  test_for_outliers(fine, "TenHr")
+  cat("\n")
+  test_for_outliers(fine, "HunHr")
+  cat("\n")
+  
+  
+  
+  
+  return(flags) } #end function
 
 #####Protocol: Saplings #verified 9/12 by Eva
 saplings_qc <- function(saps) {
@@ -891,14 +956,14 @@ saplings_qc <- function(saps) {
     } else {
       error_message <- paste("FALSE, value of", unique(saps$MacroPlotSize), "should be replaced by 0 in macroplot size list for saplings", sep = " ")
       cat(error_message, "\n")
-      flags <<- c(flags, error_message)
+      flags<- c(flags, error_message)
     }
   } else {
     error_message <- paste("FALSE, value of", unique(saps$MacroPlotSize), "should be replaced by only 0 in macroplot size list for saplings", sep = " ")
     cat(error_message, "\n")
-    flags <<- c(flags, error_message)
+    flags<- c(flags, error_message)
   }
-} # end function
+  return(flags) } #end function
 
 
 #####Protocol: Seedlings #flags could be cleaned up, otherwise works verified 9/12 by Eva
@@ -918,8 +983,9 @@ seedlings_qc=function(seeds){
   } else {
     cat(paste(c("FALSE value/s of", htcl, "entered which do not fit with acceptable values of 0.15-10, problem events are listed in flags", sep = " "), collapse = " "), "\n")
     cat("\n")
-    flags <<- c(flags, paste(c("Value/s of", htcl, "entered in height class for seedling tree data which do not fit with acceptable values of 0-10, problem problem events are", unique(seeds[which(seeds$SizeClHt %in% htcl), c("MacroPlot.Name", "Monitoring.Status")], sep = " ")), collapse = " "))
+    flags<- c(flags, paste("Value/s of", htcl, "entered in height class for seedling tree data which do not fit with acceptable values of 0-10, problem problem events are", seeds[which(seeds$SizeClHt %in% htcl), "MacroPlot.Name"],seeds[which(seeds$SizeClHt %in% htcl), "Monitoring.Status"], sep = " "), collapse = " ")
   }
+  
   
   above4=which(seeds$SizeClHt>4 | seeds$SizeClHt %in% c(NULL, NA, " ") & !is.na(seeds$MacroPlot.Name))
   cat("Flagging heights above 4 and NULL height for seedling tree data...\n")
@@ -929,9 +995,12 @@ seedlings_qc=function(seeds){
   } else {
     cat(paste(c(length(above4), "rows flagged for heights which are above 4 or NULL, problem events are listed in flags list", sep = " "), collapse = " "), "\n")
     cat("\n")
-    flags <<- c(flags, paste(c(length(above4), "rows flagged for heights which are above 4 or NULL, problem events are", unique(seeds[above4, c("MacroPlot.Name", "Monitoring.Status")]), "comments say", unique(seeds[above4, "SaComment"],), sep = " "), collapse = " "))
+    flags<- c(flags, paste("Index numbers ", seeds[above4, "Index"], "flagged for seedling heights which are above 4 or NULL:", 
+                           seeds[above4, "SizeClHt"], "in problem event", 
+                           seeds[above4, "MacroPlot.Name"], seeds[above4, "Monitoring.Status"], 
+                           "comments say", seeds[above4, "SaComment"], sep = " "), collapse = " ")
   }
-
+  
   
   cat("All samples with count value 0 have the species symbol TREE1...")
   # Count values of 0 with species symbol other than TREE1
@@ -945,9 +1014,9 @@ seedlings_qc=function(seeds){
       cat("FALSE Issues with species code when count is 0:", species_with_zero_counts, "listed for species code which should be TREE1, problem rows listed in flags\n")
       cat("\n")
       problem_rows <- which(seeds$Species.Symbol %in% species_with_zero_counts & seeds$Count == 0)
-      flags <<- c(flags, paste(c("Issues with species code when count is 0:", species_with_zero_counts, 
-                                 "listed for species code which should be TREE1, problem rows are", 
-                                 problem_rows), collapse = " "))
+      flags<- c(flags, paste(c("Issues with species code when count is 0:", species_with_zero_counts, 
+                               "listed for species code which should be TREE1, problem rows are", 
+                               problem_rows), collapse = " "))
     }
     
   }else if(length(species_with_zero_counts)==0){
@@ -957,7 +1026,7 @@ seedlings_qc=function(seeds){
     cat("FALSE Issues with species code when count is 0:", species_with_zero_counts, "listed for species code which should be TREE1, problem rows listed in flags\n")
     cat("\n")
     problem_rows <- which(seeds$Species.Symbol %in% species_with_zero_counts & seeds$Count == 0)
-    flags <<- c(flags, paste(c("Issues with species code when count is 0:", species_with_zero_counts, 
+    flags<- c(flags, paste(c("Issues with species code when count is 0:", species_with_zero_counts, 
                              "listed for species code which should be TREE1, problem rows are", 
                              problem_rows), collapse = " "))
   }
@@ -979,13 +1048,14 @@ seedlings_qc=function(seeds){
     
     outlier_msg <- paste("Outlier values detected according to Rosner test. They are",
                          paste(outliers, collapse = ", "),
-                         "with events", paste(as.character(seeds[outlier_rows, c("MacroPlot.Name", "Monitoring.Status")]), collapse = ", "),
+                         "with events", paste(as.character(seeds[outlier_rows,"MacroPlot.Name"]),paste(as.character(seeds[outlier_rows,"Monitoring.Status"])), collapse = ", "),
                          "For reference, max, min, and mean of seed counts are", max_count, min_count, mean_count, sep = " ")
     
     cat(outlier_msg, "\n")
     cat("\n")
-    flags <<- c(flags, outlier_msg)
-  }
+    flags <- c(flags, outlier_msg)
+    
+  } 
   
   
   
@@ -1014,11 +1084,11 @@ seedlings_qc=function(seeds){
           "when product should be 0.005\n")
       cat("\n")
       
-      flags <<- c(flags, paste(c("Incorrect subplot fraction/microplot size values detected:",
-                                 difspecies[incorrect_subfrac, "SubFrac"] * difspecies[incorrect_subfrac, "MicroPlotSize"],
-                                 "recorded in sample events",
-                                 paste(difspecies[incorrect_subfrac, "MacroPlot.Name"], difspecies[incorrect_subfrac, "Monitoring.Status"], sep = " - "),
-                                 "when product should be 0.005\n"), collapse=" "))
+      flags<- c(flags, paste(c("Incorrect subplot fraction/microplot size values detected:",
+                               difspecies[incorrect_subfrac, "SubFrac"] * difspecies[incorrect_subfrac, "MicroPlotSize"],
+                               "recorded in sample events",
+                               paste(difspecies[incorrect_subfrac, "MacroPlot.Name"], difspecies[incorrect_subfrac, "Monitoring.Status"], sep = " - "),
+                               "when product should be 0.005\n"), collapse=" "))
       
       
     }
@@ -1032,9 +1102,9 @@ seedlings_qc=function(seeds){
       cat("No issues with SubFrac values.\n")
       cat("\n")
     } else {
-      cat("Issues with SubFrac values detected. Values that are not one:", non_one_subfrac,", problem sample events are:", paste(nondifspecies[which(nondifspecies$SubFrac!=1),c("MacroPlot.Name", "Monitoring.Status")]), "\n")
+      cat("Issues with SubFrac values detected. Values that are not one:", non_one_subfrac,", problem sample events are:", paste(nondifspecies[which(nondifspecies$SubFrac!=1),"MacroPlot.Name"]),paste(nondifspecies[which(nondifspecies$SubFrac!=1),"Monitoring.Status"]), "\n")
       cat("\n")
-      flags<<-c(flags, paste(c("Issues with SubFrac values detected. Values that are not one:", non_one_subfrac,", problem sample events are:", paste(nondifspecies[which(nondifspecies$SubFrac==1),c("MacroPlot.Name", "Monitoring.Status")]), "\n"), collapse=" "))
+      flags<-c(flags, paste(c("Issues with SubFrac values detected. Values that are not one:", non_one_subfrac,", problem sample events are:", paste(nondifspecies[which(nondifspecies$SubFrac==1),"MacroPlot.Name"]),paste(nondifspecies[which(nondifspecies$SubFrac==1),"Monitoring.Status"]), "\n"), collapse=" "))
     }
     
   }else{
@@ -1045,9 +1115,9 @@ seedlings_qc=function(seeds){
       cat("No issues with SubFrac values.\n")
       cat("\n")
     } else {
-      cat("Issues with SubFrac values detected. Values that are not one:", non_one_subfrac,", problem sample events are:", paste(seeds[which(seeds$SubFrac!=1),c("MacroPlot.Name", "Monitoring.Status")]), "\n")
+      cat("Issues with SubFrac values detected. Values that are not one:", non_one_subfrac,", problem sample events are:", paste(seeds[which(seeds$SubFrac!=1),"MacroPlot.Name"]),paste(seeds[which(seeds$SubFrac!=1),"Monitoring.Status"]), "\n")
       cat("\n")
-      flags<<-c(flags, paste(c("Issues with SubFrac values detected. Values that are not one:", non_one_subfrac,", problem sample events are:", paste(seeds[which(seeds$SubFrac==1),c("MacroPlot.Name", "Monitoring.Status")]), "\n"), collapse=" "))
+      flags<-c(flags, paste(c("Issues with SubFrac values detected. Values that are not one:", non_one_subfrac,", problem sample events are:", paste(seeds[which(seeds$SubFrac==1),"MacroPlot.Name"]),paste(seeds[which(seeds$SubFrac==1),"Monitoring.Status"]), "\n"), collapse=" "))
     }
   }
   
@@ -1081,7 +1151,7 @@ seedlings_qc=function(seeds){
     if (length(which(is.na(seeds$MicroPlotSize))) != 0) {
       cat("Yes, there are still NAs - flagging the problem rows\n")
       cat("\n")
-      flags <<- c(flags, "NAs present in microplot column for seedings in tree seedlings protocol data. Problem rows are at indices:", which(is.na(seeds$MicroPlotSize)), sep = " ")
+      flags<- c(flags, paste("NAs present in microplot column for seedings in tree seedlings protocol data. Problem rows are at indices:", which(is.na(seeds$MicroPlotSize))), sep = " ")
     } else {
       cat("No, all NAs have been resolved\n")
       cat("\n")
@@ -1104,7 +1174,7 @@ seedlings_qc=function(seeds){
   } else {
     cat("FALSE, some samples have microplot recorded as 0 but no comment explanation, problem events noted in flags\n")
     cat("\n")
-    flags <<- c(flags, paste(c("Some samples in seedling data have microplot recorded as 0 but no comment explanation, problem rows are the following", unique(seeds[which(seeds$MicroPlotSize==0 & seeds$SaComment== zero),c("MacroPlot.Name", "Monitoring.Status")])), collapse = " "))
+    flags<- c(flags, paste("Some samples in seedling data have microplot recorded as 0 but no comment explanation, problem rows are the following", seeds[which(seeds$MicroPlotSize==0 & seeds$SaComment== zero),"MacroPlot.Name"]),seeds[which(seeds$MicroPlotSize==0 & seeds$SaComment== zero),"Monitoring.Status"], collapse = " ")
   }
   
   # mtype is monitoring type
@@ -1116,7 +1186,7 @@ seedlings_qc=function(seeds){
       # Something's wrong
       cat("Incorrect microplot size values detected:", seeds$MicroPlotSize[wrong_mp_size],", sample events listed in flags\n")
       cat("\n")
-      flags <<- c(flags, paste(c("Incorrect microplot size values detected:", seeds$MicroPlotSize[wrong_mp_size],", problem sample events:", seeds$MacroPlot.Name[wrong_mp_size], seeds$Monitoring.Status[wrong_mp_size]), collapse = " "))
+      flags<- c(flags, paste(c("Incorrect microplot size values detected:", seeds$MicroPlotSize[wrong_mp_size],", problem sample events:", seeds$MacroPlot.Name[wrong_mp_size], seeds$Monitoring.Status[wrong_mp_size]), collapse = " "))
     } else {
       # Everything's fine
       cat("TRUE\n")
@@ -1130,7 +1200,7 @@ seedlings_qc=function(seeds){
       # Something's wrong
       cat("Incorrect microplot size values detected:", unique(seeds$MicroPlotSize[wrong_mp_size]),", sample events listed in flags\n")
       cat("\n")
-      flags <<- c(flags, paste(c("Incorrect microplot size values detected:", unique(seeds$MicroPlotSize[wrong_mp_size]),", problem sample events:", seeds$MacroPlot.Name[wrong_mp_size], seeds$Monitoring.Status[wrong_mp_size]), collapse = " "))
+      flags<- c(flags, paste(c("Incorrect microplot size values detected:", unique(seeds$MicroPlotSize[wrong_mp_size]),", problem sample events:", seeds$MacroPlot.Name[wrong_mp_size], seeds$Monitoring.Status[wrong_mp_size]), collapse = " "))
     } else {
       # Everything's fine
       cat("TRUE\n")
@@ -1140,7 +1210,7 @@ seedlings_qc=function(seeds){
     # Monitoring type code is not recognized
     cat("Monitoring type code not recognized so cannot run microplot size checks\n")
     cat("\n")
-    flags <<- c(flags, "Monitoring type code not recognized so cannot run microplot size checks\n")
+    flags<- c(flags, "Monitoring type code not recognized so cannot run microplot size checks\n")
   }
   
   # Check that seedling trees have valid entries for status
@@ -1150,9 +1220,11 @@ seedlings_qc=function(seeds){
     cat("FALSE, some rows have values", paste(setdiff(unique(seeds$Status), c("", "L")), collapse = " "), ", problem events noted in flags\n")
     cat("\n")
     # Update flags with information about problem rows
-    flags <<- c(flags, paste(c("Some rows in seedling tree database have values", setdiff(unique(seeds$Status), c("", "L")),
-                               "which are not blank or L, problem rows are", unique(seeds[which(seeds$Status %in% setdiff(unique(seeds$Status), c("", "L"))),
-                                                                                   c("MacroPlot.Name", "Monitoring.Status")])), collapse = " "))
+    flags<- c(flags, paste(c("Some rows in seedling tree database have values", setdiff(unique(seeds$Status), c("", "L")),
+                             "which are not blank or L, sample events are", paste(seeds[which(seeds$Status %in% setdiff(unique(seeds$Status), c("", "L"))),
+                                                                                        "MacroPlot.Name"],
+                                                                                  seeds[which(seeds$Status %in% setdiff(unique(seeds$Status), c("", "L"))),
+                                                                                        "Monitoring.Status"], " , ")), collapse = " "))
   } else {
     cat("TRUE\n")
     cat("\n")
@@ -1164,9 +1236,10 @@ seedlings_qc=function(seeds){
     cat("Some samples are missing L status, rows:", which(!is.na(seeds[which(seeds$Status == ""), "Count"])), ", sample events noted in flags\n")
     cat("\n")
     # Update flags with information about missing L status samples with counts
-    flags <<- c(flags, paste(c("Some samples in seedling data set are missing L status, sample events:",
-                               seeds[which(!is.na(seeds[which(seeds$Status == ""), "Count"])), c("MacroPlot.Name", "Monitoring.Status")],
-                               "have counts of", seeds[which(!is.na(seeds[which(seeds$Status == ""), "Count"])), "Count"]), collapse = " "))
+    flags<- c(flags, paste("Some samples in seedling data set are missing L status, sample events:",
+                           seeds[which(!is.na(seeds[which(seeds$Status == ""), "Count"])), "MacroPlot.Name"],
+                           seeds[which(!is.na(seeds[which(seeds$Status == ""), "Count"])), "Monitoring.Status"],
+                           "have counts of", seeds[which(!is.na(seeds[which(seeds$Status == ""), "Count"])), "Count"], collapse = " "))
   } else {
     cat("TRUE, all blank seedling statuses have 0 counts for seedlings\n")
     cat("\n")
@@ -1188,10 +1261,10 @@ seedlings_qc=function(seeds){
   } else {
     cat("FALSE, some are labeled", setdiff(unique_pref_lifeforms,c("Tree", "Shrub")), ", problem events in flags\n")
     cat("\n")
-     flags <<- c(flags, paste(c("Some preferred lifeforms in the seedlings data have the mislabel",
-                               setdiff(unique_pref_lifeforms,c("Tree", "Shrub")), "in rows", seeds[problem_rows, c("MacroPlot.Name", "Monitoring.Status")]), collapse = " "))
+    flags<- c(flags, paste(c("Some preferred lifeforms in the seedlings data have the mislabel",
+                             setdiff(unique_pref_lifeforms,c("Tree", "Shrub")), "in events", paste(seeds[problem_rows, "MacroPlot.Name"],seeds[problem_rows, "Monitoring.Status"], " , ")), collapse = " "))
   }
-  
+  return(flags)
 } #end function
 
 
@@ -1207,7 +1280,7 @@ tree_CBH_qc=function(tree){
     cat("FALSE, problem rows...\n")
     cat("\n")
     which(!is.na(tree[which(tree$Status=="D"), 14]))
-    flags<<-c(flags, paste("Dead trees have a non blank live crown base height in rows", which(!is.na(tree[which(tree$Status=="D"), 14])), sep=" "))
+    flags<-c(flags, paste("Dead trees have a non blank live crown base height in rows", which(!is.na(tree[which(tree$Status=="D"), 14])), sep=" "))
   }else{
     cat("TRUE\n")
     cat("\n")
@@ -1216,22 +1289,22 @@ tree_CBH_qc=function(tree){
   #check that living trees have reasonable live crown base height values
   if(length(unique(tree$LiCrBHt))>1){
     
-  cat("Do living trees have any unreasonably high or low live crown base height values?\n")
-  
-  
-  test<-suppressWarnings(rosnerTest(tree$LiCrBHt))
-  test=test$all.stats
-  outliers=test[which(test$Outlier==TRUE),4]
-  
-  if(length(outliers)==0){
-    cat("No\n")
-    cat("\n")
-  }else{
-    cat(paste(c("Yes, the outlier values according to a rosner test are", outliers, ". They are in rows", which(tree$LiCrBHt %in% outliers), "of the tree data table. The max, min, and mean of tree LiCrBHts are", max(na.omit(tree$LiCrBHt)), min(na.omit(tree$LiCrBHt)), mean(na.omit(tree$LiCrBHt)), "respectively\n"), collapse=" "))
-    cat("\n")
-    flags<<-c(flags,paste(c("The tree LiCrBHt in the tree data set has outlier values according to a rosner test, which are", outliers, ". They are in rows", which(tree$LiCrBHt %in% outliers), "of the tree data table. The max, min, and mean of tree LiCrBHts are", max(na.omit(tree$LiCrBHt)), min(na.omit(tree$LiCrBHt)), mean(na.omit(tree$LiCrBHt)), "respectively"), collapse=" ") )
-  }
-  
+    cat("Do living trees have any unreasonably high or low live crown base height values?\n")
+    
+    
+    test<-suppressWarnings(rosnerTest(tree$LiCrBHt))
+    test=test$all.stats
+    outliers=test[which(test$Outlier==TRUE),4]
+    
+    if(length(outliers)==0){
+      cat("No\n")
+      cat("\n")
+    }else{
+      cat(paste(c("Yes, the outlier values according to a rosner test are", outliers, ". They are in rows", which(tree$LiCrBHt %in% outliers), "of the tree data table. The max, min, and mean of tree LiCrBHts are", max(na.omit(tree$LiCrBHt)), min(na.omit(tree$LiCrBHt)), mean(na.omit(tree$LiCrBHt)), "respectively\n"), collapse=" "))
+      cat("\n")
+      flags<-c(flags,paste(c("The tree LiCrBHt in the tree data set has outlier values according to a rosner test, which are", outliers, ". They are in rows", which(tree$LiCrBHt %in% outliers), "of the tree data table. The max, min, and mean of tree LiCrBHts are", max(na.omit(tree$LiCrBHt)), min(na.omit(tree$LiCrBHt)), mean(na.omit(tree$LiCrBHt)), "respectively"), collapse=" ") )
+    }
+    
   }else{
     cat("No live crown base height values recorded\n")
     cat("\n")
@@ -1252,13 +1325,13 @@ tree_CBH_qc=function(tree){
       }else{
         cat("Ladder Max Ht values are always higher than ladder base ht values \n")
         cat("\n")
-        flags<<-c(flags,"Ladder Max Ht values are always higher than ladder base ht values" )
+        flags<-c(flags,"Ladder Max Ht values are always higher than ladder base ht values" )
       }
       
     }else{
       cat(paste("FALSE, values for ladder max height are heigher than base height in these rows:", cbh[which(cbh$LaddBaseHt>cbh$LaddMaxHt),], "\n"))
       cat("\n")
-      flags<<-c(flags, paste("In tree data set values for ladder max height are heigher than base height in these rows:", cbh[which(cbh$LaddBaseHt>cbh$LaddMaxHt),]))
+      flags<-c(flags, paste("In tree data set values for ladder max height are heigher than base height in these rows:", cbh[which(cbh$LaddBaseHt>cbh$LaddMaxHt),]))
     }
     
     #check that species symbol =CANOPY for all entries with ladd base ht values
@@ -1271,13 +1344,13 @@ tree_CBH_qc=function(tree){
       }else{
         cat("FALSE, species symbol is not canopy for ANY entries with ladd base ht values\n")
         cat("\n")
-        flags<<-c(flags,"species symbol is not canopy for any entries with ladd base ht values in tree data set" )
+        flags<-c(flags,"species symbol is not canopy for any entries with ladd base ht values in tree data set" )
       }
       
     }else{
       cat(paste("FALSE, species symbol is not canopy for entries with ladd base ht values in these rows:", cbh[which(cbh$Species.Symbol!="CANOPY"),], "\n"))
       cat("\n")
-      flags<<-c(flags, paste("In tree data set species symbol is not canopy for entries with ladd base ht values in these rows:", cbh[which(cbh$Species.Symbol!="CANOPY"),]))
+      flags<-c(flags, paste("In tree data set species symbol is not canopy for entries with ladd base ht values in these rows:", cbh[which(cbh$Species.Symbol!="CANOPY"),]))
     }
     
     
@@ -1290,13 +1363,13 @@ tree_CBH_qc=function(tree){
       }else{
         cat("FALSE, status is not L for ANY entries with laddbase ht values\n ")
         cat("\n")
-        flags<<-c(flags,"status is not L for ANY entries with laddbase ht values in tree dataset" )
+        flags<-c(flags,"status is not L for ANY entries with laddbase ht values in tree dataset" )
       }
       
     }else{
       cat(paste("FALSE, status is not L for entries with laddbase ht values in these rows:", cbh[which(cbh$Status=="L"),], "\n"))
       cat("\n")
-      flags<<-c(flags, paste("In tree data set status is not L for entries with laddbase ht values in these rows:", cbh[which(cbh$Status=="L"),]))
+      flags<-c(flags, paste("In tree data set status is not L for entries with laddbase ht values in these rows:", cbh[which(cbh$Status=="L"),]))
     }
     
     
@@ -1309,13 +1382,13 @@ tree_CBH_qc=function(tree){
       }else{
         cat("FALSE, SubFrac is not 1000 for ANY entries with laddbase ht values\n ")
         cat("\n")
-        flags<<-c(flags,"SubFrac is not 1000 for ANY entries with laddbase ht values in tree dataset" )
+        flags<-c(flags,"SubFrac is not 1000 for ANY entries with laddbase ht values in tree dataset" )
       }
       
     }else{
       cat(paste("FALSE, SubFrac is not 1000 for entries with laddbase ht values in these rows:", cbh[which(cbh$SubFrac!=1000),], "\n"))
       cat("\n")
-      flags<<-c(flags, paste("In tree data set SubFrac is not 1000 for entries with laddbase ht values in these rows:", cbh[which(cbh$SubFrac!=1000),]))
+      flags<-c(flags, paste("In tree data set SubFrac is not 1000 for entries with laddbase ht values in these rows:", cbh[which(cbh$SubFrac!=1000),]))
     }
     
     
@@ -1328,19 +1401,20 @@ tree_CBH_qc=function(tree){
         cat("\n")
       }else{
         cat("FALSE, Tag is not 0 for ANY entries with laddbase ht values\n ")
-        flags<<-c(flags,"Tag is not 0 for ANY entries with laddbase ht values in tree dataset" )
+        flags<-c(flags,"Tag is not 0 for ANY entries with laddbase ht values in tree dataset" )
       }
       
     }else{
       cat(paste("FALSE, Tag is not 0 for entries with laddbase ht values in these rows:", cbh[which(cbh$TagNo!=0),], "\n"))
       cat("\n")
-      flags<<-c(flags, paste("In tree data set Tag is not 0 for entries with laddbase ht values in these rows:", cbh[which(cbh$TagNo!=0),]))
+      flags<-c(flags, paste("In tree data set Tag is not 0 for entries with laddbase ht values in these rows:", cbh[which(cbh$TagNo!=0),]))
     }
     
   }else{
     cat("No\n")
     cat("\n")
   }
+  return(flags)
 } #end function #verified 9/12 by Eva 
 
 ##Crown class
@@ -1364,9 +1438,14 @@ tree_crown_class_qc=function(tree){
     cat("TRUE\n")
     cat("\n")
   }else{
-    cat(paste(c("FALSE, values of", setdiff(blank[which(blank$Status=="D"),"CrwnCl"], c("BBD", "CUS", "DD", "")), "recorded for crown class in sample events", unique(blank[which(blank$CrwnCl%in%setdiff(blank[which(blank$Status=="D"),"CrwnCl"], c("BBD", "CUS", "DD", ""))),c("MacroPlot.Name", "Monitoring.Status")]), "\n"), collapse=" "))
+    cat(paste(c("FALSE, values of", setdiff(blank[which(blank$Status=="D"),"CrwnCl"], c("BBD", "CUS", "DD", "")), "recorded for crown class, sample events in flags\n"), collapse=" "))
     cat("\n")
-    flags<<-c(flags, paste(c("In tree data set, values of", setdiff(blank[which(blank$Status=="D"),"CrwnCl"], c("BBD", "CUS", "DD", "")), "recorded crown class in sample events", unique(blank[which(blank$CrwnCl%in%setdiff(blank[which(blank$Status=="D"),"CrwnCl"], c("BBD", "CUS", "DD", ""))),c("MacroPlot.Name", "Monitoring.Status")]), "which is not included in the acceptable list of BBD, CUS, DD, or blank"), collapse=" "))
+    flags<-c(flags, paste("Tag number ", unique(blank[which(blank$CrwnCl%in%setdiff(blank[which(blank$Status=="D"),"CrwnCl"], c("BBD", "CUS", "DD", ""))),"TagNo"]), 
+                          " in tree data set has", unique(setdiff(blank[which(blank$Status=="D"),"CrwnCl"], c("BBD", "CUS", "DD", ""))), 
+                          "recorded for crown class in sample events", 
+                          unique(blank[which(blank$CrwnCl%in%setdiff(blank[which(blank$Status=="D"),"CrwnCl"], c("BBD", "CUS", "DD", ""))),"MacroPlot.Name"]), 
+                          unique(blank[which(blank$CrwnCl%in%setdiff(blank[which(blank$Status=="D"),"CrwnCl"], c("BBD", "CUS", "DD", ""))),"Monitoring.Status"]),
+                          "which is not included in the acceptable list of BBD, CUS, DD, or blank for trees that have no dbh"))
   }
   
   #checking that dbh blank status L trees have crown class blank
@@ -1376,9 +1455,13 @@ tree_crown_class_qc=function(tree){
     cat("TRUE\n")
     cat("\n")
   }else{
-    cat(paste(c("FALSE, values of", setdiff(blank[which(blank$Status=="L"),"CrwnCl"], c("")), "recorded for crown class in sample events", unique(blank[which(blank$CrwnCl%in%setdiff(blank[which(blank$Status=="L"),"CrwnCl"], c(""))),c("MacroPlot.Name", "Monitoring.Status")]),"\n"), collapse=" "))
+    cat(paste(c("FALSE, values of", setdiff(blank[which(blank$Status=="L"),"CrwnCl"], c("")), "recorded for crown class, sample events recorded in flags\n"), collapse=" "))
     cat("\n")
-    flags<<-c(flags, paste(c("In tree data set, values of", setdiff(blank[which(blank$Status=="L"),"CrwnCl"], c("")), "recorded crown class in sample events", unique(blank[which(blank$CrwnCl%in%setdiff(blank[which(blank$Status=="L"),"CrwnCl"], c(""))), c("MacroPlot.Name", "Monitoring.Status")]), "which is not blank"), collapse=" "))
+    flags<-c(flags, paste("Tag number ", unique(blank[which(blank$CrwnCl%in%setdiff(blank[which(blank$Status=="L"),"CrwnCl"], c(""))), "TagNo"]), 
+                          " in tree data set has", unique(setdiff(blank[which(blank$Status=="L"),"CrwnCl"], c(""))), "recorded for crown class in sample events", 
+                          unique(blank[which(blank$CrwnCl%in%setdiff(blank[which(blank$Status=="L"),"CrwnCl"], c(""))), "MacroPlot.Name"]), 
+                          unique(blank[which(blank$CrwnCl%in%setdiff(blank[which(blank$Status=="L"),"CrwnCl"], c(""))), "Monitoring.Status"]),
+                          "which is not blank, it may mean that a live tree is missing a dbh"))
   }
   
   #checking that dbh overstory status D trees have crown class BAD, CS, LBS, RS, or blank
@@ -1388,9 +1471,14 @@ tree_crown_class_qc=function(tree){
     cat("TRUE\n")
     cat("\n")
   }else{
-    cat(paste(c("FALSE, values of", setdiff(overstory[which(overstory$Status=="D"),"CrwnCl"], c("BAD", "CS", "LBS", "RS", "")), "recorded for crown class in sample events", unique(overstory[which(overstory$CrwnCl %in% setdiff(overstory[which(overstory$Status=="D"),"CrwnCl"], c("BAD", "CS", "LBS", "RS", ""))),c("MacroPlot.Name", "Monitoring.Status")]), "\n"), collapse=" "))
+    cat(paste(c("FALSE, values of", setdiff(overstory[which(overstory$Status=="D"),"CrwnCl"], c("BAD", "CS", "LBS", "RS", "")), "recorded for crown class, sample events recorded in flags\n"), collapse=" "))
     cat("\n")
-    flags<<-c(flags, paste(c("In tree data set, values of", setdiff(overstory[which(overstory$Status=="D"),"CrwnCl"], c("BAD", "CS", "LBS", "RS", "")), "recorded crown class in sample events", unique(overstory[which(overstory$CrwnCl %in% setdiff(overstory[which(overstory$Status=="D"),"CrwnCl"], c("BAD", "CS", "LBS", "RS", ""))),c("MacroPlot.Name", "Monitoring.Status")]), "which is not included in the acceptable list of BAD, CS, LBS, RS, or blank"), collapse=" "))
+    flags<-c(flags, paste("Tag number ", unique(overstory[which(overstory$CrwnCl %in% setdiff(overstory[which(overstory$Status=="D"),"CrwnCl"], c("BAD", "CS", "LBS", "RS", ""))),"TagNo"]),
+                          " in tree data set has ", unique(setdiff(overstory[which(overstory$Status=="D"),"CrwnCl"], c("BAD", "CS", "LBS", "RS", ""))), 
+                          "recorded for crown class in sample events", 
+                          unique(overstory[which(overstory$CrwnCl %in% setdiff(overstory[which(overstory$Status=="D"),"CrwnCl"], c("BAD", "CS", "LBS", "RS", ""))),"MacroPlot.Name"]),
+                          unique(overstory[which(overstory$CrwnCl %in% setdiff(overstory[which(overstory$Status=="D"),"CrwnCl"], c("BAD", "CS", "LBS", "RS", ""))),"Monitoring.Status"]), 
+                          "which is not included in the acceptable list of BAD, CS, LBS, RS, or blank for overstory dead trees"))
   }
   
   
@@ -1401,9 +1489,13 @@ tree_crown_class_qc=function(tree){
     cat("TRUE\n")
     cat("\n")
   }else{
-    cat(paste(c("FALSE, values of", setdiff(overstory[which(overstory$Status=="L"),"CrwnCl"], c("C", "D", "I", "O", "SC", "")), "recorded for crown class in events", unique(overstory[which(overstory$CrwnCl %in% setdiff(overstory[which(overstory$Status=="L"),"CrwnCl"], c("C", "D", "I", "O", "SC", ""))), c("MacroPlot.Name", "Monitoring.Status")]),"\n"), collapse=" "))
+    cat(paste(c("FALSE, values of", setdiff(overstory[which(overstory$Status=="L"),"CrwnCl"], c("C", "D", "I", "O", "SC", "")), "recorded for crown class in events listed in flags\n"), collapse=" "))
     cat("\n")
-    flags<<-c(flags, paste(c("In tree data set, values of", setdiff(overstory[which(overstory$Status=="L"),"CrwnCl"], c("C", "D", "I", "O", "SC", "")), "recorded crown class in events", unique(overstory[which(overstory$CrwnCl %in% setdiff(overstory[which(overstory$Status=="L"),"CrwnCl"], c("C", "D", "I", "O", "SC", ""))), c("MacroPlot.Name", "Monitoring.Status")]), "which is not included in the acceptable list of C, D, I, O, SC, or blank"), collapse=" "))
+    flags<-c(flags, paste("Tag number ", unique(overstory[which(overstory$CrwnCl %in% setdiff(overstory[which(overstory$Status=="L"),"CrwnCl"], c("C", "D", "I", "O", "SC", ""))), "TagNo"]), 
+                          " in tree data set has", unique(setdiff(overstory[which(overstory$Status=="L"),"CrwnCl"], c("C", "D", "I", "O", "SC", ""))), "recorded for crown class in events",
+                          unique(overstory[which(overstory$CrwnCl %in% setdiff(overstory[which(overstory$Status=="L"),"CrwnCl"], c("C", "D", "I", "O", "SC", ""))), "MacroPlot.Name"]), 
+                          unique(overstory[which(overstory$CrwnCl %in% setdiff(overstory[which(overstory$Status=="L"),"CrwnCl"], c("C", "D", "I", "O", "SC", ""))), "Monitoring.Status"]), 
+                          "which is not included in the acceptable list of C, D, I, O, SC, or blank for overstory live trees"))
   }
   
   
@@ -1412,11 +1504,16 @@ tree_crown_class_qc=function(tree){
     cat("TRUE\n")
     cat("\n")
   }else{
-    cat(paste(c("FALSE, values of", setdiff(pole[,"CrwnCl"], c("BBD", "CUS", "DD", "X",  "")), "recorded for crown class in sample events", unique(pole[which(pole$CrwnCl %in% setdiff(pole[,"CrwnCl"], c("BBD", "CUS", "DD", "X",  ""))),c("MacroPlot.Name", "Monitoring.Status")]), "\n"), collapse=" "))
+    cat(paste(c("FALSE, values of", setdiff(pole[,"CrwnCl"], c("BBD", "CUS", "DD", "X",  "")), "recorded for crown class in sample events listed in flags\n"), collapse=" "))
     cat("\n")
-    flags<<-c(flags, paste(c("In tree data set, values of", setdiff(pole[,"CrwnCl"], c("BBD", "CUS", "DD", "X",  "")), "recorded crown class in sample events", unique(pole[which(pole$CrwnCl %in% setdiff(pole[,"CrwnCl"], c("BBD", "CUS", "DD", "X",  ""))),c("MacroPlot.Name", "Monitoring.Status")]), "which is not included in the acceptable list of BBD, CUS, dd, X, or blank"), collapse=" "))
+    flags<-c(flags, paste("Tag number ", unique(pole[which(pole$CrwnCl %in% setdiff(pole[,"CrwnCl"], c("BBD", "CUS", "DD", "X",  ""))),"TagNo"]), 
+                          " in tree data set has", unique(setdiff(pole[,"CrwnCl"], c("BBD", "CUS", "DD", "X",  ""))), "recorded for crown class in sample events", 
+                          unique(pole[which(pole$CrwnCl %in% setdiff(pole[,"CrwnCl"], c("BBD", "CUS", "DD", "X",  ""))),"MacroPlot.Name"]), 
+                          unique(pole[which(pole$CrwnCl %in% setdiff(pole[,"CrwnCl"], c("BBD", "CUS", "DD", "X",  ""))),"Monitoring.Status"]), 
+                          "which is not included in the acceptable list of BBD, CUS, dd, X, or blank for pole dead trees"))
     
-  }
+  } 
+  return(flags)
 } #end function #verified 9/12 by Eva (lots of flags) 
 
 #Tree damage
@@ -1430,11 +1527,25 @@ tree_damage_qc=function(tree){
   if(length(setdiff(na.omit(unique(str_trim(c(tree$DamCd1, tree$DamCd2,tree$DamCd3, tree$DamCd4, tree$DamCd5 )))),damcodes))%in%0){
     cat("TRUE\n")
   }else{
-    cat(paste("FALSE" , setdiff(unique(c(tree$DamCd1, tree$DamCd2,tree$DamCd3, tree$DamCd4, tree$DamCd5 )),damcodes), "included in row", unique(tree[which(tree[,33]%in%setdiff(unique(c(tree$DamCd1, tree$DamCd2,tree$DamCd3, tree$DamCd4, tree$DamCd5 )),damcodes)| tree[,35]%in%setdiff(unique(c(tree$DamCd1, tree$DamCd2,tree$DamCd3, tree$DamCd4, tree$DamCd5 )),damcodes) | tree[,37]%in%setdiff(unique(c(tree$DamCd1, tree$DamCd2,tree$DamCd3, tree$DamCd4, tree$DamCd5 )),damcodes) |tree[,39]%in%setdiff(unique(c(tree$DamCd1, tree$DamCd2,tree$DamCd3, tree$DamCd4, tree$DamCd5 )),damcodes) | tree[,41]%in%setdiff(unique(c(tree$DamCd1, tree$DamCd2,tree$DamCd3, tree$DamCd4, tree$DamCd5 )),damcodes)), c("MacroPlot.Name", "Monitoring.Status")]), "which is not included in acceptable list\n", sep=" "))
+    cat(paste("FALSE" , setdiff(unique(c(tree$DamCd1, tree$DamCd2,tree$DamCd3, tree$DamCd4, tree$DamCd5 )),damcodes), "included in events listed in flags\n"), sep=" ")
     cat("\n")
     cat("Acceptable list includes:", damcodes, "\n")
-    flags<<- c(flags, paste(setdiff(unique(c(tree$DamCd1, tree$DamCd2,tree$DamCd3, tree$DamCd4, tree$DamCd5 )),damcodes), "-included in row", unique(tree[which(tree[,33]%in%setdiff(unique(c(tree$DamCd1, tree$DamCd2,tree$DamCd3, tree$DamCd4, tree$DamCd5 )),damcodes)| tree[,35]%in%setdiff(unique(c(tree$DamCd1, tree$DamCd2,tree$DamCd3, tree$DamCd4, tree$DamCd5 )),damcodes) | tree[,37]%in%setdiff(unique(c(tree$DamCd1, tree$DamCd2,tree$DamCd3, tree$DamCd4, tree$DamCd5 )),damcodes) |tree[,39]%in%setdiff(unique(c(tree$DamCd1, tree$DamCd2,tree$DamCd3, tree$DamCd4, tree$DamCd5 )),damcodes) | tree[,41]%in%setdiff(unique(c(tree$DamCd1, tree$DamCd2,tree$DamCd3, tree$DamCd4, tree$DamCd5 )),damcodes)), c("MacroPlot.Name", "Monitoring.Status")]), "of tree data set for damage code which is not included in acceptable list", sep=" "))
+    flags<- c(flags, paste(setdiff(unique(c(tree$DamCd1, tree$DamCd2,tree$DamCd3, tree$DamCd4, tree$DamCd5 )),damcodes), "-included in row", 
+                           tree[which(tree[,"DamCd1"]%in%setdiff(unique(c(tree$DamCd1, tree$DamCd2,tree$DamCd3, tree$DamCd4, tree$DamCd5 )),damcodes)| 
+                                        tree[,"DamCd2"]%in%setdiff(unique(c(tree$DamCd1, tree$DamCd2,tree$DamCd3, tree$DamCd4, tree$DamCd5 )),damcodes) | 
+                                        tree[,"DamCd3"]%in%setdiff(unique(c(tree$DamCd1, tree$DamCd2,tree$DamCd3, tree$DamCd4, tree$DamCd5 )),damcodes) |
+                                        tree[,"DamCd4"]%in%setdiff(unique(c(tree$DamCd1, tree$DamCd2,tree$DamCd3, tree$DamCd4, tree$DamCd5 )),damcodes) | 
+                                        tree[,"DamCd5"]%in%setdiff(unique(c(tree$DamCd1, tree$DamCd2,tree$DamCd3, tree$DamCd4, tree$DamCd5 )),damcodes)), 
+                                "MacroPlot.Name"], 
+                           tree[which(tree[,"DamCd1"]%in%setdiff(unique(c(tree$DamCd1, tree$DamCd2,tree$DamCd3, tree$DamCd4, tree$DamCd5 )),damcodes)| 
+                                        tree[,"DamCd2"]%in%setdiff(unique(c(tree$DamCd1, tree$DamCd2,tree$DamCd3, tree$DamCd4, tree$DamCd5 )),damcodes) | 
+                                        tree[,"DamCd3"]%in%setdiff(unique(c(tree$DamCd1, tree$DamCd2,tree$DamCd3, tree$DamCd4, tree$DamCd5 )),damcodes) |
+                                        tree[,"DamCd4"]%in%setdiff(unique(c(tree$DamCd1, tree$DamCd2,tree$DamCd3, tree$DamCd4, tree$DamCd5 )),damcodes) | 
+                                        tree[,"DamCd5"]%in%setdiff(unique(c(tree$DamCd1, tree$DamCd2,tree$DamCd3, tree$DamCd4, tree$DamCd5 )),damcodes)), 
+                                "Monitoring.Status"],
+                           "of tree data set for damage code which is not included in acceptable list", sep=" "))
   }
+  return(flags)
   
 } #end function #verified 9/12 by Eva
 
@@ -1447,9 +1558,11 @@ tree_dbh_qc=function(tree){
   cat("All tree DBHs are under 2.5\n")
   
   if(any(unique(na.omit((tree$DBH)<2.5)))==TRUE){
-    cat(paste(c("Not all DBH are under 2.5 in tree data - ", tree[which(tree$DBH<2.5), "DBH"], "recorded in event/s",unique(tree[which(tree$DBH<2.5), c("MacroPlot.Name", "Monitoring.Status")]), "\n"), collapse=" "))
+    cat(paste(c("Not all DBH are under 2.5 in tree data - ", tree[which(tree$DBH<2.5), "DBH"], "recorded in event/s listed in flags\n"), collapse=" "))
     cat("\n")
-    flags<<-c(flags, paste("Not all DBH are under 2.5 in tree data- ", tree[which(tree$DBH<2.5), "DBH"], "recorded in event/s",unique(tree[which(tree$DBH<2.5), c("MacroPlot.Name", "Monitoring.Status")]), sep=" "))
+    flags<-c(flags, paste("Not all DBH are under 2.5 in tree data- ", tree[which(tree$DBH<2.5), "DBH"], "recorded in event/s",
+                          tree[which(tree$DBH<2.5), "MacroPlot.Name"],
+                          tree[which(tree$DBH<2.5), "Monitoring.Status"], sep=" "))
   }else{
     cat("TRUE\n")
     cat("\n")
@@ -1466,11 +1579,14 @@ tree_dbh_qc=function(tree){
     cat("No\n")
     cat("\n")
   }else{
-    cat(paste(c("Yes, the outlier values according to a rosner test are", outliers, ". They are in sample events", unique(tree[which(tree$DBH %in% outliers), c("MacroPlot.Name", "Monitoring.Status")]), "of the tree data table. For reference, the max, min, and mean of tree DBH are", max(na.omit(tree$DBH)), min(na.omit(tree$DBH)), mean(na.omit(tree$DBH)), "respectively\n"), collapse=" "))
+    cat(paste(c("Yes, the outlier values in the tree dbh according to a rosner test are", outliers, ". They are in sample events listed in flags of the tree data table. For reference, the max, min, and mean of tree DBH are", max(na.omit(tree$DBH)), min(na.omit(tree$DBH)), mean(na.omit(tree$DBH)), "respectively\n"), collapse=" "))
     cat("\n")
-    flags<<-c(flags,paste(c("The tree DBH in the tree data set has outlier values according to a rosner test, which are", outliers, ". They are in events", unique(tree[which(tree$DBH %in% outliers), c("MacroPlot.Name", "Monitoring.Status")]), "of the duff data table. For reference, the max, min, and mean of tree DBH's are", max(na.omit(tree$DBH)), min(na.omit(tree$DBH)), mean(na.omit(tree$DBH)), "respectively"), collapse=" ") )
+    flags<-c(flags,paste("The tree DBH in the tree data set has outlier values according to a rosner test, which are", outliers, ". They are in events", 
+                         tree[which(tree$DBH %in% outliers), "MacroPlot.Name"], 
+                         tree[which(tree$DBH %in% outliers), "Monitoring.Status"], 
+                         "of the duff data table. For reference, the max, min, and mean of tree DBH's are", max(na.omit(tree$DBH)), min(na.omit(tree$DBH)), mean(na.omit(tree$DBH)), "respectively", collapse=" ") )
   }
-  
+  return(flags)
 } #end function #verified 9/12 by Eva
 
 ##tree dd
@@ -1482,9 +1598,11 @@ tree_dd_qc=function(tree){
   
   cat("Values for DBH have been deleted for trees that are no longer standing...\n")
   if(any(is.na(fallen_trees$DBH)==FALSE)){
-    cat(paste(c("FALSE, values of", fallen_trees[which(!is.na(fallen_trees$DBH)),10], "are recorded for tree DBH that have crown class", unique(fallen_trees[which(!is.na(fallen_trees$DBH)),13]), ",problem events are", fallen_trees[which(!is.na(fallen_trees$DBH)),c("MacroPlot.Name", "Monitoring.Status")], "\n"), collapse=" "))
+    cat(paste(c("FALSE, values of", fallen_trees[which(!is.na(fallen_trees$DBH)),10], "are recorded for tree DBH that have crown class", unique(fallen_trees[which(!is.na(fallen_trees$DBH)),13]), ",problem events are listed in flags\n"), collapse=" "))
     cat("\n")
-    flags<<-c(flags, paste(c("FALSE, values of", fallen_trees[which(!is.na(fallen_trees$DBH)),10], "are recorded for tree DBH that have crown class", fallen_trees[which(!is.na(fallen_trees$DBH)),13], ",problem events are", fallen_trees[which(!is.na(fallen_trees$DBH)),c("MacroPlot.Name", "Monitoring.Status")] ), collapse=" "))
+    flags<-c(flags, paste("Values of", fallen_trees[which(!is.na(fallen_trees$DBH)),10], "are recorded for tree DBH that have crown class", fallen_trees[which(!is.na(fallen_trees$DBH)),13], ",problem events are", 
+                          fallen_trees[which(!is.na(fallen_trees$DBH)),"MacroPlot.Name"] ,
+                          fallen_trees[which(!is.na(fallen_trees$DBH)),"Monitoring.Status"] ),collapse=" ")
   }else{
     cat("TRUE\n")
     cat("\n")
@@ -1496,7 +1614,7 @@ tree_dd_qc=function(tree){
   if(any(is.na(fallen_trees$Ht)==FALSE)){
     cat(paste(c("FALSE, values of", fallen_trees[which(!is.na(fallen_trees$Ht)),11], "are recorded for tree Ht that have crown class", fallen_trees[which(!is.na(fallen_trees$Ht)),13], ",problem events are", fallen_trees[which(!is.na(fallen_trees$Ht)),c("MacroPlot.Name", "Monitoring.Status")], "\n" ), collapse=" "))
     cat("\n")
-    flags<<-c(flags, paste(c("FALSE, values of", fallen_trees[which(!is.na(fallen_trees$Ht)),11], "are recorded for tree Ht that have crown class", fallen_trees[which(!is.na(fallen_trees$Ht)),13], ",problem events are", fallen_trees[which(!is.na(fallen_trees$Ht)),c("MacroPlot.Name", "Monitoring.Status")] ), collapse=" "))
+    flags<-c(flags, paste(c("FALSE, values of", fallen_trees[which(!is.na(fallen_trees$Ht)),11], "are recorded for tree Ht that have crown class", fallen_trees[which(!is.na(fallen_trees$Ht)),13], ",problem events are", fallen_trees[which(!is.na(fallen_trees$Ht)),c("MacroPlot.Name", "Monitoring.Status")] ), collapse=" "))
   }else{
     cat("TRUE\n")
     cat("\n")
@@ -1508,11 +1626,12 @@ tree_dd_qc=function(tree){
   if(any(is.na(fallen_trees$LiCrBHt)==FALSE)){
     cat(paste(c("FALSE, values of", fallen_trees[which(!is.na(fallen_trees$LiCrBHt)),14], "are recorded for tree LiCrBHt that have crown class", fallen_trees[which(!is.na(fallen_trees$LiCrBHt)),13], ",problem events are", fallen_trees[which(!is.na(fallen_trees$LiCrBHt)),c("MacroPlot.Name", "Monitoring.Status")], "\n" ), collapse=" "))
     cat("\n")
-    flags<<-c(flags, paste(c("FALSE, values of", fallen_trees[which(!is.na(fallen_trees$LiCrBHt)),14], "are recorded for tree LiCrBHt that have crown class", fallen_trees[which(!is.na(fallen_trees$LiCrBHt)),13], ",problem events are", fallen_trees[which(!is.na(fallen_trees$LiCrBHt)),c("MacroPlot.Name", "Monitoring.Status")] ), collapse=" "))
+    flags<-c(flags, paste(c("FALSE, values of", fallen_trees[which(!is.na(fallen_trees$LiCrBHt)),14], "are recorded for tree LiCrBHt that have crown class", fallen_trees[which(!is.na(fallen_trees$LiCrBHt)),13], ",problem events are", fallen_trees[which(!is.na(fallen_trees$LiCrBHt)),c("MacroPlot.Name", "Monitoring.Status")] ), collapse=" "))
   }else{
     cat("TRUE\n")
     cat("\n")
   }
+  return(flags)
 }#end function #verified 10/2 by Eva
 
 
@@ -1538,14 +1657,14 @@ tree_fract_qc=function(tree){
     }else{
       cat(paste(c("FALSE, subfrac values for all overstory trees is", unique(overstory$SubFrac), "when it should be equal to 1\n. Problem events are:", unique(overstory[which(overstory$SubFrac!=1), c("MacroPlot.Name", "Monitoring.Status")])), collapse=" "))
       cat("\n")
-      flags<<-c(flags, paste(c("Subfrac values for all overstory trees in tree data set is", unique(overstory$SubFrac), "when it should be equal to 1"), collapse=" "))
+      flags<-c(flags, paste(c("Subfrac values for all overstory trees in tree data set is", unique(overstory$SubFrac), "when it should be equal to 1"), collapse=" "))
       #something else
     }
   }else{
     #more than one result not just one
     cat(paste(c("FALSE, subfrac values for overstory trees include", unique(overstory$SubFrac), "when it should only be 1\nProblem events are:", unique(overstory[which(overstory$SubFrac!=1), c("MacroPlot.Name", "Monitoring.Status")])), collapse=" "))
     cat("\n")
-    flags<<-c(flags, paste(c("Subfrac values for all overstory trees in tree data set is", unique(overstory$SubFrac), "when it should only be 1"), collapse=" "))
+    flags<-c(flags, paste(c("Subfrac values for all overstory trees in tree data set is", unique(overstory$SubFrac), "when it should only be 1"), collapse=" "))
   }
   
   cat("All pole trees have subplot fraction of 0.5\n")
@@ -1556,14 +1675,14 @@ tree_fract_qc=function(tree){
     }else{
       cat(paste(c("FALSE, subfrac values for all pole trees is", unique(pole$SubFrac), "when it should be equal to 0.5. Problem events are:", unique(pole[which(pole$SubFrac!=0.5), c("MacroPlot.Name", "Monitoring.Status")]), "\n"), collapse=" "))
       cat("\n")
-      flags<<-c(flags, paste(c("Subfrac values for all pole trees in tree data set is", unique(pole$SubFrac), "when it should be equal to 0.5"), collapse=" "))
+      flags<-c(flags, paste("Subfrac values for all pole trees in tree data set is", unique(pole$SubFrac), "when it should be equal to 0.5"), collapse=" ")
       #something else
     }
   }else{
     #more than one result not just one
     cat(paste(c("FALSE, subfrac values for pole trees include", unique(pole$SubFrac), "when it should only be 0.5. Problem events are:", unique(pole[which(pole$SubFrac!=0.5), c("MacroPlot.Name", "Monitoring.Status")]), "\n"), collapse=" "))
     cat("\n")
-    flags<<-c(flags, paste(c("Subfrac values for all pole trees in tree data set is", unique(pole$SubFrac), "when it should only be 0.5"), collapse=" "))
+    flags<-c(flags, paste("Subfrac values for all pole trees in tree data set is", unique(pole$SubFrac), "when it should only be 0.5"), collapse=" ")
   }
   
   cat("All blank dbh trees have subplot fraction of 1000 or blank\n")
@@ -1574,15 +1693,16 @@ tree_fract_qc=function(tree){
     }else{
       cat(paste(c("FALSE, subfrac values for all blank trees is", unique(blank$SubFrac), "when it should be equal to 1000 or blank. Problem events are:", unique(blank[which(na.omit(blank$SubFrac)!=1000), c("MacroPlot.Name", "Monitoring.Status")])), collapse=" "))
       cat("\n")
-      flags<<-c(flags, paste(c("Subfrac values for all blank trees in tree data set is", unique(blank$SubFrac), "when it should be equal to 1000 or blank, these rows with other values represent plot summary lines and DD lines and must be verified before making changes: are",which(blank$SubFrac %in% setdiff(unique(blank$SubFrac), c(1000, "")))), collapse=" "))
+      flags<-c(flags, paste("Subfrac values for all blank trees in tree data set is", unique(blank$SubFrac), "when it should be equal to 1000 or blank, these other values represent plot summary lines and DD lines and must be verified before making changes"), collapse=" ")
       #something else
     }
   }else{
     #more than one result not just one
     cat(paste(c("FALSE, subfrac values for blank trees include", unique(blank$SubFrac), "when it should only be 1000 or blank. Problem events are:", unique(blank[which(na.omit(blank$SubFrac)!=1000), c("MacroPlot.Name", "Monitoring.Status")]), "these rows with other values represent plot summary lines and DD lines and must be verified before making changes: are", which(blank$SubFrac %in% setdiff(unique(blank$SubFrac), c(1000, ""))), "\n"), collapse=" "))
     cat("\n")
-    flags<<-c(flags, paste(c("Subfrac values for all blank trees in tree data set is", unique(blank$SubFrac), "when it should only be 1000 or blank, these rows with other values represent plot summary lines and DD lines and must be verified before making changes: are", which(blank$SubFrac %in% setdiff(unique(blank$SubFrac), c(1000, "")))), collapse=" "))
+    flags<-c(flags, paste(c("Subfrac values for all blank trees in tree data set is", unique(blank$SubFrac), "when it should only be 1000 or blank, these rows with other values represent plot summary lines and DD lines and must be verified before making changes: are", which(blank$SubFrac %in% setdiff(unique(blank$SubFrac), c(1000, "")))), collapse=" "))
   }
+  return(flags)
 }#end function #verified 10/2 by Eva - lots of flags however
 
 
@@ -1598,15 +1718,19 @@ tree_header_qc=function(tree){
       cat("\n")
     }else{
       #something wrong
-      cat(paste(c("FALSE, macroplot size values for blank trees include", unique(tree$MacroPlotSize), "when it should only be 0.1 or NA, problem rows:", which(tree$MacroPlotSize==setdiff(unique(tree$MacroPlotSize), c(0.1, NA))), "\n"), collapse=" "))
+      cat(paste(c("FALSE, macroplot size values for blank trees include", unique(tree$MacroPlotSize), "when it should only be 0.1 or NA, problem events listed in flags\n"), collapse=" "))
       cat("\n")
-      flags<<-c(flags, paste(c("MacroPlotSize values for all tree trees in tree data set is", unique(tree$MacroPlotSize), "when it should only be 0.1 or NA, problem rows:", which(tree$MacroPlotSize==setdiff(unique(tree$MacroPlotSize), c(0.1, NA)))), collapse=" "))
+      flags<-c(flags, paste("MacroPlotSize values for all tree trees in tree data set is", unique(tree$MacroPlotSize), "when it should only be 0.1 or NA, problem events:", tree[which(tree$MacroPlotSize==setdiff(unique(tree$MacroPlotSize), c(0.1, NA))), "MacroPlot.Name"],
+                            tree[which(tree$MacroPlotSize==setdiff(unique(tree$MacroPlotSize), c(0.1, NA))), "Monitoring.Status"],
+                            collapse=" "))
     }
   }else{
     #something wrong
-    cat(paste(c("FALSE, macroplot size values for blank trees include", unique(tree$MacroPlotSize), "when it should only be 0.1 or NA, problem rows:", which(tree$MacroPlotSize==setdiff(unique(tree$MacroPlotSize), c(0.1, NA))), "\n"), collapse=" "))
+    cat(paste(c("FALSE, macroplot size values for blank trees include", unique(tree$MacroPlotSize), "when it should only be 0.1 or NA, problem events listed in flags\n"), collapse=" "))
     cat("\n")
-    flags<<-c(flags, paste(c("MacroPlotSize values for all blank trees in tree data set is", unique(tree$MacroPlotSize), "when it should only be 0.1 or NA, problem rows:", which(tree$MacroPlotSize==setdiff(unique(tree$MacroPlotSize), c(0.1, NA)))), collapse=" "))
+    flags<-c(flags, paste("MacroPlotSize values for all blank trees in tree data set is", unique(tree$MacroPlotSize), "when it should only be 0.1 or NA, problem events:", tree[which(tree$MacroPlotSize==setdiff(unique(tree$MacroPlotSize), c(0.1, NA))), "MacroPlot.Name"],
+                          tree[which(tree$MacroPlotSize==setdiff(unique(tree$MacroPlotSize), c(0.1, NA))), "Monitoring.Status"],
+                          collapse=" "))
   }
   
   
@@ -1617,15 +1741,19 @@ tree_header_qc=function(tree){
       cat("\n")
     }else{
       #something wrong
-      cat(paste(c("FALSE, Snagplot size values for blank trees include", unique(tree$SnagPlotSize), "when it should only be 0.1 or NA, problem rows:", which(tree$SnagPlotSize==setdiff(unique(tree$SnagPlotSize), c(0.1, NA))), "\n"), collapse=" "))
+      cat(paste("FALSE, Snagplot size values for blank trees include", unique(tree$SnagPlotSize), "when it should only be 0.1 or NA, problem events listed in flags\n"), collapse=" ")
       cat("\n")
-      flags<<-c(flags, paste(c("SnagPlotSize values for all tree trees in tree data set is", unique(tree$SnagPlotSize), "when it should only be 0.1 or NA, problem rows:", which(tree$SnagPlotSize==setdiff(unique(tree$SnagPlotSize), c(0.1, NA)))), collapse=" "))
+      flags<-c(flags, paste("SnagPlotSize values for all tree trees in tree data set is", unique(tree$SnagPlotSize), "when it should only be 0.1 or NA, problem events:", tree[which(tree$SnagPlotSize==setdiff(unique(tree$SnagPlotSize), c(0.1, NA))), "MacroPlot.Name"],
+                            tree[which(tree$SnagPlotSize==setdiff(unique(tree$SnagPlotSize), c(0.1, NA))), "Monitoring.Status"],
+                            collapse=" "))
     }
   }else{
     #something wrong
-    cat(paste(c("FALSE, Snagplot size values for blank trees include", unique(tree$SnagPlotSize), "when it should only be 0.1 or NA, problem rows:", which(tree$SnagPlotSize==setdiff(unique(tree$SnagPlotSize), c(0.1, NA))), "\n"), collapse=" "))
+    cat(paste("FALSE, Snagplot size values for blank trees include", unique(tree$SnagPlotSize), "when it should only be 0.1 or NA, problem events listed in flags\n"), collapse=" ")
     cat("\n")
-    flags<<-c(flags, paste(c("SnagPlotSize values for all blank trees in tree data set is", unique(tree$SnagPlotSize), "when it should only be 0.1 or NA, problem rows:", which(tree$SnagPlotSize==setdiff(unique(tree$SnagPlotSize), c(0.1, NA)))), collapse=" "))
+    flags<-c(flags, paste("SnagPlotSize values for all blank trees in tree data set is", unique(tree$SnagPlotSize), "when it should only be 0.1 or NA, problem events:", tree[which(tree$SnagPlotSize==setdiff(unique(tree$SnagPlotSize), c(0.1, NA))),"MacroPlot.Name"], 
+                          tree[which(tree$SnagPlotSize==setdiff(unique(tree$SnagPlotSize), c(0.1, NA))), "Monitoring.Status"],
+                          collapse=" "))
   }
   
   
@@ -1637,19 +1765,22 @@ tree_header_qc=function(tree){
       cat("\n")
     }else{
       #something wrong
-      cat(paste(c("FALSE, Break point diameter values for blank trees include", unique(tree$BrkPntDia), "when it should only be 15.1 or NA, problem rows:", which(tree$BrkPntDia==setdiff(unique(tree$BrkPntDia), c(15.1, NA))), "\n"), collapse=" "))
+      cat(paste(c("FALSE, Break point diameter values for blank trees include", unique(tree$BrkPntDia), "when it should only be 15.1 or NA, problem events listed in flags\n"), collapse=" "))
       cat("\n")
-      flags<<-c(flags, paste(c("Break Point Diameter values for all blank trees in tree data set is", unique(tree$BrkPntDia), "when it should only be 15.1 or NA, problem rows:", which(tree$BrkPntDia==setdiff(unique(tree$BrkPntDia), c(15.1, NA)))), collapse=" "))
+      flags<-c(flags, paste("Break Point Diameter values for all blank trees in tree data set is", unique(tree$BrkPntDia), "when it should only be 15.1 or NA, problem events:", tree[which(tree$BrkPntDia==setdiff(unique(tree$BrkPntDia), c(15.1, NA))), "MacroPlot.Name"],
+                            tree[which(tree$BrkPntDia==setdiff(unique(tree$BrkPntDia), c(15.1, NA))), "Monitoring.Status"],
+                            collapse=" "))
     }
   }else{
     #something wrong
-    cat(paste(c("FALSE, Break point diameter values for blank trees include", unique(tree$BrkPntDia), "when it should only be 15.1 or NA, problem rows:", which(tree$BrkPntDia==setdiff(unique(tree$BrkPntDia), c(15.1, NA))), "\n"), collapse=" "))
+    cat(paste(c("FALSE, Break point diameter values for blank trees include", unique(tree$BrkPntDia), "when it should only be 15.1 or NA, problem events listed in flags\n"), collapse=" "))
     cat("\n")
-    flags<<-c(flags, paste(c("Break Point Diameter values for all blank trees in tree data set is", unique(tree$BrkPntDia), "when it should only be 15.1 or NA, problem rows:", which(tree$BrkPntDia==setdiff(unique(tree$BrkPntDia), c(15.1, NA)))), collapse=" "))
+    flags<-c(flags, paste("Break Point Diameter values for all blank trees in tree data set is", unique(tree$BrkPntDia), "when it should only be 15.1 or NA, problem events:", tree[which(tree$BrkPntDia==setdiff(unique(tree$BrkPntDia), c(15.1, NA))), "MacroPlot.Name"],
+                          tree[which(tree$BrkPntDia==setdiff(unique(tree$BrkPntDia), c(15.1, NA))), "Monitoring.Status"], collapse=" "))
   }
   
-  
-}#end function
+  return(flags)
+}#end function #verified 10/11 by Eva (I think)
 
 
 
@@ -1665,7 +1796,7 @@ tree_height_qc=function(tree){
   blank$treerow=which(tree$DBH=="" | is.na(tree$DBH))
   
   
-  print("Are there any outlier values in overstory tree height?")
+  cat("Are there any outlier values in overstory tree height?\n")
   
   if(length(na.omit(overstory$Ht))>4){
     test<-suppressWarnings(rosnerTest(na.omit(overstory$Ht)))
@@ -1673,30 +1804,38 @@ tree_height_qc=function(tree){
     outliers=test[which(test$Outlier==TRUE),4]
     
     if(length(outliers)==0){
-      print("No")
+      cat("No\n")
+      cat("\n")
     }else{
-      print(paste(c("Yes, the outlier values according to a rosner test are", outliers, ". They are in rows", which(overstory$Ht %in% outliers), "of the overstory data table. The max, min, and mean of overstory tree height are", max(na.omit(overstory$Ht)), min(na.omit(overstory$Ht)), mean(na.omit(overstory$Ht)), "respectively"), collapse=" "))
-      flags<<-c(flags,paste(c("The overstory tree height in the overstory data set has outlier values according to a rosner test, which are", outliers, ". They are in rows", which(overstory$Ht %in% outliers), "of the overstory data table. The max, min, and mean of overstory tree height's are", max(na.omit(overstory$Ht)), min(na.omit(overstory$Ht)), mean(na.omit(overstory$Ht)), "respectively"), collapse=" ") )
+      cat(paste(c("Yes, the outlier values according to a rosner test are", outliers, ". They are in events listed in flags. The max, min, and mean of overstory tree height are", max(na.omit(overstory$Ht)), min(na.omit(overstory$Ht)), mean(na.omit(overstory$Ht)), "respectively","\n"), collapse=" "))
+      cat("\n")
+      flags<-c(flags,paste("The overstory tree height in the overstory data set has outlier values according to a rosner test, which are", outliers, ". They are in events", overstory[which(overstory$Ht %in% outliers), "MacroPlot.Name"], 
+                           overstory[which(overstory$Ht %in% outliers), "Monitoring.Status"], "of the overstory data table. 
+                           The max, min, and mean of overstory tree height's are", max(na.omit(overstory$Ht)), min(na.omit(overstory$Ht)), mean(na.omit(overstory$Ht)), "respectively", collapse=" ") )
     }
   }else{
-    print(paste(c("Not enough samples to conduct a rosner test (<4) for the outlier values for overstory ht in the tree dataset. Values are ", na.omit(overstory$Ht)), collapse=" "))
-    flags<<-c(flags, paste(c("Not enough samples to conduct a rosner test (<4) for the outlier values for overstory ht in the tree dataset. Values are ", na.omit(overstory$Ht)), collapse=" "))
+    cat(paste(c("Not enough samples to conduct a rosner test (<4) for the outlier values for overstory ht in the tree dataset. Values are ", na.omit(overstory$Ht),"\n"), collapse=" "))
+    cat("\n")
+    flags<-c(flags, paste(c("Not enough samples to conduct a rosner test (<4) for the outlier values for overstory ht in the tree dataset. Values are ", na.omit(overstory$Ht)), collapse=" "))
   }
   
   
   ###check that pole dbh ht is 1-10 or blank
   
-  print("Correct height classes entered for pole tree data...")
+  cat("Correct height classes entered for pole tree data...\n")
   htcl=setdiff(unique(na.omit(pole$Ht)), c(0:10, NA))
   
   if(length(htcl)==0){
-    print("TRUE")
+    cat("TRUE\n")
+    cat("\n")
   }else{
-    print(paste(c("FALSE", htcl, "values entered which do not fit with acceptable values of 0-10 or NA, problem rows are", which(pole$Ht %in% htcl), sep=" "), collapse=" "))
-    flags<<-c(flags,paste(c(htcl, "values entered in height for pole tree data which do not fit with acceptable values of 0-10 or NA, problem rows are", which(pole$Ht %in% htcl), sep=" "), collapse=" ") )
+    cat(paste(c("FALSE", htcl, "values entered which do not fit with acceptable values of 0-10 or NA, problem events listed in flags\n"), sep=" "), collapse=" ")
+    cat("\n")
+    flags<-c(flags,paste(htcl, "values entered in height for pole tree data which do not fit with acceptable values of 0-10 or NA, problem rows are", pole[which(pole$Ht %in% htcl),"MacroPlot.Name"],
+                         pole[which(pole$Ht %in% htcl),"Monitoring.Status"], sep=" ", collapse=" ") )
   }
-  
-}#end function
+  return(flags)
+}#end function #verified 10/11 by Eva
 
 
 
@@ -1707,87 +1846,127 @@ tree_severity_qc=function(tree){
   
   
   
-  print("All char heights are blank for pre burn trees...")
+  cat("All char heights are blank for pre burn trees...")
   if(length(unique(pretree$CharHt))==1){
     if(is.na(unique(pretree$CharHt))){
-      print("TRUE")
+      cat("TRUE\n")
+      cat("\n")
     }else{
       #something wrong
-      print(paste(c("FALSE, Char height values for pre burn trees in tree data set include", unique(pretree$CharHt), "when it should only be NA, problem rows:", which(pretree$CharHt==setdiff(unique(pretree$CharHt), NA))), collapse=" "))
-      flags<<-c(flags, paste(c("Char height values for pre burn trees in tree data set include", unique(pretree$CharHt), "when it should only be NA, problem rows:", which(pretree$CharHt==setdiff(unique(pretree$CharHt), NA))), collapse=" "))
+      cat(paste(c("FALSE, Char height values for pre burn trees in tree data set include", unique(pretree$CharHt), "when it should only be NA, problem events listed in flags\n"), collapse=" "))
+      cat("\n")
+      flags<-c(flags, paste(c("Char height values for pre burn trees in tree data set include", unique(pretree$CharHt), "when it should only be NA, problem events:",
+                              pretree[which(pretree$CharHt==setdiff(unique(pretree$CharHt), NA)),"MacroPlot.Name"],
+                              pretree[which(pretree$CharHt==setdiff(unique(pretree$CharHt), NA)),"Monitoring.Status"],
+                              "\n"), collapse=" "))
     }
   }else{
     #something wrong
-    print(paste(c("FALSE, Char height values for pre burn trees in tree data set include", unique(pretree$CharHt), "when it should only be NA, problem rows:", which(pretree$CharHt==setdiff(unique(pretree$CharHt), NA))), collapse=" "))
-    flags<<-c(flags, paste(c("Char height values for pre burn trees in tree data set include", unique(pretree$CharHt), "when it should only be NA, problem rows:", which(pretree$CharHt==setdiff(unique(pretree$CharHt), NA))), collapse=" "))
+    cat(paste(c("FALSE, Char height values for pre burn trees in tree data set include", unique(pretree$CharHt), "when it should only be NA, problem events listed in flags\n"), collapse=" "))
+    cat("\n")
+    flags<-c(flags, paste("Char height values for pre burn trees in tree data set include", unique(pretree$CharHt), "when it should only be NA, problem events:", 
+                          pretree[which(pretree$CharHt==setdiff(unique(pretree$CharHt), NA)),"MacroPlot.Name"],
+                          pretree[which(pretree$CharHt==setdiff(unique(pretree$CharHt), NA)),"Monitoring.Status"], "\n"), collapse=" ")
   }
   
   
-  print("All Scorch heights are blank for pre burn trees...")
+  cat("All Scorch heights are blank for pre burn trees...")
   if(length(unique(pretree$ScorchHt))==1){
     if(is.na(unique(pretree$ScorchHt))){
-      print("TRUE")
+      cat("TRUE\n")
+      cat("\n")
     }else{
       #something wrong
-      print(paste(c("FALSE, Scorch height values for pre burn trees in tree data set include", unique(pretree$ScorchHt), "when it should only be NA, problem rows:", which(pretree$ScorchHt==setdiff(unique(pretree$ScorchHt), NA))), collapse=" "))
-      flags<<-c(flags, paste(c("Scorch height values for pre burn trees in tree data set include", unique(pretree$ScorchHt), "when it should only be NA, problem rows:", which(pretree$ScorchHt==setdiff(unique(pretree$ScorchHt), NA))), collapse=" "))
+      cat(paste(c("FALSE, Scorch height values for pre burn trees in tree data set include", unique(pretree$ScorchHt), "when it should only be NA, problem events listed in flags\n"), collapse=" "))
+      cat("\n")
+      flags<-c(flags, paste("Scorch height values for pre burn trees in tree data set include", unique(pretree$ScorchHt), "when it should only be NA, problem rows:", 
+                            pretree[which(pretree$ScorchHt==setdiff(unique(pretree$ScorchHt), NA)),"MacroPlot.Name"], 
+                            pretree[which(pretree$ScorchHt==setdiff(unique(pretree$ScorchHt), NA)),"Monitoring.Status"],"\n"), collapse=" ")
     }
   }else{
     #something wrong
-    print(paste(c("FALSE, Scorch height values for pre burn trees in tree data set include", unique(pretree$ScorchHt), "when it should only be NA, problem rows:", which(pretree$ScorchHt==setdiff(unique(pretree$ScorchHt), NA))), collapse=" "))
-    flags<<-c(flags, paste(c("Scorch height values for pre burn trees in tree data set include", unique(pretree$ScorchHt), "when it should only be NA, problem rows:", which(pretree$ScorchHt==setdiff(unique(pretree$ScorchHt), NA))), collapse=" "))
+    cat(paste(c("FALSE, Scorch height values for pre burn trees in tree data set include", unique(pretree$ScorchHt), "when it should only be NA, problem events listed in flags\n"), collapse=" "))
+    cat("\n")
+    flags<-c(flags, paste("Scorch height values for pre burn trees in tree data set include", unique(pretree$ScorchHt), "when it should only be NA, problem rows:", 
+                          pretree[which(pretree$ScorchHt==setdiff(unique(pretree$ScorchHt), NA)),"MacroPlot.Name"],
+                          pretree[which(pretree$ScorchHt==setdiff(unique(pretree$ScorchHt), NA)),"Monitoring.Status"], "\n"), collapse=" ")
   }
   
   
-  print("All Scorch percentage heights are blank for pre burn trees...")
+  cat("All Scorch percentage heights are blank for pre burn trees...")
   if(length(unique(pretree$CrScPct))==1){
     if(is.na(unique(pretree$CrScPct))){
-      print("TRUE")
+      cat("TRUE\n")
+      cat("\n")
     }else{
       #something wrong
-      print(paste(c("FALSE, Scorch percentage height values for pre burn trees in tree data set include", unique(pretree$CrScPct), "when it should only be NA, problem rows:", which(pretree$CrScPct==setdiff(unique(pretree$CrScPct), NA))), collapse=" "))
-      flags<<-c(flags, paste(c("Scorch percentage height values for pre burn trees in tree data set include", unique(pretree$CrScPct), "when it should only be NA, problem rows:", which(pretree$CrScPct==setdiff(unique(pretree$CrScPct), NA))), collapse=" "))
+      cat(paste(c("FALSE, Scorch percentage height values for pre burn trees in tree data set include", unique(pretree$CrScPct), "when it should only be NA, problem rows listed in flags\n"), collapse=" "))
+      cat("\n")
+      flags<-c(flags, paste("Scorch percentage height values for pre burn trees in tree data set include", unique(pretree$CrScPct), "when it should only be NA, problem rows:", 
+                            pretree[which(pretree$CrScPct==setdiff(unique(pretree$CrScPct), NA)),"MacroPlot.Name"], "\n",
+                            pretree[which(pretree$CrScPct==setdiff(unique(pretree$CrScPct), NA)),"Monitoring.Status"], "\n"),
+               collapse=" ")
     }
   }else{
     #something wrong
-    print(paste(c("FALSE, Scorch percentage height values for pre burn trees in tree data set include", unique(pretree$CrScPct), "when it should only be NA, problem rows:", which(pretree$CrScPct==setdiff(unique(pretree$CrScPct), NA))), collapse=" "))
-    flags<<-c(flags, paste(c("Scorch percentage height values for pre burn trees in tree data set include", unique(pretree$CrScPct), "when it should only be NA, problem rows:", which(pretree$CrScPct==setdiff(unique(pretree$CrScPct), NA))), collapse=" "))
+    cat(paste(c("FALSE, Scorch percentage height values for pre burn trees in tree data set include", unique(pretree$CrScPct), "when it should only be NA, problem rows listed in flags\n"), collapse=" "))
+    cat("\n")
+    flags<-c(flags, paste(c("Scorch percentage height values for pre burn trees in tree data set include", unique(pretree$CrScPct), "when it should only be NA, problem events:", 
+                            pretree[which(pretree$CrScPct==setdiff(unique(pretree$CrScPct), NA)),"MacroPlot.Name"],
+                            pretree[which(pretree$CrScPct==setdiff(unique(pretree$CrScPct), NA)),"Monitoring.Status"], "\n"), collapse=" "))
   }
-  
-}#end function
+  return(flags)
+}#end function #verified 10/11 by Eva
 
-#tree status and lifeform
+#tree status and life form
 tree_status_lifeform_qc=function(tree){
   ###check that tree status is L or D
   
-  print("Tree statuses are all L or D...")
+  cat("Tree statuses are all L or D...")
   htcl=setdiff(unique(na.omit(tree$Status)), c("L", "D", ""))
   
   if(length(htcl)==0){
-    print("TRUE")
+    cat("TRUE\n")
+    cat("\n")
   }else{
-    print(paste(c("FALSE", htcl, "values entered which do not fit with acceptable values of L or D, problem rows are", which(tree$Status %in% htcl), sep=" "), collapse=" "))
-    flags<<-c(flags,paste(c(htcl, "values entered in height for pole tree data which do not fit with acceptable values of L or D, problem rows are", which(tree$Status %in% htcl), sep=" "), collapse=" ") )
+    cat(paste(c("FALSE", htcl, "values entered which do not fit with acceptable values of L or D, problem events are in flags\n"), sep=" "), collapse=" ")
+    cat("\n")
+    flags<-c(flags,paste(htcl, "values entered for tree status which do not fit with acceptable values of L or D, problem events are", 
+                         tree[which(tree$Status %in% htcl),"MacroPlot.Name"],
+                         tree[which(tree$Status %in% htcl), "Monitoring.Status"],
+                         "tree tag is", tree[which(tree$Status %in% htcl), "TagNo"],
+                         "comments say", tree[which(tree$Status %in% htcl), "Comment"],
+                         sep=" "))
   }
   
   
   
   
-  print("All preferred lifeforms are tree for trees...")
+  cat("All preferred lifeforms are tree for trees...")
   if(length(unique(tree$Preferred_Lifeform))==1){
     if(unique(tree$Preferred_Lifeform)=="Tree"){
-      print("TRUE")
+      cat("TRUE")
+      cat("\n")
     }else{
       #something wrong
-      print(paste(c("FALSE, preferred lifeform values for trees in tree data set include", unique(tree$Preferred_Lifeform), "when it should only be tree, problem rows:", which(tree$Preferred_Lifeform==setdiff(unique(tree$Preferred_Lifeform), "Tree"))), collapse=" "))
-      flags<<-c(flags, paste(c("preferred lifeform values for  trees in tree data set include", unique(tree$Preferred_Lifeform), "when it should only be tree, problem rows:", which(tree$Preferred_Lifeform==setdiff(unique(tree$Preferred_Lifeform), "Tree"))), collapse=" "))
+      cat(paste(c("FALSE, preferred lifeform values for trees in tree data set include:", unique(tree$Preferred_Lifeform), ", when it should only be tree, problem events listed in flags\n"), collapse=" "))
+      cat("\n")
+      flags<-c(flags, paste("preferred lifeform values for  trees in tree data set include:", unique(tree$Preferred_Lifeform), ", when it should only be tree, problem events:", 
+                            tree[which(tree$Preferred_Lifeform %in% setdiff(unique(tree$Preferred_Lifeform), "Tree")),"MacroPlot.Name"], 
+                            tree[which(tree$Preferred_Lifeform %in% setdiff(unique(tree$Preferred_Lifeform), "Tree")),"Monitoring.Status"],
+                            collapse=" "))
     }
   }else{
     #something wrong
-    print(paste(c("FALSE, preferred lifeform values fortrees in tree data set include", unique(tree$Preferred_Lifeform), "when it should only be tree, problem rows:", which(tree$Preferred_Lifeform==setdiff(unique(tree$Preferred_Lifeform), "Tree"))), collapse=" "))
-    flags<<-c(flags, paste(c("preferred lifeform values for trees in tree data set include", unique(tree$Preferred_Lifeform), "when it should only be tree, problem rows:", which(tree$Preferred_Lifeform==setdiff(unique(tree$Preferred_Lifeform), "Tree"))), collapse=" "))
+    cat(paste(c("FALSE, preferred lifeform values fortrees in tree data set include", unique(tree$Preferred_Lifeform), "when it should only be tree, problem events listed in flags\n"), collapse=" "))
+    cat("\n")
+    flags<-c(flags, paste(c("preferred lifeform values for trees in tree data set include", unique(tree$Preferred_Lifeform), "when it should only be tree, problem events:", 
+                            paste(tree[which(tree$Preferred_Lifeform %in% setdiff(unique(tree$Preferred_Lifeform), "Tree")), "MacroPlot.Name"], 
+                                  tree[which(tree$Preferred_Lifeform %in% setdiff(unique(tree$Preferred_Lifeform), "Tree")), "Monitoring.Status"], ", ")), 
+                          collapse=" "))
   }
-}#end function
+  return(flags)
+}#end function #verified 10/11 by Eva
 
 ##duplicates
 tree_duplicates_qc=function(tree){
@@ -1826,7 +2005,7 @@ tree_duplicates_qc=function(tree){
   diff=c()
   diff2=c()
   norm=c()
-  rep=rep(colnames(tree)[c(1,2,3,8,9,10,11)],7)
+  rep=rep(colnames(tree)[c(1,2,3,8,9,10,11)],length(duplicates)/7) #FIX THIS
   
   
   for(x in 1:length(duplicates)){
@@ -1847,7 +2026,7 @@ tree_duplicates_qc=function(tree){
   results[,which(!is.na(results[3,]))]
   
   for(g in 1:length(error_events)){
-    m=seq(1,49,7)[g]
+    m=seq(1,length(duplicates),7)[g]
     bad=which(!is.na(results[3,m:(m+6)]))
     bad=bad+(m-1)
     if(length(bad)==0){
@@ -1857,14 +2036,23 @@ tree_duplicates_qc=function(tree){
     }
     
   }
-  print(error_events)
+  
+  cat("Any duplicate tree tags?\n")
+  if(length(error_events)==0){
+    cat("No\n")
+    cat("\n")
+  }else{
+    cat(paste(error_events, "\n"), sep="\n")
+    cat("\n")  
+  }
+  
   
   ##change to quarter and subplot fraction - add this information, species too - add a comment about which trees need different tags, could be overstory and pole tagged the same number
   
   
-  flags<<-c(flags, error_events)
+  flags<-c(flags, error_events)
   
-  
+  return(flags)
 }#end function
 
 ###Tree dead to alive and changing dbh (need to add date for changing dbh)
@@ -1932,7 +2120,18 @@ tree_dead_to_alive_DBH_change_qc=function(tree){
               #DBH doesn't change, nothing to do
             }else{
               #DBH DOES change - flag
-              error_messages_DBH=c(error_messages_DBH, paste(c("Tree number", tags[check],"in plot", unique(individual_tree$Plot), "has been dead for every sampling event but its DBH changes in the following values:", unique(individual_tree_d$Value)), collapse=" "))
+              #add threshold here
+              individual_tree_d$Value=as.numeric(individual_tree_d$Value)
+              if(all(abs(diff(unique(individual_tree_d$Value)))<1)){
+                #doesn't meet threshold of concern
+              }else{
+                #meets threshold - flag
+                dates=unique(format(individual_tree_d$Date, "%Y-%m-%d"))
+                error_messages_DBH=c(error_messages_DBH, paste(c("Tree number", tags[check],"in plot", unique(individual_tree$Plot), 
+                                                                 "has been dead for every sampling event but its DBH changes in the following values:", 
+                                                                 paste(individual_tree_d$Value, sep=", "),
+                                                                 "on the following dates", paste(dates, collapse=", ")),collapse=" "))
+              }
             }
           }
         }else{
@@ -1974,7 +2173,17 @@ tree_dead_to_alive_DBH_change_qc=function(tree){
             if(length(unique(individual_tree_d[which(individual_tree_d$Date %in% dead_tree_dates),5]))==1){
               #no change in DBH - nothing to do
             }else{
-              error_messages_DBH=c(error_messages_DBH, paste(c("Tree number", tags[check],"in plot", unique(individual_tree$Plot), "has been changing DBH when its dead in the following values:", unique(individual_tree_d$Value)), collapse=" "))
+              individual_tree_d$Value=as.numeric(individual_tree_d$Value)
+              if(all(abs(diff(unique(individual_tree_d$Value)))<1)){
+                #doesn't meet threshold of concern
+              }else{
+                #meets threshold
+                dates=unique(format(individual_tree_d$Date, "%Y-%m-%d"))
+                error_messages_DBH=c(error_messages_DBH, paste(c("Tree number", tags[check],"in plot", unique(individual_tree$Plot), 
+                                                                 "has been changing DBH when its dead in the following values:", 
+                                                                 paste(individual_tree_d$Value, sep=", "), 
+                                                                 "on the following dates",paste(dates, collapse=",")),  collapse=" "))
+              }
             }
             
           }
@@ -2001,11 +2210,12 @@ tree_dead_to_alive_DBH_change_qc=function(tree){
     }
     
   }
-  flags<<-c(flags, error_messages_DBH) #add dates #check for increase in dbh which would be weird
-  flags<<-c(flags, error_messages_resurrections)
-  print(error_messages_DBH)
-  print(error_messages_resurrections)
-
+  flags<-c(flags, error_messages_DBH) #add dates #check for increase in dbh which would be weird
+  flags<-c(flags, error_messages_resurrections)
+  cat(paste(error_messages_DBH,"\n"), sep="\n")
+  cat("\n")
+  cat(paste(error_messages_resurrections,"\n"), sep="\n")
+  
   
   #tree data - trees are tagged, in theory once that tree dies it shouldn't come back alive, it shouldn't shrink - make sure it doesn't
   #how much should it matter for density calculations... 
@@ -2016,8 +2226,129 @@ tree_dead_to_alive_DBH_change_qc=function(tree){
   #number the checks for easy reference?
   #notes of things to change: is rows the most useful to go back and correct data? maybe macroplot and sample event is better
   #add number of each test for reference?
-  
+  return(flags)
 }#end function
 
 #end of document
 
+#all comments ever 
+#separate by protocol
+comments=function(cover, fuel1000, duff, fine, saps, seeds, tree){
+  comments=c()
+  cover_comments=unique(na.omit(cover$Comment))
+  cover_comments=cover_comments[! cover_comments %in% c('no data collected', 'data not collected', '')]
+  fuel1000_comments=unique(na.omit(fuel1000$Comment))
+  fuel1000_comments=fuel1000_comments[! fuel1000_comments %in% c('no data collected', 'data not collected', '')]
+  duff_comments=unique(na.omit(duff$Comment))
+  duff_comments=duff_comments[! duff_comments %in% c('no data collected', 'data not collected', '')]
+  fine_comments=unique(na.omit(fine$Comment))
+  fine_comments=fine_comments[! fine_comments %in% c('no data collected', 'data not collected', '')]
+  saps_comments=unique(na.omit(saps$Comment))
+  saps_comments=saps_comments[! saps_comments %in% c('no data collected', 'data not collected', '')]
+  seeds_comments=unique(na.omit(seeds$Comment))
+  seeds_comments=seeds_comments[! seeds_comments %in% c('no data collected', 'data not collected', '')]
+  tree_comments=unique(na.omit(tree$Comment))
+  tree_comments=tree_comments[! tree_comments %in% c('no data collected', 'data not collected', '', 'missing tag', 'NEEDS DBH', 'Tag missing')]
+  comments=c("COVER PROTOCOL", 
+             paste(cover[which(cover$Comment %in% cover_comments), "MacroPlot.Name"],
+                   cover[which(cover$Comment %in% cover_comments), "Monitoring.Status"],
+                   cover[which(cover$Comment %in% cover_comments), "Comment"], sep=", "),
+             "1000 HR FUELS PROTOCOL",
+             paste("Index", fuel1000[which(fuel1000$Comment %in% fuel1000_comments), "Index"],
+                   fuel1000[which(fuel1000$Comment %in% fuel1000_comments), "MacroPlot.Name"],
+                   fuel1000[which(fuel1000$Comment %in% fuel1000_comments), "Monitoring.Status"],
+                   fuel1000[which(fuel1000$Comment %in% fuel1000_comments), "Comment"], sep=", "),
+             
+             "DUFF PROTOCOL", 
+             paste("Index", duff[which(duff$Comment %in% duff_comments), "Index"],
+                   duff[which(duff$Comment %in% duff_comments), "MacroPlot.Name"],
+                   duff[which(duff$Comment %in% duff_comments), "Monitoring.Status"],
+                   duff[which(duff$Comment %in% duff_comments), "Comment"], sep=", "),
+             
+             
+             "FINE FUELS PROTOCOL", 
+             paste("Index",  fine[which(fine$Comment %in% fine_comments), "Index"],
+                   fine[which(fine$Comment %in% fine_comments), "MacroPlot.Name"],
+                   fine[which(fine$Comment %in% fine_comments), "Monitoring.Status"],
+                   fine[which(fine$Comment %in% fine_comments), "Comment"], sep=", "),
+             
+             
+             "SAPLINGS PROTOCOL", 
+             paste("Index",  saps[which(saps$Comment %in% saps_comments), "Index"],
+                   saps[which(saps$Comment %in% saps_comments), "MacroPlot.Name"],
+                   saps[which(saps$Comment %in% saps_comments), "Monitoring.Status"],
+                   saps[which(saps$Comment %in% saps_comments), "Comment"], sep=", "),
+             
+             
+             "SEEDLINGS PROTOCOL",
+             paste("Index",  seeds[which(seeds$Comment %in% seeds_comments), "Index"],
+                   seeds[which(seeds$Comment %in% seeds_comments), "MacroPlot.Name"],
+                   seeds[which(seeds$Comment %in% seeds_comments), "Monitoring.Status"],
+                   seeds[which(seeds$Comment %in% seeds_comments), "Comment"], sep=", "),
+             
+             
+             "TREES PROTOCOL", 
+             paste( tree[which(tree$Comment %in% tree_comments), "TagNo"],
+                    tree[which(tree$Comment %in% tree_comments), "MacroPlot.Name"],
+                    tree[which(tree$Comment %in% tree_comments), "Monitoring.Status"],
+                    tree[which(tree$Comment %in% tree_comments), "Comment"], sep=", ")
+             
+             
+  )
+  
+  return(comments)
+}
+
+#function to seperate flags by plot
+format_flags=function(flags, samp, mtype, comments){
+  #blank list
+  
+  plots=unique(samp[which(samp$ProjectUnit_Name == mtype), "MacroPlot_Name"])
+  df_flags <- data.frame(matrix(ncol = length(plots), nrow = 0))
+  colnames(df_flags)=plots
+  for(i in 1:length(flags)){
+    for(x in 1:length(plots)){
+      if(grepl(plots[x], flags[i])){
+        df_flags[nrow(df_flags)+1, x]=flags[i]
+      }else{
+        #nothing
+      }
+    }
+  }
+  
+  df_flags$Comments=c(comments_list, rep(NA,nrow(df_flags)-length(comments_list)))
+  
+  data = list()
+  
+  for(p in 1:ncol(df_flags)){
+    col=na.omit(df_flags[,p])
+    x1=as.data.frame(col)
+    data[p]=x1
+    #cat(colnames(df_flags[p]))
+    #cat("\n")
+    #cat("\n")
+    #cat("\n")
+    #cat("\n")
+    #cat(paste(col, "\n"), sep="\n")
+  }
+  
+  for(t in 1:(length(plots)+1)){
+    data[[t]]=as.data.frame(data[[t]])
+    colnames(data[[t]])="Issue"
+    data[[t]]$Resolved=rep(NA, nrow(data[[t]]))
+    data[[t]]$Resolved_by=rep(NA, nrow(data[[t]]))
+    data[[t]]$Action_need=rep(NA, nrow(data[[t]]))
+    data[[t]]$Other_notes=rep(NA, nrow(data[[t]]))
+  }
+  
+  names(data)=c(plots, "Comments")
+  
+  write.xlsx(
+    x=data,
+    file = paste(mtype, "flags.xlsx"),
+    col_names = TRUE,
+    format_headers = TRUE,
+    use_zip64 = FALSE
+  )
+  
+}
