@@ -279,7 +279,7 @@ cover_qc <- function(cover) {
 }#end of function
 
 # Perform quality control checks for cover class and invasive species data #verified 9/11 by Eva
-#' Title
+#' Cover class and invasive species data
 #' @description
 #' The cover_uvs_qc function is responsible for quality control checks on cover class data, including canopy cover class and invasive species cover class values, as well as UV descriptions. It takes a dataset cover as input and conducts validation. The function first subsets the data based on UV1 values and performs checks on canopy cover class values, followed by invasive species cover class values if available. It then assesses the accuracy of UV descriptions (Protocol Name, Plot Quarter, Count Code) associated with the cover classes.
 #'
