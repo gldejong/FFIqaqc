@@ -7,6 +7,8 @@
 sample_event_qc(samp, mtype)
 }
 \arguments{
+\item{samp}{}
+
 \item{mtype}{}
 }
 \value{

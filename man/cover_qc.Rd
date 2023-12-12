@@ -13,7 +13,7 @@ cover_qc(cover)
 A list of flags or data issues in the cover csv
 }
 \description{
-Cover - species composition (metric) checks
+The cover_qc function focuses on quality control checks for canopy data, particularly canopy cover class values. It takes a dataset cover as input and assesses the presence and correctness of canopy data. The function first filters the dataset to extract canopy data and then checks if all quarters of data are present for each unique macro plot and monitoring status combination. If any quarter is missing, the function logs an error message. Additionally, it validates the recorded canopy cover class values and provides feedback on any discrepancies.
 }
 \examples{
 cover_qc(cover)

@@ -10,8 +10,10 @@
 #' It then checks for missing values (NAs) in the MonitoringStatus_Name, Protocols, and Visited columns.
 #' If any NAs are detected, they are added to a list of flags.
 #' Additionally, the function checks for mislabeled or missing monitoring statuses, protocols, and visited values.
-#' @param samp
-#' @param mtype
+#' @param
+#' samp
+#' @param
+#' mtype
 #'
 #' @return A list of flags or data issues in the sample events csv
 #' @export
@@ -226,8 +228,10 @@ sample_event_qc <- function(samp, mtype) {
 
 #####Protocol: Cover - species Composition (Metric) #verified 9/11 by Eva
 #' Cover - species composition (metric) checks
-#'
-#' @param cover
+#'@description
+#' The cover_qc function focuses on quality control checks for canopy data, particularly canopy cover class values. It takes a dataset cover as input and assesses the presence and correctness of canopy data. The function first filters the dataset to extract canopy data and then checks if all quarters of data are present for each unique macro plot and monitoring status combination. If any quarter is missing, the function logs an error message. Additionally, it validates the recorded canopy cover class values and provides feedback on any discrepancies.
+#' @param
+#' cover
 #'
 #' @return A list of flags or data issues in the cover csv
 #' @export
@@ -275,6 +279,17 @@ cover_qc <- function(cover) {
 }#end of function
 
 # Perform quality control checks for cover class and invasive species data #verified 9/11 by Eva
+#' Title
+#' @description
+#' The cover_uvs_qc function is responsible for quality control checks on cover class data, including canopy cover class and invasive species cover class values, as well as UV descriptions. It takes a dataset cover as input and conducts validation. The function first subsets the data based on UV1 values and performs checks on canopy cover class values, followed by invasive species cover class values if available. It then assesses the accuracy of UV descriptions (Protocol Name, Plot Quarter, Count Code) associated with the cover classes.
+#'
+#' @param cover
+#'
+#' @return A list of flags or data issues in the cover csv
+#' @export
+#'
+#' @examples
+#' cover_uvs_qc(cover)
 cover_uvs_qc <- function(cover) {
 
   # Subset the cover data for canopy cover class
@@ -348,6 +363,17 @@ cover_uvs_qc <- function(cover) {
 
 
 ##### Fuel 1000 function #verified 9/11 by Eva
+#' Fuel 1000
+#' @description
+#' The fuel1000_qc function conducts quality control checks on surface fuels data within the fuel1000 data set. It begins by validating decay class, transect, and slope values, and ensures that tree diameter values are within the specified range. It then identifies missing diameter values and checks for the presence of blank DIA for each unique macro plot and monitoring status combination. Additionally, it performs outlier tests using Rosner test for the "Slope" and "Dia" columns, logging any detected outliers and their details.
+#' @param fuel1000
+#'
+#' @return A list of flags or data issues in the fuel csv
+#' @export
+#'
+#' @examples
+#' fuel1000_qc(fuel1000)
+
 fuel1000_qc <- function(fuel1000) {
 
   # Helper function for validation checks
@@ -463,6 +489,20 @@ fuel1000_qc <- function(fuel1000) {
 
 ###
 #####Fuel fine vs 1000 hr slope azimuth consistency check #verified 9/11 by Eva
+#' Fuel fine vs 1000 hr slope azimuth consistency check
+#' @description
+#' The transect_slope_azimuth_qc function conducts quality control checks on slope and azimuth data in the 'fuel1000' and 'fine' datasets. It uses macroplot names in the two datasets and compares slope and azimuth values within each transect. The function flags errors if multiple different values are detected for slope or azimuth within transects. It also checks for overall consistency in slope and azimuth values across different transects.
+#' @param
+#' fuel1000
+#' @param
+#' fine
+#'
+#' @return A list of flags or data issues with slope consistency
+#' @export
+#'
+#' @examples
+#' transect_slope_azimuth_qc(fuel1000, fine)
+
 transect_slope_azimuth_qc <- function(fuel1000, fine) {
   # Print a message indicating that plots are being compared between 1000Hr fuels and fine fuels
   cat("Plots are the same in 1000Hr fuels and fine fuels...\n")
@@ -602,6 +642,16 @@ transect_slope_azimuth_qc <- function(fuel1000, fine) {
 
 
 #####Protocol: Surface Fuels - Duff Litter #verified 9/11 by Eva
+#' Duff Litter
+#' @description
+#' The duff_qc function performs quality control checks on duff data. It first ensures that all duff number transects are equal to 4, printing a message to confirm this. If any transects have a different count, it generates an error message, indicating the row and comment associated with the discrepancy. The function then groups the data by macro plot and sample event date, checking for errors in duff transect values and sample locations within each group. It reports any mismatches and provides details about the offending values and sample events. Additionally, the function checks for outlier values in litter depth and duff depth using the Rosner test, generating messages if outliers are detected. Lastly, it checks for null values in both variables, reporting the affected sample events, transects, and associated comments. The function compiles all error messages in the 'flags' vector and returns it.
+#' @param duff
+#'
+#' @return A list of flags or data issues in the duff csv
+#' @export
+#'
+#' @examples
+#' duff_qc(duff)
 duff_qc <- function(duff) {
   # Print a message about checking duff number transects
   cat("All duff number transects are 4\n")
@@ -746,6 +796,18 @@ duff_qc <- function(duff) {
   return(flags) } #end function
 
 #####Protocol: Surface Fuels - Fine Litter #verified 9/12 by Eva
+#' Fine Litter Fuels
+#' @description
+#' The fine_fuels_qc function performs quality control checks on fine fuels data. It verifies if the transect lengths for One Hour, Ten Hour, and Hundred Hour are consistently 6, checks for misplaced fuel values in the transect length rows, and identifies sample events with missing transect length information. The function also groups the data by macro plot and sample event date, then checks for errors in fine transect values, including patterns that deviate from the expected range (1 to 4) and duplicated values. If all checks pass, the function validates that the fine transect values are correct. Any inconsistencies or issues detected during the checks are flagged for further investigation.
+#'
+#' @param fine
+#'
+#' @return A list of flags or data issues in the fine fuels csv
+#' @export
+#'
+#' @examples
+#' fine_fuels_qc(fine)
+#'
 fine_fuels_qc <- function(fine) {
   # Check if One Hour Transect Length is always 6
   cat("One Hour Transect Length is always 6...\n")
@@ -950,6 +1012,17 @@ fine_fuels_qc <- function(fine) {
   return(flags) } #end function
 
 #####Protocol: Saplings #verified 9/12 by Eva
+#' Saplings
+#' @description
+#' The saplings_qc function is designed to perform quality control checks on a dataset of saplings. It specifically focuses on detecting and addressing potential errors related to the macroplot size recorded for each sapling. The function begins by checking whether the macroplot size is consistently recorded as 0 for all saplings, which would indicate that they were not sampled by diameter class. If the unique value of macroplot size is found to be 0, the function prints "TRUE" to indicate the absence of errors. In case the macroplot size is not uniformly 0, the function generates an error message indicating that the value(s) should be replaced with 0 in the macroplot size list for saplings.
+#' @param saps
+#'
+#' @return A list of flags or data issues in the saplings csv
+#' @export
+#'
+#' @examples
+#' saplings_qc(saps)
+#'
 saplings_qc <- function(saps) {
 
   # Check for data incorrectly entered in the sapling tab (saplings recorded as individuals at SAGU)
@@ -977,6 +1050,23 @@ saplings_qc <- function(saps) {
 #adjusting this microplotsize check based on info from perry, going to change to see whether it is consistent, any missing data
 #or if it reflects whats really on the data sheet
 #Q1 data has been deleted for PMSE to make it only 5x10, don't know why. Consistency?
+#' Seedlings
+#' @description
+#' The seedlings_qc function performs quality control checks on seedling tree data within the given 'seeds' dataset. It covers various aspects, ensuring the accuracy and integrity of the information. The function begins by validating height class entries, flagging any values outside the acceptable range of 0.15 to 10. It then identifies and flags heights above 4 or null values, providing detailed information about the problematic rows.
+#' The function also checks for accurate species coding when the count value is 0, ensuring that the species code is "TREE1." It uses the Rosner test to detect and flag outliers in seedling tree counts.
+#' The section related to subplot fractions verifies specific species symbols, such as "JUNI1" and "QUAR1," ensuring that their product with microplot size equals 0.005. For other species, the subplot fraction should be 1. Inconsistencies are flagged, providing details about problematic sample events.
+#' Microplot size checks are performed based on monitoring types, ensuring adherence to specified values (0.025, 0.005) and flagging any discrepancies. The function also validates the 'Status' column, ensuring all entries are marked as "L" for living.
+#' Additionally, the function addresses issues with missing microplot size values, identifies cases where a microplot size of 0 implies non-collection (recorded in comments), and ensures that all blank seedling statuses represent either no seedlings found or non-collection.
+#' Finally, the function checks that species entered in the seedling tree tab are labeled either "Tree" or "Shrub" in the preferred lifeform column, flagging any discrepancies.
+
+#'
+#' @param seeds
+#'
+#' @return A list of flags or data issues in the seedlings csv
+#' @export
+#'
+#' @examples
+#' seedlings_qc(seeds)
 seedlings_qc=function(seeds){
 
   htcl <- setdiff(unique(na.omit(seeds$SizeClHt)), c(0, 0.15, 0.3, 0.6, 1, 2, 3, 4, 5, 6, 7, 8, 9,10))
@@ -1278,6 +1368,17 @@ seedlings_qc=function(seeds){
 
 ##Tree CBH and Tree CBH Range
 
+#' Tree CBH and Tree CBH Range
+#' @description
+#' The tree_CBH_qc function performs quality control checks on the 'tree' dataset. It ensures that dead trees have blank live crown base height values and flags any discrepancies. For living trees, it checks for unreasonable live crown base height values using the Rosner test and flags outliers. The function also verifies the relationship between ladder base height (LaddBaseHt) and ladder max height (LaddMaxHt), ensuring the former is always less than the latter. It checks that entries with LaddBaseHt values have the correct species symbol ('CANOPY'), status ('L'), SubFrac (1000), and TagNo (0), flagging any inconsistencies and providing detailed information about problematic rows.
+#'
+#' @param tree
+#'
+#' @return A list of flags or data issues with CBH in the tree csv
+#' @export
+#'
+#' @examples
+#' tree_CBH_qc(tree)
 tree_CBH_qc=function(tree){
   #chck that dead trees do not have live crown base height values
 
@@ -1424,6 +1525,17 @@ tree_CBH_qc=function(tree){
 } #end function #verified 9/12 by Eva
 
 ##Crown class
+#' Crown Class
+#' @description
+#' The tree_crown_class_qc function classifies trees based on their diameter at breast height (DBH) and validates the correctness of crown class values for different tree statuses. It ensures that for trees with a blank or dead status and blank DBH, the crown class is either "BBD," "CUS," "DD," or blank. In the case of live trees with blank DBH, it verifies that the crown class is blank. For overstory trees with a dead status, the function checks for acceptable crown class values such as "BAD," "CS," "LBS," "RS," or blank. Similarly, for live overstory trees, it ensures crown class values are within categories "C," "D," "I," "O," "SC," or blank. Additionally, for pole trees with a dead status, the function checks for valid crown class values like "BBD," "CUS," "DD," "X," or blank. The function flags instances where crown class values deviate from these specified categories, providing quality control for tree data.
+#'
+#' @param tree
+#'
+#' @return A list of flags or data issues with crown class in the tree csv
+#' @export
+#'
+#' @examples
+#' tree_crown_class_qc(tree)
 tree_crown_class_qc=function(tree){
   #check for invalid values entered for tree crown class
 
@@ -1523,6 +1635,17 @@ tree_crown_class_qc=function(tree){
 } #end function #verified 9/12 by Eva (lots of flags)
 
 #Tree damage
+#' Tree damage
+#' @description
+#' The `tree_damage_qc` function validates the accuracy of tree damage codes in a dataset. It checks if the codes provided (DamCd1, DamCd2, DamCd3, DamCd4, DamCd5) are within the predefined acceptable list of damage codes. The function returns "TRUE" if all codes are correct and included in the acceptable list, and "FALSE" with details of any discrepancies found. The acceptable list includes codes such as "ABGR," "BIRD," "BLIG," and others. If discrepancies are detected, the function adds corresponding entries to the quality control flags, specifying the MacroPlot.Name and Monitoring.Status for the rows where the issues occur.
+#'
+#' @param tree
+#'
+#' @return A list of flags or data issues with damage class in the tree csv
+#' @export
+#'
+#' @examples
+#' tree_damage_qc(tree)
 tree_damage_qc=function(tree){
 
   #check that tree damage codes are entered correctly
@@ -1557,16 +1680,27 @@ tree_damage_qc=function(tree){
 
 
 ###Tree DBH
+#' Tree DBH
+#' @description
+#' The `tree_dbh_qc` function conducts quality control on the Diameter at Breast Height (DBH) values in a tree dataset. It first checks if all DBH values are under 2.5; if any exceed this limit, it flags the events with the specific DBH values, MacroPlot.Name, and Monitoring.Status. Subsequently, the function performs a check for outlier values using a rosner test on the DBH values. If outliers are detected, it adds entries to the quality control flags with details on the outlier values, the corresponding events (MacroPlot.Name and Monitoring.Status), and statistics on the maximum, minimum, and mean of the DBH values in the dataset.
+#'
+#' @param tree
+#'
+#' @return A list of flags or data issues with DBH in the tree csv
+#' @export
+#'
+#' @examples
+#' tree_dbh_qc(tree)
 tree_dbh_qc=function(tree){
 
 
-  #checking for slope that is over 90
-  cat("All tree DBHs are under 2.5\n")
+  #checking for DBH under 2.5
+  cat("All tree DBHs are over 2.5\n")
 
   if(any(unique(na.omit((tree$DBH)<2.5)))==TRUE){
-    cat(paste(c("Not all DBH are under 2.5 in tree data - ", tree[which(tree$DBH<2.5), "DBH"], "recorded in event/s listed in flags\n"), collapse=" "))
+    cat(paste(c("Not all DBH are over 2.5 in tree data - ", tree[which(tree$DBH<2.5), "DBH"], "recorded in event/s listed in flags\n"), collapse=" "))
     cat("\n")
-    flags<-c(flags, paste("Not all DBH are under 2.5 in tree data- ", tree[which(tree$DBH<2.5), "DBH"], "recorded in event/s",
+    flags<-c(flags, paste("Not all DBH are over 2.5 in tree data- ", tree[which(tree$DBH<2.5), "DBH"], "recorded in event/s",
                           tree[which(tree$DBH<2.5), "MacroPlot.Name"],
                           tree[which(tree$DBH<2.5), "Monitoring.Status"], sep=" "))
   }else{
@@ -1596,6 +1730,17 @@ tree_dbh_qc=function(tree){
 } #end function #verified 9/12 by Eva
 
 ##tree dd
+#' Tree dead and down
+#' @description
+#' The `tree_dd_qc` function focuses on quality control for fallen trees in a dataset. It identifies fallen trees based on specific crown classes (BBD, CUS, DD) and creates a subset named `fallen_trees`. The function then checks if values for Diameter at Breast Height (DBH), tree height (Ht), and live crown base height (LiCrBHt) have been deleted for trees that are no longer standing. For each parameter, it reports "TRUE" if the values have been deleted as expected. If any values are still present, it flags the events with details on the specific parameter values, crown class, and associated events (MacroPlot.Name and Monitoring.Status). The quality control results are stored in the `flags` variable and returned by the function.
+#'
+#' @param tree
+#'
+#' @return A list of flags or data issues with dead and down trees in the tree csv
+#' @export
+#'
+#' @examples
+#' tree_dd_qc(tree)
 tree_dd_qc=function(tree){
 
   fallen_trees=tree[which(tree$CrwnCl=="BBD" | tree$CrwnCl=="CUS" | tree$CrwnCl=="DD"),]
@@ -1618,9 +1763,9 @@ tree_dd_qc=function(tree){
 
   cat("Values for height have been deleted for trees that are no longer standing...\n")
   if(any(is.na(fallen_trees$Ht)==FALSE)){
-    cat(paste(c("FALSE, values of", fallen_trees[which(!is.na(fallen_trees$Ht)),11], "are recorded for tree Ht that have crown class", fallen_trees[which(!is.na(fallen_trees$Ht)),13], ",problem events are", fallen_trees[which(!is.na(fallen_trees$Ht)),c("MacroPlot.Name", "Monitoring.Status")], "\n" ), collapse=" "))
+    cat(paste(c("FALSE, values of", fallen_trees[which(!is.na(fallen_trees$Ht)),"Ht"], "are recorded for tree Ht that have crown class", fallen_trees[which(!is.na(fallen_trees$Ht)),"CrwnCl"], ",problem events are", fallen_trees[which(!is.na(fallen_trees$Ht)),c("MacroPlot.Name", "Monitoring.Status")], "\n" ), collapse=" "))
     cat("\n")
-    flags<-c(flags, paste(c("FALSE, values of", fallen_trees[which(!is.na(fallen_trees$Ht)),11], "are recorded for tree Ht that have crown class", fallen_trees[which(!is.na(fallen_trees$Ht)),13], ",problem events are", fallen_trees[which(!is.na(fallen_trees$Ht)),c("MacroPlot.Name", "Monitoring.Status")] ), collapse=" "))
+    flags<-c(flags, paste(c("FALSE, values of", fallen_trees[which(!is.na(fallen_trees$Ht)),"Ht"], "are recorded for tree Ht that have crown class", fallen_trees[which(!is.na(fallen_trees$Ht)),"CrwnCl"], ",problem events are", fallen_trees[which(!is.na(fallen_trees$Ht)),c("MacroPlot.Name", "Monitoring.Status")] ), collapse=" "))
   }else{
     cat("TRUE\n")
     cat("\n")
@@ -1630,9 +1775,9 @@ tree_dd_qc=function(tree){
 
   cat("Values for crown base height have been deleted for trees that are no longer standing...\n")
   if(any(is.na(fallen_trees$LiCrBHt)==FALSE)){
-    cat(paste(c("FALSE, values of", fallen_trees[which(!is.na(fallen_trees$LiCrBHt)),14], "are recorded for tree LiCrBHt that have crown class", fallen_trees[which(!is.na(fallen_trees$LiCrBHt)),13], ",problem events are", fallen_trees[which(!is.na(fallen_trees$LiCrBHt)),c("MacroPlot.Name", "Monitoring.Status")], "\n" ), collapse=" "))
+    cat(paste(c("FALSE, values of", fallen_trees[which(!is.na(fallen_trees$LiCrBHt)),"LiCrBHt"], "are recorded for tree LiCrBHt that have crown class", fallen_trees[which(!is.na(fallen_trees$LiCrBHt)),"CrwnCl"], ",problem events are", fallen_trees[which(!is.na(fallen_trees$LiCrBHt)),c("MacroPlot.Name", "Monitoring.Status")], "\n" ), collapse=" "))
     cat("\n")
-    flags<-c(flags, paste(c("FALSE, values of", fallen_trees[which(!is.na(fallen_trees$LiCrBHt)),14], "are recorded for tree LiCrBHt that have crown class", fallen_trees[which(!is.na(fallen_trees$LiCrBHt)),13], ",problem events are", fallen_trees[which(!is.na(fallen_trees$LiCrBHt)),c("MacroPlot.Name", "Monitoring.Status")] ), collapse=" "))
+    flags<-c(flags, paste(c("FALSE, values of", fallen_trees[which(!is.na(fallen_trees$LiCrBHt)),"LiCrBHt"], "are recorded for tree LiCrBHt that have crown class", fallen_trees[which(!is.na(fallen_trees$LiCrBHt)),"CrwnCl"], ",problem events are", fallen_trees[which(!is.na(fallen_trees$LiCrBHt)),c("MacroPlot.Name", "Monitoring.Status")] ), collapse=" "))
   }else{
     cat("TRUE\n")
     cat("\n")
@@ -1643,6 +1788,17 @@ tree_dd_qc=function(tree){
 
 
 ##Tree fraction
+#' Tree fraction
+#' @description
+#' The `tree_fract_qc` function conducts quality control checks on subplot fractions for different tree categories based on Diameter at Breast Height (DBH). It classifies trees into `pole` (DBH < 15.1), `overstory` (DBH ≥ 15.1), and `blank` (missing or blank DBH). For overstory trees, the function ensures that all have a subplot fraction (`SubFrac`) of 1. For pole trees, it verifies a subplot fraction of 0.5. For trees with blank or missing DBH, the function checks for a subplot fraction of 1000 or blank. The results are stored in the `flags` variable, containing details about events where subplot fractions deviate from the specified criteria, and are returned by the function.
+#'
+#' @param tree
+#'
+#' @return A list of flags or data issues with fraction in the tree csv
+#' @export
+#'
+#' @examples
+#' tree_fract_qc(tree)
 tree_fract_qc=function(tree){
 
   ##check that correct subplot fraction is entered for trees
@@ -1713,6 +1869,17 @@ tree_fract_qc=function(tree){
 
 
 ##Tree header
+#' Tree header
+#' @description
+#' The `tree_header_qc` function performs quality control checks on the header information of the tree data. It first ensures that all macroplot sizes (`MacroPlotSize`) are either 0.1 or blank, with detailed information about problematic events stored in the `flags` variable. Similarly, it verifies that all snagplot sizes (`SnagPlotSize`) are 0.1 or blank. The function also checks that break point diameters (`BrkPntDia`) are either 15.1 or blank. For each of these checks, it provides a logical value and details about any non-compliance events stored in the `flags` variable, which is returned by the function.
+#'
+#' @param tree
+#'
+#' @return A list of flags or data issues with header in the tree csv
+#' @export
+#'
+#' @examples
+#' tree_header_qc(tree)
 tree_header_qc=function(tree){
 
   #check for incorrect sampling information
@@ -1791,6 +1958,17 @@ tree_header_qc=function(tree){
 
 
 ###tree height
+#' Tree height
+#' @description
+#' The `tree_height_qc` function categorizes trees based on diameter at breast height (DBH) into pole, overstory, and blank trees. For overstory trees, it conducts a Rosner test to identify height outliers, reporting details if four or more valid samples are available. The function also checks pole tree data to ensure entered height classes fall within the acceptable range of 1 to 10 or are blank, flagging any deviations and providing event details in the `flags` variable returned by the function.
+#'
+#' @param tree
+#'
+#' @return A list of flags or data issues with height in the tree csv
+#' @export
+#'
+#' @examples
+#' tree_height_qc(tree)
 tree_height_qc=function(tree){
 
   #classify dbh
@@ -1846,6 +2024,17 @@ tree_height_qc=function(tree){
 
 
 ##Tree non-post severity
+#' Tree non-post severity
+#' @description
+#' The `tree_severity_qc` function focuses on pre-burn trees by extracting relevant data based on monitoring status. It checks if all characteristic heights, scorch heights, and scorch percentage heights are blank (NA) for these pre-burn trees, flagging any discrepancies and providing event details in the `flags` variable returned by the function. If the unique values for these attributes are exclusively NA, the function returns "TRUE" for each check, indicating conformity. Otherwise, it reports the issues, listing problematic events with associated macroplot names and monitoring statuses in the `flags`.
+#'
+#' @param tree
+#'
+#' @return A list of flags or data issues with severity in the tree csv
+#' @export
+#'
+#' @examples
+#' tree_severity_qc(tree)
 tree_severity_qc=function(tree){
 
   pretree=tree[which(tree$Monitoring.Status %in% c("00PR01","00PR02","01Pre")),]
@@ -1925,6 +2114,17 @@ tree_severity_qc=function(tree){
 }#end function #verified 10/11 by Eva
 
 #tree status and life form
+#' Tree status and life form
+#' @description
+#' The tree_status_lifeform_qc function assesses the quality of data related to tree status and life form in the provided tree dataset. It ensures that tree statuses are either "L" or "D" and that all preferred life forms are "Tree." The function reports any deviations from these criteria, flagging problematic events and providing details such as macroplot names, monitoring statuses, tag numbers, and comments.
+#'
+#' @param tree
+#'
+#' @return A list of flags or data issues with tree status and life form in the tree csv
+#' @export
+#'
+#' @examples
+#' tree_status_lifeform_qc(tree)
 tree_status_lifeform_qc=function(tree){
   ###check that tree status is L or D
 
@@ -1975,6 +2175,17 @@ tree_status_lifeform_qc=function(tree){
 }#end function #verified 10/11 by Eva
 
 ##duplicates
+#' Duplicate tags
+#' @description
+#' The tree_duplicates_qc function addresses the identification of duplicate tree tags in the dataset. It groups the data by macro plot and sample event date, then checks for duplicated tag numbers within each group. If duplicates are found, it reports the error events, highlighting the affected macroplot names and monitoring statuses. Additionally, the function compares differences in data for the duplicated tag numbers, pointing out any discrepancies. The final results are presented in the flags variable, which includes information about duplicate tree tags and the detected issues.
+#'
+#' @param tree
+#'
+#' @return A list of flags or data issues with duplicates in the tree csv
+#' @export
+#'
+#' @examples
+#' tree_duplicates_qc(tree)
 tree_duplicates_qc=function(tree){
   #group by macro plot and sample event date (monitoring status)
   treedates=as.data.frame(str_split(unique(paste(tree$MacroPlot.Name, tree$Monitoring.Status, sep =",")), ","))
@@ -2061,7 +2272,18 @@ tree_duplicates_qc=function(tree){
   return(flags)
 }#end function
 
-###Tree dead to alive and changing dbh (need to add date for changing dbh)
+###Tree dead to alive and changing dbh
+#' Tree dead to alive and changing dbh
+#' @description
+#' The tree_dead_to_alive_DBH_change_qc function examines tree data for instances of dynamic status changes and potential Diameter at Breast Height (DBH) alterations across multiple sampling events. It systematically identifies trees that consistently exhibit DBH changes despite being recorded as dead. Additionally, the function captures cases where trees switch between alive and dead statuses, providing specific information on dates and circumstances. Flagged issues are reported in the 'flags' variable, separating DBH-related concerns and occurrences of trees transitioning from dead to alive.
+#'
+#' @param tree
+#'
+#' @return A list of flags or data issues with trees resurrecting and changing dbh when dead in the tree csv
+#' @export
+#'
+#' @examples
+#' tree_dead_to_alive_DBH_change_qc(tree)
 tree_dead_to_alive_DBH_change_qc=function(tree){
   events=c("00PR02"   ,  "01Pre"  , "01Post",  "01Year01" ,"01Year05", "01Year10")
   plots=unique(tree$MacroPlot.Name)
@@ -2239,6 +2461,30 @@ tree_dead_to_alive_DBH_change_qc=function(tree){
 
 #all comments ever
 #separate by protocol
+#' Comments
+#' @description
+#' The `comments` function compiles unique, non-empty comments from protocols cover, 1000 HR Fuels, Duff, Fine Fuels, Saplings, Seedlings, and Trees, excluding common placeholders. It categorizes comments by protocol, including macro plot names, monitoring statuses, and associated comments.
+#'
+#' @param
+#' cover
+#' @param
+#' fuel1000
+#' @param
+#' duff
+#' @param
+#' fine
+#' @param
+#' saps
+#' @param
+#' seeds
+#' @param
+#' tree
+#'
+#' @return A list of comments excluding some repeated ones that aren't relevant
+#' @export
+#'
+#' @examples
+#' comments(cover, fuel1000,duff, fine, saps, seeds, tree)
 comments=function(cover, fuel1000, duff, fine, saps, seeds, tree){
   comments=c()
   cover_comments=unique(na.omit(cover$Comment))
@@ -2306,6 +2552,24 @@ comments=function(cover, fuel1000, duff, fine, saps, seeds, tree){
 }
 
 #function to seperate flags by plot
+#' Format flags
+#' @description
+#' The format_flags function generates an Excel output that consists of multiple sheets, each corresponding to a distinct macro plot and an additional sheet for comments. For each macro plot sheet, the data is organized with a column named "Issue" containing flagged information. Additional columns include "Resolved," "Resolved_by," "Action_need," and "Other_notes," providing a structured format for documenting and tracking the resolution status of flagged issues.
+#'
+#' @param
+#' flags
+#' @param
+#' samp
+#' @param
+#' mtype
+#' @param
+#' comments
+#'
+#' @return Excel file separating issues by plot
+#' @export
+#'
+#' @examples
+#' format_flags(flags, samp, mtype, comments)
 format_flags=function(flags, samp, mtype, comments){
   #blank list
 
