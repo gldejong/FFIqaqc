@@ -2,7 +2,7 @@
 % Please edit documentation in R/datacleaningfunctions.R
 \name{cover_uvs_qc}
 \alias{cover_uvs_qc}
-\title{Title}
+\title{Cover class and invasive species data}
 \usage{
 cover_uvs_qc(cover)
 }
