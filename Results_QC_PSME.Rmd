@@ -9,6 +9,7 @@ date: "2023-10-12"
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, error = TRUE)
+install.packages("stringr")
 library(stringr)
 library(outliers)
 library(EnvStats)
