@@ -1083,7 +1083,7 @@ seedlings_qc=function(seeds){
   }
 
 
-  above4=which(seeds$SizeClHt>4 | seeds$SizeClHt %in% c(NULL, NA, " ") & !is.na(seeds$MacroPlot.Name))
+  above4=which(seeds$SizeClHt>4 | seeds$SizeClHt %in% c(NULL, NA, " ") & !is.na(seeds$Index))
   cat("Flagging heights above 4 and NULL height for seedling tree data...\n")
   if (length(above4) == 0) {
     cat("No heights above 4 or null values\n")
@@ -1550,84 +1550,91 @@ tree_crown_class_qc=function(tree){
 
 
   #checking that dbh blank status D trees have crown class bbd, cus, dd, or blank
+  Dead_CC=setdiff(blank[which(blank$Status=="D"),"CrwnCl"], c("BBD", "CUS", "DD", ""))
 
   cat("Dbh blank status D trees have crown class bbd, cus, dd, or blank...\n")
-  if(length(setdiff(blank[which(blank$Status=="D"),"CrwnCl"], c("BBD", "CUS", "DD", "")))==0){
+  if(length(Dead_CC)==0){
     cat("TRUE\n")
     cat("\n")
   }else{
-    cat(paste(c("FALSE, values of", setdiff(blank[which(blank$Status=="D"),"CrwnCl"], c("BBD", "CUS", "DD", "")), "recorded for crown class, sample events in flags\n"), collapse=" "))
+    blank_D=blank[which(blank$Status=="D"),]
+    cat(paste(c("FALSE, values of", Dead_CC, "recorded for crown class, sample events in flags\n"), collapse=" "))
     cat("\n")
-    flags<-c(flags, paste("Tag number ", unique(blank[which(blank$CrwnCl%in%setdiff(blank[which(blank$Status=="D"),"CrwnCl"], c("BBD", "CUS", "DD", ""))),"TagNo"]),
-                          " in tree data set has", unique(setdiff(blank[which(blank$Status=="D"),"CrwnCl"], c("BBD", "CUS", "DD", ""))),
+    flags<-c(flags, paste("Tag number ", unique(blank_D[which(blank_D$CrwnCl%in% Dead_CC),"TagNo"]),
+                          " in tree data set has", unique(Dead_CC),
                           "recorded for crown class in sample events",
-                          unique(blank[which(blank$CrwnCl%in%setdiff(blank[which(blank$Status=="D"),"CrwnCl"], c("BBD", "CUS", "DD", ""))),"MacroPlot.Name"]),
-                          unique(blank[which(blank$CrwnCl%in%setdiff(blank[which(blank$Status=="D"),"CrwnCl"], c("BBD", "CUS", "DD", ""))),"Monitoring.Status"]),
+                          unique(blank_D[which(blank_D$CrwnCl%in% Dead_CC),"MacroPlot.Name"]),
+                          unique(blank_D[which(blank_D$CrwnCl%in% Dead_CC),"Monitoring.Status"]),
                           "which is not included in the acceptable list of BBD, CUS, DD, or blank for trees that have no dbh"))
   }
 
   #checking that dbh blank status L trees have crown class blank
-
+  Live_B=setdiff(blank[which(blank$Status=="L"),"CrwnCl"], c(""))
   cat("Dbh blank status L trees have crown class blank\n")
-  if(length(setdiff(blank[which(blank$Status=="L"),"CrwnCl"], c("")))==0){
+  if(length(Live_B)==0){
     cat("TRUE\n")
     cat("\n")
   }else{
-    cat(paste(c("FALSE, values of", setdiff(blank[which(blank$Status=="L"),"CrwnCl"], c("")), "recorded for crown class, sample events recorded in flags\n"), collapse=" "))
+    blank_L=blank[which(blank$Status=="L"),]
+    cat(paste(c("FALSE, values of", Live_B, "recorded for crown class, sample events recorded in flags\n"), collapse=" "))
     cat("\n")
-    flags<-c(flags, paste("Tag number ", unique(blank[which(blank$CrwnCl%in%setdiff(blank[which(blank$Status=="L"),"CrwnCl"], c(""))), "TagNo"]),
-                          " in tree data set has", unique(setdiff(blank[which(blank$Status=="L"),"CrwnCl"], c(""))), "recorded for crown class in sample events",
-                          unique(blank[which(blank$CrwnCl%in%setdiff(blank[which(blank$Status=="L"),"CrwnCl"], c(""))), "MacroPlot.Name"]),
-                          unique(blank[which(blank$CrwnCl%in%setdiff(blank[which(blank$Status=="L"),"CrwnCl"], c(""))), "Monitoring.Status"]),
+    flags<-c(flags, paste("Tag number ", unique(blank_L[which(blank_L$CrwnCl%in%Live_B), "TagNo"]),
+                          " in tree data set has", unique(Live_B), "recorded for crown class in sample events",
+                          unique(blank_L[which(blank_L$CrwnCl%in%Live_B), "MacroPlot.Name"]),
+                          unique(blank_L[which(blank_L$CrwnCl%in%Live_B), "Monitoring.Status"]),
                           "which is not blank, it may mean that a live tree is missing a dbh"))
   }
 
   #checking that dbh overstory status D trees have crown class BAD, CS, LBS, RS, or blank
 
+  Dead_O=setdiff(overstory[which(overstory$Status=="D"),"CrwnCl"], c("BAD", "CS", "LBS", "RS", ""))
   cat("Dbh overstory status D trees have crown class BAD, CS, LBS, RS, or blank\n")
-  if(length(setdiff(overstory[which(overstory$Status=="D"),"CrwnCl"], c("BAD", "CS", "LBS", "RS", "")))==0){
+  if(length(Dead_O)==0){
     cat("TRUE\n")
     cat("\n")
   }else{
-    cat(paste(c("FALSE, values of", setdiff(overstory[which(overstory$Status=="D"),"CrwnCl"], c("BAD", "CS", "LBS", "RS", "")), "recorded for crown class, sample events recorded in flags\n"), collapse=" "))
+    overstory_D=overstory[which(overstory$Status=="D"),]
+    cat(paste(c("FALSE, values of", Dead_O, "recorded for crown class, sample events recorded in flags\n"), collapse=" "))
     cat("\n")
-    flags<-c(flags, paste("Tag number ", unique(overstory[which(overstory$CrwnCl %in% setdiff(overstory[which(overstory$Status=="D"),"CrwnCl"], c("BAD", "CS", "LBS", "RS", ""))),"TagNo"]),
-                          " in tree data set has ", unique(setdiff(overstory[which(overstory$Status=="D"),"CrwnCl"], c("BAD", "CS", "LBS", "RS", ""))),
+    flags<-c(flags, paste("Tag number ", unique(overstory_D[which(overstory_D$CrwnCl %in% Dead_O),"TagNo"]),
+                          " in tree data set has ", unique(Dead_O),
                           "recorded for crown class in sample events",
-                          unique(overstory[which(overstory$CrwnCl %in% setdiff(overstory[which(overstory$Status=="D"),"CrwnCl"], c("BAD", "CS", "LBS", "RS", ""))),"MacroPlot.Name"]),
-                          unique(overstory[which(overstory$CrwnCl %in% setdiff(overstory[which(overstory$Status=="D"),"CrwnCl"], c("BAD", "CS", "LBS", "RS", ""))),"Monitoring.Status"]),
+                          unique(overstory_D[which(overstory_D$CrwnCl %in% Dead_O),"MacroPlot.Name"]),
+                          unique(overstory_D[which(overstory_D$CrwnCl %in% Dead_O),"Monitoring.Status"]),
                           "which is not included in the acceptable list of BAD, CS, LBS, RS, or blank for overstory dead trees"))
   }
 
 
   #checking that dbh overstory status L trees have crown class C, D, I, O, SC, or blank
-
+  Live_O=setdiff(overstory[which(overstory$Status=="L"),"CrwnCl"], c("C", "D", "I", "O", "SC", ""))
   cat("Dbh overstory status L trees have crown class C, D, I, O, SC, or blank\n")
-  if(length(setdiff(overstory[which(overstory$Status=="L"),"CrwnCl"], c("C", "D", "I", "O", "SC", "")))==0){
+  if(length(Live_O)==0){
     cat("TRUE\n")
     cat("\n")
   }else{
-    cat(paste(c("FALSE, values of", setdiff(overstory[which(overstory$Status=="L"),"CrwnCl"], c("C", "D", "I", "O", "SC", "")), "recorded for crown class in events listed in flags\n"), collapse=" "))
+    overstory_L=overstory[which(overstory$Status=="L"),]
+    cat(paste(c("FALSE, values of", Live_O, "recorded for crown class in events listed in flags\n"), collapse=" "))
     cat("\n")
-    flags<-c(flags, paste("Tag number ", unique(overstory[which(overstory$CrwnCl %in% setdiff(overstory[which(overstory$Status=="L"),"CrwnCl"], c("C", "D", "I", "O", "SC", ""))), "TagNo"]),
-                          " in tree data set has", unique(setdiff(overstory[which(overstory$Status=="L"),"CrwnCl"], c("C", "D", "I", "O", "SC", ""))), "recorded for crown class in events",
-                          unique(overstory[which(overstory$CrwnCl %in% setdiff(overstory[which(overstory$Status=="L"),"CrwnCl"], c("C", "D", "I", "O", "SC", ""))), "MacroPlot.Name"]),
-                          unique(overstory[which(overstory$CrwnCl %in% setdiff(overstory[which(overstory$Status=="L"),"CrwnCl"], c("C", "D", "I", "O", "SC", ""))), "Monitoring.Status"]),
+    flags<-c(flags, paste("Tag number ", unique(overstory_L[which(overstory_L$CrwnCl %in% Live_O), "TagNo"]),
+                          " in tree data set has", unique(Live_O), "recorded for crown class in events",
+                          unique(overstory_L[which(overstory_L$CrwnCl %in% Live_O), "MacroPlot.Name"]),
+                          unique(overstory_L[which(overstory_L$CrwnCl %in% Live_O), "Monitoring.Status"]),
                           "which is not included in the acceptable list of C, D, I, O, SC, or blank for overstory live trees"))
   }
 
-
+  Dead_P=setdiff(pole[,"CrwnCl"], c("BBD", "CUS", "DD", "X",  ""))
   cat("Dbh pole status D trees have crown class bbd, cus, dd, X, or blank\n")
-  if(length(setdiff(pole[,"CrwnCl"], c("BBD", "CUS", "DD", "X",  "")))==0){
+  if(length(Dead_P)==0){
     cat("TRUE\n")
     cat("\n")
   }else{
-    cat(paste(c("FALSE, values of", setdiff(pole[,"CrwnCl"], c("BBD", "CUS", "DD", "X",  "")), "recorded for crown class in sample events listed in flags\n"), collapse=" "))
+    pole_L=pole[which(pole$Status=="L"),]
+    cat(paste(c("FALSE, values of", Dead_P, "recorded for crown class in sample events listed in flags\n"), collapse=" "))
     cat("\n")
-    flags<-c(flags, paste("Tag number ", unique(pole[which(pole$CrwnCl %in% setdiff(pole[,"CrwnCl"], c("BBD", "CUS", "DD", "X",  ""))),"TagNo"]),
-                          " in tree data set has", unique(setdiff(pole[,"CrwnCl"], c("BBD", "CUS", "DD", "X",  ""))), "recorded for crown class in sample events",
-                          unique(pole[which(pole$CrwnCl %in% setdiff(pole[,"CrwnCl"], c("BBD", "CUS", "DD", "X",  ""))),"MacroPlot.Name"]),
-                          unique(pole[which(pole$CrwnCl %in% setdiff(pole[,"CrwnCl"], c("BBD", "CUS", "DD", "X",  ""))),"Monitoring.Status"]),
+    flags<-c(flags, paste("Tag number ", unique(pole_L[which(pole_L$CrwnCl %in% Dead_P),"TagNo"]),
+                          " in tree data set has", unique(Dead_P), "recorded for crown class in sample events",
+                          unique(pole_L[which(pole_L$CrwnCl %in% Dead_P),"MacroPlot.Name"]),
+                          unique(pole_L[which(pole_L$CrwnCl %in% Dead_P),"Monitoring.Status"]),
                           "which is not included in the acceptable list of BBD, CUS, dd, X, or blank for pole dead trees"))
 
   }
