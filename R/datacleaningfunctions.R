@@ -1560,11 +1560,11 @@ tree_crown_class_qc=function(tree){
     blank_D=blank[which(blank$Status=="D"),]
     cat(paste(c("FALSE, values of", Dead_CC, "recorded for crown class, sample events in flags\n"), collapse=" "))
     cat("\n")
-    flags<-c(flags, paste("Tag number ", unique(blank_D[which(blank_D$CrwnCl%in% Dead_CC),"TagNo"]),
+    flags<-c(flags, paste("Tag number ", blank_D[which(blank_D$CrwnCl%in% Dead_CC),"TagNo"],
                           " in tree data set has", unique(Dead_CC),
                           "recorded for crown class in sample events",
-                          unique(blank_D[which(blank_D$CrwnCl%in% Dead_CC),"MacroPlot.Name"]),
-                          unique(blank_D[which(blank_D$CrwnCl%in% Dead_CC),"Monitoring.Status"]),
+                          blank_D[which(blank_D$CrwnCl%in% Dead_CC),"MacroPlot.Name"],
+                          blank_D[which(blank_D$CrwnCl%in% Dead_CC),"Monitoring.Status"],
                           "which is not included in the acceptable list of BBD, CUS, DD, or blank for trees that have no dbh"))
   }
 
@@ -1578,10 +1578,10 @@ tree_crown_class_qc=function(tree){
     blank_L=blank[which(blank$Status=="L"),]
     cat(paste(c("FALSE, values of", Live_B, "recorded for crown class, sample events recorded in flags\n"), collapse=" "))
     cat("\n")
-    flags<-c(flags, paste("Tag number ", unique(blank_L[which(blank_L$CrwnCl%in%Live_B), "TagNo"]),
+    flags<-c(flags, paste("Tag number ", blank_L[which(blank_L$CrwnCl%in%Live_B), "TagNo"],
                           " in tree data set has", unique(Live_B), "recorded for crown class in sample events",
-                          unique(blank_L[which(blank_L$CrwnCl%in%Live_B), "MacroPlot.Name"]),
-                          unique(blank_L[which(blank_L$CrwnCl%in%Live_B), "Monitoring.Status"]),
+                          blank_L[which(blank_L$CrwnCl%in%Live_B), "MacroPlot.Name"],
+                          blank_L[which(blank_L$CrwnCl%in%Live_B), "Monitoring.Status"],
                           "which is not blank, it may mean that a live tree is missing a dbh"))
   }
 
@@ -1596,11 +1596,11 @@ tree_crown_class_qc=function(tree){
     overstory_D=overstory[which(overstory$Status=="D"),]
     cat(paste(c("FALSE, values of", Dead_O, "recorded for crown class, sample events recorded in flags\n"), collapse=" "))
     cat("\n")
-    flags<-c(flags, paste("Tag number ", unique(overstory_D[which(overstory_D$CrwnCl %in% Dead_O),"TagNo"]),
+    flags<-c(flags, paste("Tag number ", overstory_D[which(overstory_D$CrwnCl %in% Dead_O),"TagNo"],
                           " in tree data set has ", unique(Dead_O),
                           "recorded for crown class in sample events",
-                          unique(overstory_D[which(overstory_D$CrwnCl %in% Dead_O),"MacroPlot.Name"]),
-                          unique(overstory_D[which(overstory_D$CrwnCl %in% Dead_O),"Monitoring.Status"]),
+                          overstory_D[which(overstory_D$CrwnCl %in% Dead_O),"MacroPlot.Name"],
+                          overstory_D[which(overstory_D$CrwnCl %in% Dead_O),"Monitoring.Status"],
                           "which is not included in the acceptable list of BAD, CS, LBS, RS, or blank for overstory dead trees"))
   }
 
@@ -1615,10 +1615,10 @@ tree_crown_class_qc=function(tree){
     overstory_L=overstory[which(overstory$Status=="L"),]
     cat(paste(c("FALSE, values of", Live_O, "recorded for crown class in events listed in flags\n"), collapse=" "))
     cat("\n")
-    flags<-c(flags, paste("Tag number ", unique(overstory_L[which(overstory_L$CrwnCl %in% Live_O), "TagNo"]),
+    flags<-c(flags, paste("Tag number ", overstory_L[which(overstory_L$CrwnCl %in% Live_O), "TagNo"],
                           " in tree data set has", unique(Live_O), "recorded for crown class in events",
-                          unique(overstory_L[which(overstory_L$CrwnCl %in% Live_O), "MacroPlot.Name"]),
-                          unique(overstory_L[which(overstory_L$CrwnCl %in% Live_O), "Monitoring.Status"]),
+                          overstory_L[which(overstory_L$CrwnCl %in% Live_O), "MacroPlot.Name"],
+                          overstory_L[which(overstory_L$CrwnCl %in% Live_O), "Monitoring.Status"],
                           "which is not included in the acceptable list of C, D, I, O, SC, or blank for overstory live trees"))
   }
 
@@ -1631,10 +1631,10 @@ tree_crown_class_qc=function(tree){
     pole_L=pole[which(pole$Status=="L"),]
     cat(paste(c("FALSE, values of", Dead_P, "recorded for crown class in sample events listed in flags\n"), collapse=" "))
     cat("\n")
-    flags<-c(flags, paste("Tag number ", unique(pole_L[which(pole_L$CrwnCl %in% Dead_P),"TagNo"]),
+    flags<-c(flags, paste("Tag number ", pole_L[which(pole_L$CrwnCl %in% Dead_P),"TagNo"],
                           " in tree data set has", unique(Dead_P), "recorded for crown class in sample events",
-                          unique(pole_L[which(pole_L$CrwnCl %in% Dead_P),"MacroPlot.Name"]),
-                          unique(pole_L[which(pole_L$CrwnCl %in% Dead_P),"Monitoring.Status"]),
+                          pole_L[which(pole_L$CrwnCl %in% Dead_P),"MacroPlot.Name"],
+                          pole_L[which(pole_L$CrwnCl %in% Dead_P),"Monitoring.Status"],
                           "which is not included in the acceptable list of BBD, CUS, dd, X, or blank for pole dead trees"))
 
   }
