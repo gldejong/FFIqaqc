@@ -1,0 +1,158 @@
+---
+title: "AKR_QAQC_Results"
+output: 
+  html_document:
+    theme:
+      bootswatch: simplex
+date: "2023-12-14"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, error = TRUE)
+library(stringr)
+library(outliers)
+library(EnvStats)
+library(tidyverse)
+library(miniUI)
+library(bslib)
+library(dplyr)
+library(knitr)
+library(DT)
+library(xtable)
+library(openxlsx)
+```
+
+### Setting Working Directory
+
+```{r}
+rm(list = ls())
+
+```
+
+## Reading in data {.tabset}
+
+```{r}
+#setwd("T:/ResMgmt/Fire/2023 FY/Fire Ecology/FFI/QAQC_FFI_exports")
+
+# load data
+# in FFI, Project Management tab, Utilities menu, select Sample Event Report
+samp=read.csv("FFI_exports/AKWEST_SampleEventReport.csv")
+
+# in FFI, Query tab, select All Project Units, Filter tab, select desired protocol from drop down, select Method, at the top select Apply Selections to view data, and Export to save as csv
+cover=read.csv("FFI_exports/AKWEST_Cover - Species Composition (metric)_XPT.csv", na.strings=c("","NA"), quote="") #ocular cover estimates
+treemeasure=read.csv("FFI_exports/AKWEST_Trees - Individuals (metric)_XPT.csv", quote="") #tree measurements, two per species, size class
+fuel1000=read.csv("FFI_exports/AKWEST_Surface Fuels - 1000Hr_XPT.csv", na.strings=c("","NA"), quote="") #fuel loading, tally of DWD
+duff=read.csv("FFI_exports/AKWEST_Surface Fuels - Duff_Litter_XPT.csv", na.strings=c("","NA"), quote="") #fuel loading, tally of DWD
+fine=read.csv("FFI_exports/AKWEST_Surface Fuels - Fine_XPT.csv", na.strings=c("","NA"), quote="") #fuel loading, tally of DWD
+
+# AK protocols that still need functions for QAQC
+coverpts=read.csv("FFI_exports/AKWEST_Cover - Points (metric)_XPT.csv", na.strings=c("","NA")) #veg transects
+treetally=read.csv("FFI_exports/AKWEST_Density - Belts (metric)_XPT.csv") #tree density tallied by species, status, size class, entered as Transect 1
+shrub=read.csv("FFI_exports/AKWEST_Density - Belts (metric)_XPT.csv") #shrub density tallied by species, entered as Transect 2
+seeds=read.csv("FFI_exports/AKWEST_Density - Quadrats (metric)_XPT.csv") #seedling density
+soils=read.csv("FFI_exports/AKWEST_SOILS_XPT.csv") #active layer and soil temp
+burnsev=read.csv("FFI_exports/AKWEST_Post Burn Severity (metric)_XPT.csv") #burn severity/duff consumption
+cbi=read.csv("FFI_exports/AKWEST_CBIf - Summation_XPT.csv") #visual estimates of fire-caused change
+akduff=read.csv("FFI_exports/AKWEST_Surface Fuels - Alaska Duff_Litter (metric)_XPT.csv") #thickness of forest floor layers
+
+# PSME protocols not used in AK 
+#saps=read.csv("PSME_data/PSME_Trees - Saplings (Diameter Class) (metric)_XPT.csv", na.strings=c("","NA"))
+#seeds=read.csv("PSME_data/PSME_Trees - Seedlings (Height Class) (metric)_XPT.csv")
+
+# load data cleaning functions
+source("R/AKR_datacleaningfunctions.R")
+
+# designate your monitoring type (mtype)
+# this could be a park or Project
+# i.e., return unique values of the ProjectUnit_Name column that start with XXXX
+# mtype=unique(samp[grep("NOAT-Racine",samp$ProjectUnit_Name),"ProjectUnit_Name"])
+# or simply return values from one ProjectUnit_Name
+mtype="DENA-FY21-HZF"
+
+
+flags=c()
+```
+
+### Sample Events 
+```{r}
+sample_event_qc(samp, mtype)[1]
+flags=sample_event_qc(samp, mtype)[2]
+ggsave(paste0("output/", mtype, "_sample_history.png"), width=10, height=10)
+
+
+```
+
+### Cover - Species Composition
+```{r}
+flags=cover_qc(cover)
+
+flags=cover_uvs_qc(cover)
+```
+
+### Protocol: Surface Fuels - 1000Hr 
+```{r}
+flags=fuel1000_qc(fuel1000)
+```
+
+```{r}
+flags=transect_slope_azimuth_qc(fuel1000,fine)
+```
+
+### Protocol: Surface Fuels - Duff Litter
+```{r}
+flags=duff_qc(duff)
+```
+
+### Protocol: Surface Fuels - Fine Litter 
+```{r}
+flags=fine_fuels_qc(fine)
+```
+
+### Trees - Saplings protocol: 
+```{r}
+flags=saplings_qc(saps)
+```
+
+### Trees - Seedlings protocol: 
+
+```{r}
+flags=seedlings_qc(seeds)
+```
+
+### Trees - Individuals protocol: 
+
+```{r}
+
+flags=tree_CBH_qc(treemeasure)
+
+flags=tree_crown_class_qc(treemeasure)
+
+flags=tree_damage_qc(treemeasure)
+
+flags=tree_dbh_qc(treemeasure)
+
+flags=tree_dd_qc(treemeasure)
+
+flags=tree_fract_qc(treemeasure)
+
+flags=tree_header_qc(treemeasure)
+
+flags=tree_height_qc(treemeasure)
+
+flags=tree_severity_qc(treemeasure)
+
+flags=tree_status_lifeform_qc(treemeasure)
+
+flags=tree_duplicates_qc(treemeasure)
+
+flags=tree_dead_to_alive_DBH_change_qc(treemeasure)
+```
+
+
+### Flags 
+
+```{r linewidth=60}
+comments_list=comments(cover, fuel1000, duff, fine, saps, seeds, treemeasure)
+
+format_flags(flags, samp, mtype, comments)
+```
