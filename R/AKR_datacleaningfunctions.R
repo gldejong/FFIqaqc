@@ -22,7 +22,7 @@
 #' sample_event_qc(samp, "PSME")
 #'
 sample_event_qc <- function(samp, mtype) {
-
+  ##### test comment #####
   samples <<- samp[which(samp$ProjectUnit_Name %in% mtype),] # filtering for project name
 
   # checking for NAs in monitoring status
@@ -43,66 +43,98 @@ sample_event_qc <- function(samp, mtype) {
     flags <- c(flags, "NAs exist in protocol column of sample event data")
   }
 
-  monitoring_status <- c("00PR01", "01Pre", "01Post", "01Year01", "01Year02", "01Year05", "02Pre", "02Post", "02Year01", "02Year02", "02Year10", "03Pre", "03Post", "03Year01", "03Year02", "00PR02", "00PR03", "00PR04", "01Year10", "01Year12", "02Year05", "03Year05","04Post", "04Year01", "04Year02", "04Pre", "04Year05", "05Post", "05Year01", "05Year02",  "02Year20", "01Year20", "00 PRE")
-
+  # list of accepted monitoring status, from AKWEST database
+  monitoring_status <- c("PreTreatmentYear0","PreTreatmentYear1",
+                         "PostTreatmentYear0","PostTreatmentYear1","PostTreatmentYear5","PostTreatmentYear18",
+                         "PostBurnYear0","PostBurnYear1","PostBurnYear2","PostBurnYear3","PostBurnYear4","PostBurnYear5","PostBurnYear6","PostBurnYear9",
+                         "PostBurnYear10","PostBurnYear16",
+                         "PostBurnYear23","PostBurnYear24","PostBurnYear28","PostBurnYear32",
+                         "PostBurnYear40","PostBurnYear42",
+                         "PostBurnYear1-5","PostBurnYear5-10","PostBurnYear14-19","PostBurnYear20-30",
+                         "PreBurn","PreBurnEstimate","PreBurnYear1",
+                         "UnBurn","UnBurnYear0","UnBurnYear1","UnBurnYear3","UnBurnYear5","UnBurnYear9",
+                         "UnBurnYear23","UnBurnYear28","UnBurnYear40",
+                         "PostBurn2XYear1","PostBurn2XYear5","PostBurn2XYear6","PostBurn2XYear21","PostBurn2XYear33",
+                         "")
   recorded_monitoring_status <- unique(samples$MonitoringStatus_Name)
   mislabeled_monitoring_status <- setdiff(recorded_monitoring_status, monitoring_status)
+  missing_monitoring_status <- filter(samples, MonitoringStatus_Name=="") %>%
+    select(MacroPlot_Name) %>%
+    unique()
+
   # printing monitoring status checks
-  cat("\nWhich monitoring statuses are included?\n")
-  cat(paste(recorded_monitoring_status, sep="\n"))
+  cat(paste0("\nWhich monitoring statuses are included in ",mtype,"?"))
+  cat(paste0(recorded_monitoring_status,"\n"))
   cat("\n")
   cat("\nWhich monitoring statuses are off-cycle?\n")
   if (length(mislabeled_monitoring_status) == 0) {
     cat("None\n")
   } else {
     cat(mislabeled_monitoring_status, sep = "\n")
-    flags <- c(flags, paste("These monitoring statuses are off-cycle:", paste(mislabeled_monitoring_status, collapse = ", "), sep = " "))
+    flags <- c(flags, paste("These monitoring statuses are off-cycle:",
+                            paste(mislabeled_monitoring_status, collapse = ", "), sep = " "))
+  }
+  cat("\nWhich monitoring statuses are blank?\n")
+  if (length(missing_monitoring_status) == 0) {
+    cat("None\n")
+  } else {
+    cat(as.character(missing_monitoring_status), sep = "\n")
+    flags <- c(flags, paste("These plots have a blank monitoring status:",
+                            paste(missing_monitoring_status, collapse = ", "), sep = " "))
   }
 
-  #ms check with years
-
- # anything that says post should be the same years as a fire
-
+  # format date for use as year
   samples$SampleEvent_Date=as.Date(samples$SampleEvent_Date, "%m/%d/%Y")
-    samples$year=str_split_fixed(samples$SampleEvent_Date, "-",3)[,1]
+  samples$year=str_split_fixed(samples$SampleEvent_Date, "-",3)[,1]
 
+  # change the treatment to be 'treated' for statuses labeled 'post'
+  post=samples[grep("Post", samples$MonitoringStatus_Name),]
+  samples[grep("Post", samples$MonitoringStatus_Name),"Treatment"]="Treated"
 
-  samples=samples%>%
-    mutate(fire="no_fire")
-
-
-
- post=samples[grep("Post", samples$MonitoringStatus_Name),]
-  samples[grep("Post", samples$MonitoringStatus_Name),"fire"]="fire"
-
-
-
-  postyears=unique(post$year)
-  postplots=c()
-
+  # list and print plots that were sampled post-treatment by year
+  postyears=sort(unique(post$year))
+  postplots=c() # create blank vector
   for(x in 1:length(postyears)){
     postplot=unique(post[which(post$year==postyears[x]), "MacroPlot_Name"], "\n")
     postplots=c(postplots, postplot)
-    cat(paste(c("\nIn", postyears[x],"the following plots burned and were measured: ", postplot), collapse=" "))
+    cat(paste0(c("\nIn", postyears[x],"the following plots had been treated and were measured: ", postplot), collapse=" "))
+    cat("\n")
   }
-
-  cat("(Warning: some plots may have burned but were only measured in following years)")
+  cat("(Warning: some plots may have been treated but have not yet been measured).")
   cat("\n")
-  after=samples[grep("Year01", samples$MonitoringStatus_Name),]
-  samples[grep("Year01", samples$MonitoringStatus_Name),"fire"]="fire+1"
+  regmatches(samples$MonitoringStatus_Name,
+             regexpr("[0-9]+",samples$MonitoringStatus_Name),
+             invert=TRUE)
+  # break down monitoring status to mark visit status on graphic
+  samples=samples %>%
+    mutate(Type=case_when(grepl("Pre", MonitoringStatus_Name)==TRUE~"Pre",
+                          grepl("Post", MonitoringStatus_Name)==TRUE~"Post",
+                          grepl("Un", MonitoringStatus_Name)==TRUE~"Pre",
+                          TRUE~"Pre"),
+           Time=case_when(MonitoringStatus_Name==""~"missing",
+                          TRUE~regmatches(MonitoringStatus_Name,
+                                          as.character(regexpr("[0-9]+",MonitoringStatus_Name),
+                                                       invert=TRUE)))) %>%
+    mutate(Type=factor(Type, levels=c("Pre","Post")),
+           Time=as.numeric(Time))
 
-  burnyears=as.numeric(unique(c(samples[which(samples$fire=="fire+1"), "year"])))-1
+  # identify treatment years for plotting
+  after=samples %>% filter(grepl("Post", Type)==TRUE) %>%
+    ###### unique(min(Time))
 
+    samples[which(samples$MonitoringStatus_Name %in% after),"Treatment"]="Treatment+1"
+  treatmentyears=as.numeric(unique(c(samples[which(samples$Treatment=="Treatment+1"), "year"])))-1
 
-
+  # identify all years that occurred after treatments
   afteryears=unique(after$year)
-  afterplots=c()
-
+  afterplots=c() # create blank vector
+  #build list of plot names that were sampled after treatment
   for(x in 1:length(afteryears)){
     afterplot=unique(after[which(after$year==afteryears[x]), "MacroPlot_Name"], "\n")
     afterplots=c(afterplots, afterplot)
   }
-  samples[which(samples$year %in% burnyears & samples$MacroPlot_Name %in% afterplots),"fire"]="fire"
+  samples[which(samples$year %in% treatmentyears &
+                  samples$MacroPlot_Name %in% afterplots),"fire"]="fire"
 
   cat("\n")
 
@@ -110,7 +142,6 @@ sample_event_qc <- function(samp, mtype) {
   samples[grep("Year02", samples$MonitoringStatus_Name),"fire"]="fire+2"
 
   burnyears=as.numeric(unique(c(samples[which(samples$fire=="fire+2"), "year"])))-2
-
 
   after2years=unique(after2$year)
   after2plots=c()
@@ -121,12 +152,10 @@ sample_event_qc <- function(samp, mtype) {
   }
   samples[which(samples$year %in% burnyears & samples$MacroPlot_Name %in% after2plots),"fire"]="fire"
 
-
   after5=samples[grep("Year05", samples$MonitoringStatus_Name),]
   samples[grep("Year05", samples$MonitoringStatus_Name),"fire"]="fire+5"
 
   burnyears=as.numeric(unique(c(samples[which(samples$fire=="fire+5"), "year"])))-5
-
 
   after5years=unique(after5$year)
   after5plots=c()
@@ -137,21 +166,17 @@ sample_event_qc <- function(samp, mtype) {
   }
   samples[which(samples$year %in% burnyears & samples$MacroPlot_Name %in% after5plots),"fire"]="fire"
 
-
   after10=samples[grep("Year10", samples$MonitoringStatus_Name),]
   samples[grep("Year10", samples$MonitoringStatus_Name),"fire"]="fire+10"
 
   burnyears=as.numeric(unique(c(samples[which(samples$fire=="fire+10"), "year"])))-10
 
-
   after10years=unique(after10$year)
   after10plots=c()
-
   for(x in 1:length(after10years)){
     after10plot=unique(after10[which(after10$year==after10years[x]), "MacroPlot_Name"], "\n")
     after10plots=c(after10plots, after10plot)
   }
-
 
   samples=rbind(samples, after, after2, after5, after10)
 
@@ -163,7 +188,6 @@ sample_event_qc <- function(samp, mtype) {
   samples[which(samples$fire %in% c("fire+1","fire+2","fire+5","fire+10")), "MonitoringStatus_Name"]="01Post"
   samples[which(samples$fire %in% c("fire+1","fire+2","fire+5","fire+10")), "Visited"]="N"
   samples[which(samples$fire %in% c("fire+1","fire+2","fire+5","fire+10")), "Protocols"]="all"
-
   samples[which(samples$fire %in% c("fire+1","fire+2","fire+5","fire+10")), "fire"]="fire"
 
   #plotting stuff
@@ -183,23 +207,28 @@ sample_event_qc <- function(samp, mtype) {
   # f$Protocols="Post Burn Severity"
   #
   # samples=rbind(samples, a,b,c,d,e,f)
-  # samples=samples[-which(samples$Protocols=="all"),]
+  #samples=samples[-which(samples$Protocols=="all"),]
 
+  samples_ordered <- samples %>%
+    arrange(Type,Time) %>%
+    mutate(ordered_MonitoringStatus=factor(MonitoringStatus_Name,
+                                           unique(MonitoringStatus_Name)))
 
-
-  p=samples %>%
-    ggplot(aes(x=year, y=MacroPlot_Name, shape=Visited))
-
-
-  p=p+geom_point(aes(color=MonitoringStatus_Name), size=5)+
-    geom_point(aes(shape = fire), size=3)+
-    scale_shape_manual(values=c(16, 13,8, 1), breaks=c('Y', 'N', 'fire','no_fire'))+
-    facet_wrap(~Protocols)+
-    theme_classic()+
-    theme(axis.text.x = element_text(angle = 60, hjust=1, size=5))
-
-  p
-
+  #build list of plot names that were sampled after treatment
+  for(x in 1:length(mtype)){
+    p=samples_ordered %>%
+      ggplot(aes(x=year, y=MacroPlot_Name, shape=Visited))+
+      geom_point(aes(color=ordered_MonitoringStatus), size=5)+
+      geom_point(aes(shape = fire), size=3)+
+      scale_shape_manual(values=c(16, 13,8, 1), breaks=c('Y', 'N', 'fire','no_fire'))+
+      scale_color_discrete(name="Monitoring Status")+
+      facet_wrap(~Protocols)+
+      xlab("Year")+
+      ylab("MacroPlot Name")+
+      theme_classic()+
+      theme(axis.text.x = element_text(angle = 60, hjust=1, size=10))
+    p
+  }
 
   recorded_protocols <- unique(samples$Protocols)
   cat("\n")
