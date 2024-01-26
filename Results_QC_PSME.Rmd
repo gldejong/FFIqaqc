@@ -36,17 +36,17 @@ rm(list = ls())
 
 
 ```{r}
-setwd("C:/Users/edeegan/OneDrive - DOI/Fire_project/Fire_project/")
+setwd("C:/Users/edeegan/OneDrive - DOI/Fire_project/Fire_project/SAGU_data/")
 mtype="PSME"
-source("QAQC/datacleaningfunctions.R")
-samp=read.csv("PsME_data/SAGU_SampleEventReport.csv")
-cover=read.csv("PSME_data/PSME_Cover - Species Composition (metric)_XPT.csv", na.strings=c("","NA"))
-fuel1000=read.csv("PSME_data/PSME_Surface Fuels - 1000Hr_XPT.csv", na.strings=c("","NA"))
-duff=read.csv("PSME_data/PSME_Surface Fuels - Duff_Litter_XPT.csv", na.strings=c("","NA"))
-fine=read.csv("PSME_data/PSME_Surface Fuels - Fine_XPT.csv", na.strings=c("","NA"))
-saps=read.csv("PSME_data/PSME_Trees - Saplings (Diameter Class) (metric)_XPT.csv", na.strings=c("","NA"))
-seeds=read.csv("PSME_data/PSME_Trees - Seedlings (Height Class) (metric)_XPT.csv")
-tree=read.csv("PSME_data/PSME_Trees - Individuals (metric)_XPT.csv")
+source("C:/Users/edeegan/OneDrive - DOI/FFIqaqc/R/datacleaningfunctions.R")
+samp=read.csv("C:/Users/edeegan/OneDrive - DOI/Fire_project/Fire_project/SAGU_data/PSME/SAGU_SampleEventReport.csv")
+cover=read.csv("C:/Users/edeegan/OneDrive - DOI/Fire_project/Fire_project/SAGU_data/PSME/PSME_Cover - Species Composition (metric)_XPT.csv", na.strings=c("","NA"))
+fuel1000=read.csv("C:/Users/edeegan/OneDrive - DOI/Fire_project/Fire_project/SAGU_data/PSME/PSME_Surface Fuels - 1000Hr_XPT.csv", na.strings=c("","NA"))
+duff=read.csv("C:/Users/edeegan/OneDrive - DOI/Fire_project/Fire_project/SAGU_data/PSME/PSME_Surface Fuels - Duff_Litter_XPT.csv", na.strings=c("","NA"))
+fine=read.csv("C:/Users/edeegan/OneDrive - DOI/Fire_project/Fire_project/SAGU_data/PSME/PSME_Surface Fuels - Fine_XPT.csv", na.strings=c("","NA"))
+saps=read.csv("C:/Users/edeegan/OneDrive - DOI/Fire_project/Fire_project/SAGU_data/PSME/PSME_Trees - Saplings (Diameter Class) (metric)_XPT.csv", na.strings=c("","NA"))
+seeds=read.csv("C:/Users/edeegan/OneDrive - DOI/Fire_project/Fire_project/SAGU_data/PSME/PSME_Trees - Seedlings (Height Class) (metric)_XPT.csv")
+tree=read.csv("C:/Users/edeegan/OneDrive - DOI/Fire_project/Fire_project/SAGU_data/PSME/PSME_Trees - Individuals (metric)_XPT.csv")
 
 flags=c()
 ```

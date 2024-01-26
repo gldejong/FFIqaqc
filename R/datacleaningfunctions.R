@@ -1824,7 +1824,6 @@ tree_dd_qc=function(tree){
 #' @examples
 #' tree_fract_qc(tree)
 tree_fract_qc=function(tree){
-
   ##check that correct subplot fraction is entered for trees
   #classify dbh
   pole=tree[which(tree$DBH<15.1),]
@@ -1833,7 +1832,53 @@ tree_fract_qc=function(tree){
   overstory$treerow=which(tree$DBH>=15.1)
   blank=tree[which(tree$DBH=="" | is.na(tree$DBH)),]
   blank$treerow=which(tree$DBH=="" | is.na(tree$DBH))
+  cat("All pole trees have subplot fraction of 0.25\n")
+  if(length(unique(pole$SubFrac))==1){
+    if(unique(pole$SubFrac)==0.25){
+      cat("TRUE\n")
+      cat("\n")
+    }else{
+      wrongsubfract=unique(pole[which(pole$SubFrac!=0.25), "SubFrac"])
+      cat(paste("FALSE, subfrac values for pole trees include", wrongsubfract, "when it should be equal to 0.25. Problem events are:", pole[which(pole$SubFrac %in% wrongsubfract), "MacroPlot.Name"],
+                pole[which(pole$SubFrac %in% wrongsubfract), "Monitoring.Status"],"tree",pole[which(pole$SubFrac %in% wrongsubfract), "TagNo"], "\n", collapse=" "))
+      cat("\n")
+      flags<-c(flags, paste("FALSE, subfrac values for pole trees include", wrongsubfract, "when it should be equal to 0.25. Problem events are:", pole[which(pole$SubFrac %in% wrongsubfract), "MacroPlot.Name"],
+                            pole[which(pole$SubFrac %in% wrongsubfract), "Monitoring.Status"], "tree", pole[which(pole$SubFrac %in% wrongsubfract), "TagNo"], "\n", collapse=" "))
+    }
+  }else{
+    #more than one result not just one
+    wrongsubfract=unique(pole[which(pole$SubFrac!=0.25), "SubFrac"])
+    cat(paste("FALSE, subfrac values for pole trees include", wrongsubfract, "when it should be equal to 0.25. Problem events are:", pole[which(pole$SubFrac %in% wrongsubfract), "MacroPlot.Name"],
+              pole[which(pole$SubFrac %in% wrongsubfract), "Monitoring.Status"],"tree",pole[which(pole$SubFrac %in% wrongsubfract), "TagNo"], "\n", collapse=" "))
+    cat("\n")
+    flags<-c(flags, paste("FALSE, subfrac values for pole trees include", wrongsubfract, "when it should be equal to 0.25. Problem events are:", pole[which(pole$SubFrac %in% wrongsubfract), "MacroPlot.Name"],
+                          pole[which(pole$SubFrac %in% wrongsubfract), "Monitoring.Status"], "tree", pole[which(pole$SubFrac %in% wrongsubfract), "TagNo"], "\n", collapse=" "))
+  }
 
+  cat("All blank dbh trees have subplot fraction of 1000 or blank\n")
+  if(length(unique(na.omit(blank$SubFrac)))==1){
+    if(unique(na.omit(blank$SubFrac))==1000){
+      cat("TRUE\n")
+      cat("\n")
+    }else{
+      wrongsubfract=unique(na.omit(blank$SubFrac))
+      wrongsubfract=wrongsubfract[! wrongsubfract==1000]
+      cat(paste("FALSE, subfrac values for blank dbh trees include", wrongsubfract, "when it should be equal to 1000. Problem events are:", blank[which(na.omit(blank$SubFrac) %in% wrongsubfract), "MacroPlot.Name"],
+                blank[which(na.omit(blank$SubFrac) %in% wrongsubfract), "Monitoring.Status"],"tree",blank[which(na.omit(blank$SubFrac) %in% wrongsubfract), "TagNo"], "\n", collapse=" "))
+      cat("\n")
+      flags<-c(flags, paste("FALSE, subfrac values for blank trees include", wrongsubfract, "when it should be equal to 1000. Problem events are:", blank[which(na.omit(blank$SubFrac) %in% wrongsubfract), "MacroPlot.Name"],
+                            blank[which(na.omit(blank$SubFrac) %in% wrongsubfract), "Monitoring.Status"], "tree", blank[which(na.omit(blank$SubFrac) %in% wrongsubfract), "TagNo"], "\n", collapse=" "))
+    }
+  }else{
+    #more than one result not just one
+    wrongsubfract=unique(na.omit(blank$SubFrac))
+    wrongsubfract=wrongsubfract[! wrongsubfract==1000]
+    cat(paste("FALSE, subfrac values for blank dbh trees include", wrongsubfract, "when it should be equal to 1000. Problem events are:", blank[which(na.omit(blank$SubFrac) %in% wrongsubfract), "MacroPlot.Name"],
+              blank[which(na.omit(blank$SubFrac) %in% wrongsubfract), "Monitoring.Status"],"tree",blank[which(na.omit(blank$SubFrac) %in% wrongsubfract), "TagNo"], "\n", collapse=" "))
+    cat("\n")
+    flags<-c(flags, paste("FALSE, subfrac values for blank trees include", wrongsubfract, "when it should be equal to 1000. Problem events are:", blank[which(na.omit(blank$SubFrac) %in% wrongsubfract), "MacroPlot.Name"],
+                          blank[which(na.omit(blank$SubFrac) %in% wrongsubfract), "Monitoring.Status"], "tree", blank[which(na.omit(blank$SubFrac) %in% wrongsubfract), "TagNo"], "\n", collapse=" "))
+  }
 
   cat("All overstory trees have subplot fraction of 1\n")
   if(length(unique(overstory$SubFrac))==1){
@@ -1841,65 +1886,23 @@ tree_fract_qc=function(tree){
       cat("TRUE\n")
       cat("\n")
     }else{
-      cat(paste(c("FALSE, subfrac values for all overstory trees is", unique(overstory$SubFrac), "when it should be equal to 1\n. Problem events are:", unique(overstory[which(overstory$SubFrac!=1), c("MacroPlot.Name", "Monitoring.Status")])), collapse=" "))
+      wrongsubfract=unique(overstory[which(overstory$SubFrac!=1), "SubFrac"])
+      cat(paste("FALSE, subfrac values for overstory trees include", wrongsubfract, "when it should be equal to 1. Problem events are:", overstory[which(overstory$SubFrac %in% wrongsubfract), "MacroPlot.Name"],
+                overstory[which(overstory$SubFrac %in% wrongsubfract), "Monitoring.Status"],"tree",overstory[which(overstory$SubFrac %in% wrongsubfract), "TagNo"], "\n", collapse=" "))
       cat("\n")
-      flags<-c(flags, paste(c("Subfrac values for all overstory trees in tree data set is", unique(overstory$SubFrac), "when it should be equal to 1"), collapse=" "))
-      #something else
+      flags<-c(flags, paste("FALSE, subfrac values for overstory trees include", wrongsubfract, "when it should be equal to 1. Problem events are:", overstory[which(overstory$SubFrac %in% wrongsubfract), "MacroPlot.Name"],
+                            overstory[which(overstory$SubFrac %in% wrongsubfract), "Monitoring.Status"], "tree", overstory[which(overstory$SubFrac %in% wrongsubfract), "TagNo"], "\n", collapse=" "))
     }
   }else{
     #more than one result not just one
-    cat(paste(c("FALSE, subfrac values for overstory trees include", unique(overstory$SubFrac), "when it should only be 1\nProblem events are:", unique(overstory[which(overstory$SubFrac!=1), c("MacroPlot.Name", "Monitoring.Status")])), collapse=" "))
+    wrongsubfract=unique(overstory[which(overstory$SubFrac!=1), "SubFrac"])
+    cat(paste("FALSE, subfrac values for overstory trees include", wrongsubfract, "when it should be equal to 1. Problem events are:", overstory[which(overstory$SubFrac %in% wrongsubfract), "MacroPlot.Name"],
+              overstory[which(overstory$SubFrac %in% wrongsubfract), "Monitoring.Status"],"tree",overstory[which(overstory$SubFrac %in% wrongsubfract), "TagNo"], "\n", collapse=" "))
     cat("\n")
-    flags<-c(flags, paste(c("Subfrac values for all overstory trees in tree data set is", unique(overstory$SubFrac), "when it should only be 1"), collapse=" "))
+    flags<-c(flags, paste("FALSE, subfrac values for overstory trees include", wrongsubfract, "when it should be equal to 1. Problem events are:", overstory[which(overstory$SubFrac %in% wrongsubfract), "MacroPlot.Name"],
+                          overstory[which(overstory$SubFrac %in% wrongsubfract), "Monitoring.Status"], "tree", overstory[which(overstory$SubFrac %in% wrongsubfract), "TagNo"], "\n", collapse=" "))
   }
 
-  cat("All pole trees have subplot fraction of 0.5\n")
-  if(length(unique(pole$SubFrac))==1){
-    if(unique(pole$SubFrac)==0.5){
-      cat("TRUE\n")
-      cat("\n")
-    }else{
-      cat(paste("FALSE, subfrac values for all pole trees is", unique(pole[which(pole$SubFrac!=0.5), "SubFrac"]), "when it should be equal to 0.5. Problem events are:", unique(pole[which(pole$SubFrac!=0.5), "MacroPlot.Name"]),
-                  unique(pole[which(pole$SubFrac!=0.5), "Monitoring.Status"]), "\n", collapse=" "))
-      cat("\n")
-      flags<-c(flags, paste("FALSE, subfrac values for all pole trees is", unique(pole[which(pole$SubFrac!=0.5), "SubFrac"]), "when it should be equal to 0.5. Problem events are:", unique(pole[which(pole$SubFrac!=0.5), "MacroPlot.Name"]),
-                                  unique(pole[which(pole$SubFrac!=0.5), "Monitoring.Status"]), "\n", collapse=" "))
-      #something else
-    }
-  }else{
-    #more than one result not just one
-    cat(paste("FALSE, subfrac values for all pole trees is", unique(pole[which(pole$SubFrac!=0.5), "SubFrac"]), "when it should be equal to 0.5. Problem events are:", unique(pole[which(pole$SubFrac!=0.5), "MacroPlot.Name"]),
-              unique(pole[which(pole$SubFrac!=0.5), "Monitoring.Status"]), "\n", collapse=" "))
-    cat("\n")
-    flags<-c(flags, paste("FALSE, subfrac values for all pole trees is", unique(pole[which(pole$SubFrac!=0.5), "SubFrac"]), "when it should be equal to 0.5. Problem events are:", unique(pole[which(pole$SubFrac!=0.5), "MacroPlot.Name"]),
-                          unique(pole[which(pole$SubFrac!=0.5), "Monitoring.Status"]), "\n", collapse=" "))
-  }
-
-  cat("All blank dbh trees have subplot fraction of 1000 or blank\n")
-  if(length(na.omit(unique(blank$SubFrac)))==1){
-    if(unique(blank$SubFrac)==1000){
-      cat("TRUE\n")
-      cat("\n")
-    }else{
-      cat(paste("FALSE, subfrac values for all blank trees is", unique(blank[which(blank$SubFrac!=1000), "SubFrac"]), "when it should be equal to 1000 or blank. Problem events are:",
-                unique(blank[which(na.omit(blank$SubFrac)!=1000), "MacroPlot.Name"]),
-                       unique(blank[which(na.omit(blank$SubFrac)!=1000), "Monitoring.Status"]),"\n", collapse=" "))
-      cat("\n")
-      flags<-c(flags, paste("Subfrac values for all blank trees in tree data set is", unique(blank[which(blank$SubFrac!=1000), "SubFrac"]), "when it should be equal to 1000 or blank. Problem events are:",
-                            unique(blank[which(na.omit(blank$SubFrac)!=1000), "MacroPlot.Name"]),
-                            unique(blank[which(na.omit(blank$SubFrac)!=1000), "Monitoring.Status"]),"\n", collapse=" "))
-    }
-  }else{
-    #more than one result not just one
-    cat(paste("FALSE, subfrac values for blank trees include", unique(blank[which(blank$SubFrac!=1000), "SubFrac"]), "when it should be equal to 1000 or blank. Problem events are:",
-                unique(blank[which(na.omit(blank$SubFrac)!=1000), "MacroPlot.Name"]),
-                unique(blank[which(na.omit(blank$SubFrac)!=1000), "Monitoring.Status"]),"\n", collapse=" "))
-
-    cat("\n")
-    flags<-c(flags, paste("Subfrac values for all blank trees in tree data set is", unique(blank[which(blank$SubFrac!=1000), "SubFrac"]), "when it should be equal to 1000 or blank. Problem events are:",
-                          unique(blank[which(na.omit(blank$SubFrac)!=1000), "MacroPlot.Name"]),
-                          unique(blank[which(na.omit(blank$SubFrac)!=1000), "Monitoring.Status"]),"\n", collapse=" "))
-    }
   return(flags)
 }#end function #verified 10/2 by Eva - lots of flags however
 
