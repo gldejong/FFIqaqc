@@ -810,7 +810,7 @@ duff_qc <- function(duff) {
 #'
 fine_fuels_qc <- function(fine) {
   # Check if One Hour Transect Length is always 6
-  cat("One Hour Transect Length is always 6...\n")
+  cat("One Hour Transect Length is consistent with monitoring protocols...\n")
   if (length(unique(na.omit(fine$OneHrTranLen))) == 1) {
    if(unique(na.omit(fine$OneHrTranLen)) == 6){
      cat("TRUE\n")
@@ -818,16 +818,16 @@ fine_fuels_qc <- function(fine) {
    }else{
      cat("FALSE, see flagged sample events:\n")
      cat("\n")
-     flags<- c(flags, paste("One Hour Transect Length is not always 6, see sample events:", fine[which(fine$OneHrTranLen!=6), "MacroPlot.Name"], fine[which(fine$OneHrTranLen!=6), "Monitoring.Status"]))
+     flags<- c(flags, paste("One Hour Transect Length is not consistent with monitoring protocols, see sample events:", fine[which(fine$OneHrTranLen!=6), "MacroPlot.Name"], fine[which(fine$OneHrTranLen!=6), "Monitoring.Status"]))
    }
   } else {
     cat("FALSE, see flagged sample events:\n")
     cat("\n")
-    flags<- c(flags, paste("One Hour Transect Length is not always 6, see sample events:", fine[which(fine$OneHrTranLen!=6), "MacroPlot.Name"], fine[which(fine$OneHrTranLen!=6), "Monitoring.Status"]))
+    flags<- c(flags, paste("One Hour Transect Length is not consistent with monitoring protocols, see sample events:", fine[which(fine$OneHrTranLen!=6), "MacroPlot.Name"], fine[which(fine$OneHrTranLen!=6), "Monitoring.Status"]))
   }
 
-  # Check if Ten Hour Transect Length is always 6
-  cat("Ten Hour Transect Length is always 6...\n")
+  # Check if Ten Hour Transect Length is consistent with monitoring protocols
+  cat("Ten Hour Transect Length is consistent with monitoring protocols...\n")
   if (length(unique(na.omit(fine$TenHrTranLen))) == 1) {
     if(unique(na.omit(fine$TenHrTranLen)) == 6){
       cat("TRUE\n")
@@ -835,16 +835,16 @@ fine_fuels_qc <- function(fine) {
     }else{
       cat("FALSE, see flagged sample events\n")
       cat("\n")
-      flags<- c(flags, paste("Ten Hour Transect Length is not always 6, see rows:", fine[which(fine$TenHrTranLen!=6), "MacroPlot.Name"], fine[which(fine$TenHrTranLen!=6), "Monitoring.Status"]))
+      flags<- c(flags, paste("Ten Hour Transect Length is not consistent with monitoring protocols, see sample events:", fine[which(fine$TenHrTranLen!=6), "MacroPlot.Name"], fine[which(fine$TenHrTranLen!=6), "Monitoring.Status"]))
     }
   } else {
     cat("FALSE, see flagged sample events\n")
     cat("\n")
-    flags<- c(flags, paste("Ten Hour Transect Length is not always 6, see rows:", fine[which(fine$TenHrTranLen!=6), "MacroPlot.Name"], fine[which(fine$TenHrTranLen!=6), "Monitoring.Status"]))
+    flags<- c(flags, paste("Ten Hour Transect Length is not consistent with monitoring protocols, see sample events:", fine[which(fine$TenHrTranLen!=6), "MacroPlot.Name"], fine[which(fine$TenHrTranLen!=6), "Monitoring.Status"]))
   }
 
-  # Check if Hundred Hour Transect Length is always 12
-  cat("Hundred Hour Transect Length is always 12...\n")
+  # Check if Hundred Hour Transect Length is consistent with monitoring protocols
+  cat("Hundred Hour Transect Length is consistent with monitoring protocols...\n")
   if (length(unique(na.omit(fine$HunHrTranLen))) == 1) {
     if(unique(na.omit(fine$HunHrTranLen)) == 12){
       cat("TRUE\n")
@@ -852,12 +852,12 @@ fine_fuels_qc <- function(fine) {
     }else{
       cat("FALSE, see flagged sample events\n")
       cat("\n")
-      flags<- c(flags, paste("Hundred Hour Transect Length is not always 12, see rows:", fine[which(fine$HunHrTranLen!=12), "MacroPlot.Name"], fine[which(fine$HunHrTranLen!=12), "Monitoring.Status"]))
+      flags<- c(flags, paste("Hundred Hour Transect Length is not consistent with monitoring protocols, see sample events:", fine[which(fine$HunHrTranLen!=12), "MacroPlot.Name"], fine[which(fine$HunHrTranLen!=12), "Monitoring.Status"]))
     }
   } else {
     cat("FALSE, see flagged sample events\n")
     cat("\n")
-    flags<- c(flags, paste("Hundred Hour Transect Length is not always 12, see rows:", fine[which(fine$HunHrTranLen!=12), "MacroPlot.Name"], fine[which(fine$HunHrTranLen!=12), "Monitoring.Status"]))
+    flags<- c(flags, paste("Hundred Hour Transect Length is not consistent with monitoring protocols, see sample events:", fine[which(fine$HunHrTranLen!=12), "MacroPlot.Name"], fine[which(fine$HunHrTranLen!=12), "Monitoring.Status"]))
   }
 
   # Check for misplaced fuel values in transect length row
