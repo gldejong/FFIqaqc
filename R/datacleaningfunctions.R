@@ -1417,6 +1417,20 @@ seedlings_qc=function(seeds){
     flags<- c(flags, paste(c("Some preferred lifeforms in the seedlings data have the mislabel",
                              setdiff(unique_pref_lifeforms,c("Tree", "Shrub")), "in events", paste(seeds[problem_rows, "MacroPlot.Name"],seeds[problem_rows, "Monitoring.Status"], " , ")), collapse = " "))
   }
+
+  #dead seedling check
+  cat("All seedlings are alive?\n")
+  if(all(seeds$Status=="L")){
+    cat("TRUE\n")
+  }else{
+    cat("FALSE, problem sample events listed in flags")
+    flags <- c(flags, paste("Dead seedlings recorded in sample events:", seeds[which(seeds$Status=="D"), "MacroPlot.Name"],seeds[which(seeds$Status=="D"), "Monitoring.Status"]))
+  }
+
+
+
+
+
   return(flags)
 } #end function
 
