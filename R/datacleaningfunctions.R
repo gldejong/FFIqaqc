@@ -877,6 +877,45 @@ fine_fuels_qc <- function(fine) {
   }
 
 
+
+  # Check for misplaced fuel values in NumTran row
+  cat("Any NA's for number of transects where they shouldn't be?\n")
+
+  # Check for NAs in number of transect column (OneHr, TenHr, HunHr)
+  if (anyNA(fine[which(is.na(fine$OneHr) & is.na(fine$TenHr) & is.na(fine$HunHr)), "NumTran"])) {
+    missing_events <- fine[is.na(fine[which(is.na(fine$OneHr) & is.na(fine$TenHr) & is.na(fine$HunHr)), "NumTran"]),]
+    missing_events_str <- paste(missing_events$MacroPlot.Name, missing_events$Monitoring.Status, sep = ": ")
+
+    cat("There are NAs for NumTran for the following sample events: ", missing_events_str, "\n")
+    cat("\n")
+    flags<- c(flags, "There are NAs in the columns that should be specifying the NumTran in the fine fuels data", missing_events_str, "\n")
+  }else{
+    cat("No")
+    cat("\n")
+  }
+
+#Check for NumTran=4
+  cat("Are all number of transects (NumTran) equal to 4?\n")
+if(length(na.omit(unique(fine$NumTran)))==1){
+  if(na.omit(unique(fine$NumTran))==4){
+    #all good
+    cat("Yes\n")
+  }else{
+    #all number of transects equal to something other than 4
+    cat("No, number of transects equal to",na.omit(unique(fine$NumTran)), "all sample events have the same problem.\n")
+  }
+}else{
+  #no
+  cat("FALSE, see flagged sample events\n")
+  cat("\n")
+  flags<- c(flags, paste("Number of transects (numtran) is", fine[which(fine$NumTran!=4), "NumTran"], "not 4, see sample events:", fine[which(fine$NumTran!=4), "MacroPlot.Name"], fine[which(fine$NumTran!=4), "Monitoring.Status"]
+                         , "comments say", fine[which(fine$NumTran!=4), "SaComment"]))
+}
+
+
+
+
+
   # Group by macro plot and sample event date (monitoring status)
   finedates <- as.data.frame(str_split(unique(paste(fine$MacroPlot.Name, fine$Monitoring.Status, sep = ",")), ","))
 
