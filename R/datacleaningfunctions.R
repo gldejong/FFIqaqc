@@ -1216,7 +1216,7 @@ seedlings_qc=function(seeds){
   #start of fraction stuff
 
   #if species symbol is "JUNI1","QUAR1","QUEM1","QUER1","QUGA1","QUHY1","QUOB1","QURU1"
-  #subfrac * microplot should equal 0.005
+  #subfrac * microplot should equal 0.005 - CHANGING THIS PART
   #if it doesn't - flag
   #if species symbol does not match these codes
   #subfrac should equal 1
@@ -1227,21 +1227,21 @@ seedlings_qc=function(seeds){
   if(any(seeds$Species.Symbol %in% c("JUNI1","QUAR1","QUEM1","QUER1","QUGA1","QUHY1","QUOB1","QURU1"))){
 
     difspecies=seeds[which(seeds$Species.Symbol %in% c("JUNI1","QUAR1","QUEM1","QUER1","QUGA1","QUHY1","QUOB1","QURU1")),]
-    incorrect_subfrac <- which(difspecies$SubFrac*difspecies$MicroPlotSize!=0.005)
+    incorrect_subfrac <- which(difspecies$SubFrac*difspecies$MicroPlotSize!=0.025)
 
     if(length(incorrect_subfrac>0)){
       cat("Incorrect subplot fraction/microplot size values detected:",
           difspecies[incorrect_subfrac, "SubFrac"] * difspecies[incorrect_subfrac, "MicroPlotSize"],
           "recorded in sample events",
           paste(difspecies[incorrect_subfrac, "MacroPlot.Name"], difspecies[incorrect_subfrac, "Monitoring.Status"], sep = " - "),
-          "when product should be 0.005\n")
+          "when product should be 0.025\n")
       cat("\n")
 
       flags<- c(flags, paste(c("Incorrect subplot fraction/microplot size values detected:",
                                difspecies[incorrect_subfrac, "SubFrac"] * difspecies[incorrect_subfrac, "MicroPlotSize"],
                                "recorded in sample events",
                                paste(difspecies[incorrect_subfrac, "MacroPlot.Name"], difspecies[incorrect_subfrac, "Monitoring.Status"], sep = " - "),
-                               "when product should be 0.005\n"), collapse=" "))
+                               "when product should be 0.025\n"), collapse=" "))
 
 
     }
@@ -1401,21 +1401,21 @@ seedlings_qc=function(seeds){
 
   # Check that species entered in the seedling tree tab are trees
   # Check that species entered in the seedling tree tab are trees
-  cat("The species entered in seedling tree tab are labeled Tree or Shrub in preferred lifeform\n")
+  cat("The species entered in seedling tree tab are labeled Tree in preferred lifeform\n")
 
   selected_rows <- which(seeds$Count != 0 | !is.na(seeds$Count) | seeds$Count != "")
   unique_pref_lifeforms <- unique(seeds[selected_rows, "Preferred_Lifeform"])
-  problem_rows <- which(seeds$Preferred_Lifeform %in% setdiff(unique_pref_lifeforms,c("Tree", "Shrub")))
+  problem_rows <- which(seeds$Preferred_Lifeform %in% setdiff(unique_pref_lifeforms,c("Tree")))
 
 
-  if (all(unique_pref_lifeforms %in% c("Tree", "Shrub"))) {
+  if (all(unique_pref_lifeforms %in% c("Tree"))) {
     cat("TRUE\n")
     cat("\n")
   } else {
-    cat("FALSE, some are labeled", setdiff(unique_pref_lifeforms,c("Tree", "Shrub")), ", problem events in flags\n")
+    cat("FALSE, some are labeled", setdiff(unique_pref_lifeforms,c("Tree")), ", problem events in flags\n")
     cat("\n")
     flags<- c(flags, paste(c("Some preferred lifeforms in the seedlings data have the mislabel",
-                             setdiff(unique_pref_lifeforms,c("Tree", "Shrub")), "in events", paste(seeds[problem_rows, "MacroPlot.Name"],seeds[problem_rows, "Monitoring.Status"], " , ")), collapse = " "))
+                             setdiff(unique_pref_lifeforms,c("Tree")), "in events", paste(seeds[problem_rows, "MacroPlot.Name"],seeds[problem_rows, "Monitoring.Status"], " , ")), collapse = " "))
   }
 
   #dead seedling check
@@ -1692,20 +1692,20 @@ tree_crown_class_qc=function(tree){
                           "which is not included in the acceptable list of C, D, I, O, SC, or blank for overstory live trees"))
   }
 
-  Dead_P=setdiff(pole[,"CrwnCl"], c("BBD", "CUS", "DD", "X",  ""))
-  cat("Dbh pole status D trees have crown class bbd, cus, dd, X, or blank\n")
-  if(length(Dead_P)==0){
+  #checking pole trees have crown class X, or blank
+  wrong_cc=setdiff(pole[,"CrwnCl"], c("X",  ""))
+  cat("Dbh pole trees have crown class X, or blank\n")
+  if(length(wrong_cc)==0){
     cat("TRUE\n")
     cat("\n")
   }else{
-    pole_L=pole[which(pole$Status=="L"),]
-    cat(paste(c("FALSE, values of", Dead_P, "recorded for crown class in sample events listed in flags\n"), collapse=" "))
+    cat(paste(c("FALSE, values of", wrong_cc, "recorded for crown class in sample events listed in flags\n"), collapse=" "))
     cat("\n")
-    flags<-c(flags, paste("Tag number ", pole_L[which(pole_L$CrwnCl %in% Dead_P),"TagNo"],
-                          " in tree data set has", unique(Dead_P), "recorded for crown class in sample events",
-                          pole_L[which(pole_L$CrwnCl %in% Dead_P),"MacroPlot.Name"],
-                          pole_L[which(pole_L$CrwnCl %in% Dead_P),"Monitoring.Status"],
-                          "which is not included in the acceptable list of BBD, CUS, dd, X, or blank for pole dead trees"))
+    flags<-c(flags, paste("Tag number ", pole[which(pole$CrwnCl %in% wrong_cc),"TagNo"],
+                          " in tree data set has", unique(wrong_cc), "recorded for crown class in sample events",
+                          pole[which(pole$CrwnCl %in% wrong_cc),"MacroPlot.Name"],
+                          pole[which(pole$CrwnCl %in% wrong_cc),"Monitoring.Status"],
+                          "which is not included in the acceptable list of X, or blank for pole trees"))
 
   }
   return(flags)
