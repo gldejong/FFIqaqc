@@ -1867,7 +1867,7 @@ tree_dd_qc=function(tree){
 ##Tree fraction
 #' Tree fraction
 #' @description
-#' The `tree_fract_qc` function conducts quality control checks on subplot fractions for different tree categories based on Diameter at Breast Height (DBH). It classifies trees into `pole` (DBH < 15.1), `overstory` (DBH ≥ 15.1), and `blank` (missing or blank DBH). For overstory trees, the function ensures that all have a subplot fraction (`SubFrac`) of 1. For pole trees, it verifies a subplot fraction of 0.5. For trees with blank or missing DBH, the function checks for a subplot fraction of 1000 or blank. The results are stored in the `flags` variable, containing details about events where subplot fractions deviate from the specified criteria, and are returned by the function.
+#' The `tree_area_multiplier_qc` function conducts quality control checks on subplot fractions for different tree categories based on Diameter at Breast Height (DBH). It classifies trees into `pole` (DBH < 15.1), `overstory` (DBH ≥ 15.1), and `blank` (missing or blank DBH). For overstory trees, the function ensures that all have a subplot fraction (`SubFrac`) of 1. For pole trees, it verifies a subplot fraction of 0.5. For trees with blank or missing DBH, the function checks for a subplot fraction of 1000 or blank. The results are stored in the `flags` variable, containing details about events where subplot fractions deviate from the specified criteria, and are returned by the function.
 #'
 #' @param tree
 #'
@@ -1875,8 +1875,8 @@ tree_dd_qc=function(tree){
 #' @export
 #'
 #' @examples
-#' tree_fract_qc(tree)
-tree_fract_qc=function(tree){
+#' tree_area_multiplier_qc(tree)
+tree_area_multiplier_qc=function(tree){
   ##check that correct subplot fraction is entered for trees
   #classify dbh
   pole=tree[which(tree$DBH<15.1),]
@@ -1885,27 +1885,27 @@ tree_fract_qc=function(tree){
   overstory$treerow=which(tree$DBH>=15.1)
   blank=tree[which(tree$DBH=="" | is.na(tree$DBH)),]
   blank$treerow=which(tree$DBH=="" | is.na(tree$DBH))
-  cat("All pole trees have subplot fraction of 0.25\n")
-  if(length(unique(pole$SubFrac))==1){
-    if(unique(pole$SubFrac)==0.25){
+  cat("All pole trees have subplot fraction of 0.25 or 0.5\n")
+  if(length(unique(pole$SubFrac)) %in% c(1,2)){
+    if(unique(pole$SubFrac) %in% c(0.25,0.5)){
       cat("TRUE\n")
       cat("\n")
     }else{
-      wrongsubfract=unique(pole[which(pole$SubFrac!=0.25), "SubFrac"])
-      cat(paste("FALSE, subfrac values for pole trees include", wrongsubfract, "when it should be equal to 0.25. Problem events are:", pole[which(pole$SubFrac %in% wrongsubfract), "MacroPlot.Name"],
+      wrongsubfract=unique(pole[which(pole$SubFrac %in% setdiff(pole$SubFrac, c(0.25,0.5))), "SubFrac"])
+      cat(paste("FALSE, subfrac values for pole trees include", wrongsubfract, "when it should be equal to 0.25 or 0.5. Problem events are:", pole[which(pole$SubFrac %in% wrongsubfract), "MacroPlot.Name"],
                 pole[which(pole$SubFrac %in% wrongsubfract), "Monitoring.Status"],"tree",pole[which(pole$SubFrac %in% wrongsubfract), "TagNo"], "\n", collapse=" "))
       cat("\n")
-      flags<-c(flags, paste("FALSE, subfrac values for pole trees include", wrongsubfract, "when it should be equal to 0.25. Problem events are:", pole[which(pole$SubFrac %in% wrongsubfract), "MacroPlot.Name"],
-                            pole[which(pole$SubFrac %in% wrongsubfract), "Monitoring.Status"], "tree", pole[which(pole$SubFrac %in% wrongsubfract), "TagNo"], "\n", collapse=" "))
+      flags<-c(flags, paste("FALSE, subfrac values for pole trees include", wrongsubfract, "when it should be equal to 0.25 or 0.5. Problem events are:", pole[which(pole$SubFrac %in% wrongsubfract), "MacroPlot.Name"],
+                            pole[which(pole$SubFrac %in% wrongsubfract), "Monitoring.Status"], "tree", pole[which(pole$SubFrac %in% wrongsubfract), "TagNo"]))
     }
   }else{
     #more than one result not just one
-    wrongsubfract=unique(pole[which(pole$SubFrac!=0.25), "SubFrac"])
-    cat(paste("FALSE, subfrac values for pole trees include", wrongsubfract, "when it should be equal to 0.25. Problem events are:", pole[which(pole$SubFrac %in% wrongsubfract), "MacroPlot.Name"],
+    wrongsubfract=unique(pole[which(pole$SubFrac %in% setdiff(pole$SubFrac, c(0.25,0.5))), "SubFrac"])
+    cat(paste("FALSE, subfrac values for pole trees include", wrongsubfract, "when it should be equal to 0.25 or 0.5. Problem events are:", pole[which(pole$SubFrac %in% wrongsubfract), "MacroPlot.Name"],
               pole[which(pole$SubFrac %in% wrongsubfract), "Monitoring.Status"],"tree",pole[which(pole$SubFrac %in% wrongsubfract), "TagNo"], "\n", collapse=" "))
     cat("\n")
-    flags<-c(flags, paste("FALSE, subfrac values for pole trees include", wrongsubfract, "when it should be equal to 0.25. Problem events are:", pole[which(pole$SubFrac %in% wrongsubfract), "MacroPlot.Name"],
-                          pole[which(pole$SubFrac %in% wrongsubfract), "Monitoring.Status"], "tree", pole[which(pole$SubFrac %in% wrongsubfract), "TagNo"], "\n", collapse=" "))
+    flags<-c(flags, paste("FALSE, subfrac values for pole trees include", wrongsubfract, "when it should be equal to 0.25 or 0.5. Problem events are:", pole[which(pole$SubFrac %in% wrongsubfract), "MacroPlot.Name"],
+                          pole[which(pole$SubFrac %in% wrongsubfract), "Monitoring.Status"], "tree", pole[which(pole$SubFrac %in% wrongsubfract), "TagNo"]))
   }
 
   cat("All blank dbh trees have subplot fraction of 1000 or blank\n")
