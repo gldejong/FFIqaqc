@@ -1916,22 +1916,105 @@ tree_area_multiplier_qc=function(tree){
     }else{
       wrongsubfract=unique(na.omit(blank$SubFrac))
       wrongsubfract=wrongsubfract[! wrongsubfract==1000]
-      cat(paste("FALSE, subfrac values for blank dbh trees include", wrongsubfract, "when it should be equal to 1000. Problem events are:", blank[which(na.omit(blank$SubFrac) %in% wrongsubfract), "MacroPlot.Name"],
-                blank[which(na.omit(blank$SubFrac) %in% wrongsubfract), "Monitoring.Status"],"tree",blank[which(na.omit(blank$SubFrac) %in% wrongsubfract), "TagNo"], "\n", collapse=" "))
-      cat("\n")
-      flags<-c(flags, paste("FALSE, subfrac values for blank trees include", wrongsubfract, "when it should be equal to 1000. Problem events are:", blank[which(na.omit(blank$SubFrac) %in% wrongsubfract), "MacroPlot.Name"],
-                            blank[which(na.omit(blank$SubFrac) %in% wrongsubfract), "Monitoring.Status"], "tree", blank[which(na.omit(blank$SubFrac) %in% wrongsubfract), "TagNo"], "\n", collapse=" "))
-    }
+      if(all(wrongsubfract %in% c(1,0.5,0.25))){
+        #and
+        if(all(blank[which(blank$SubFrac %in% wrongsubfract), "CrwnCl"] %in% c("DD", "CUS", "BBD"))){
+          #all good
+          cat("TRUE\n")
+          cat("\n")
+        }else{
+          diffcc=setdiff(unique(blank[which(blank$SubFrac %in% wrongsubfract), "CrwnCl"]), c("DD", "CUS", "BBD"))
+          if(all(blank[which(blank$SubFrac %in% wrongsubfract & blank$CrwnCl %in% diffcc), "Status"]=="X")){
+            #all good
+            cat("TRUE\n")
+            cat("\n")
+          }else{
+            #error
+            #df with blank dbh, subfrac thats not 1000, crown class thats not DD, CUS, BBD
+            df=blank[which(blank$SubFrac %in% wrongsubfract & blank$CrwnCl %in% diffcc),]
+            #of that df, trees which status are not x
+            df=df[df$Status!="X", ]
+            cat(paste("FALSE, subfrac values for blank dbh trees include", wrongsubfract, "when it should be equal to 1000.(Doesn't have CC DD, CUS, BBD, or status X) Problem events are:", df[, "MacroPlot.Name"],
+                      df[, "Monitoring.Status"],"tree",df[, "TagNo"], "\n", collapse=" "))
+            cat("\n")
+            flags<-c(flags, paste("FALSE, subfrac values for blank trees include", wrongsubfract, "when it should be equal to 1000.(Doesn't have CC DD, CUS, BBD, or status X) Problem events are:", df[, "MacroPlot.Name"],
+                                  df[, "Monitoring.Status"], "tree", df[, "TagNo"]))
+          }
+        }
+      }else{
+        #error
+        #df with blank dbh, subfrac thats not 1000, crown class thats not DD, CUS, BBD
+        df=blank[which(blank$SubFrac %in% wrongsubfract & blank$CrwnCl %in% diffcc),]
+        #of that df, trees which status are not x
+        df=df[df$Status!="X", ]
+        cat(paste("FALSE, subfrac values for blank dbh trees include", wrongsubfract, "when it should be equal to 1000.(Doesn't have CC DD, CUS, BBD, or status X) Problem events are:", df[, "MacroPlot.Name"],
+                  df[, "Monitoring.Status"],"tree",df[, "TagNo"], "\n", collapse=" "))
+        cat("\n")
+        flags<-c(flags, paste("FALSE, subfrac values for blank trees include", wrongsubfract, "when it should be equal to 1000.(Doesn't have CC DD, CUS, BBD, or status X) Problem events are:", df[, "MacroPlot.Name"],
+                              df[, "Monitoring.Status"], "tree", df[, "TagNo"]))
+        }
+   }
   }else{
-    #more than one result not just one
     wrongsubfract=unique(na.omit(blank$SubFrac))
     wrongsubfract=wrongsubfract[! wrongsubfract==1000]
-    cat(paste("FALSE, subfrac values for blank dbh trees include", wrongsubfract, "when it should be equal to 1000. Problem events are:", blank[which(na.omit(blank$SubFrac) %in% wrongsubfract), "MacroPlot.Name"],
-              blank[which(na.omit(blank$SubFrac) %in% wrongsubfract), "Monitoring.Status"],"tree",blank[which(na.omit(blank$SubFrac) %in% wrongsubfract), "TagNo"], "\n", collapse=" "))
+    if(all(wrongsubfract %in% c(1,0.5,0.25))){
+      #and
+      if(all(blank[which(blank$SubFrac %in% wrongsubfract), "CrwnCl"] %in% c("DD", "CUS", "BBD"))){
+        #all good
+        cat("TRUE\n")
+        cat("\n")
+      }else{
+        diffcc=setdiff(unique(blank[which(blank$SubFrac %in% wrongsubfract), "CrwnCl"]), c("DD", "CUS", "BBD"))
+        if(all(blank[which(blank$SubFrac %in% wrongsubfract & blank$CrwnCl %in% diffcc), "Status"]=="X")){
+          #all good
+          cat("TRUE\n")
+          cat("\n")
+        }else{
+          #error
+          #df with blank dbh, subfrac thats not 1000, crown class thats not DD, CUS, BBD
+          df=blank[which(blank$SubFrac %in% wrongsubfract & blank$CrwnCl %in% diffcc),]
+          #of that df, trees which status are not x
+          df=df[df$Status!="X", ]
+          cat(paste("FALSE, subfrac values for blank dbh trees include", wrongsubfract, "when it should be equal to 1000.(Doesn't have CC DD, CUS, BBD, or status X) Problem events are:", df[, "MacroPlot.Name"],
+                    df[, "Monitoring.Status"],"tree",df[, "TagNo"], "\n", collapse=" "))
+          cat("\n")
+          flags<-c(flags, paste("FALSE, subfrac values for blank trees include", wrongsubfract, "when it should be equal to 1000.(Doesn't have CC DD, CUS, BBD, or status X) Problem events are:", df[, "MacroPlot.Name"],
+                                df[, "Monitoring.Status"], "tree", df[, "TagNo"]))
+        }
+      }
+    }else{
+      #error
+      #df with blank dbh, subfrac thats not 1000, crown class thats not DD, CUS, BBD
+      df=blank[which(blank$SubFrac %in% wrongsubfract & blank$CrwnCl %in% diffcc),]
+      #of that df, trees which status are not x
+      df=df[df$Status!="X", ]
+      cat(paste("FALSE, subfrac values for blank dbh trees include", wrongsubfract, "when it should be equal to 1000.(Doesn't have CC DD, CUS, BBD, or status X) Problem events are:", df[, "MacroPlot.Name"],
+                df[, "Monitoring.Status"],"tree",df[, "TagNo"], "\n", collapse=" "))
+      cat("\n")
+      flags<-c(flags, paste("FALSE, subfrac values for blank trees include", wrongsubfract, "when it should be equal to 1000.(Doesn't have CC DD, CUS, BBD, or status X) Problem events are:", df[, "MacroPlot.Name"],
+                            df[, "Monitoring.Status"], "tree", df[, "TagNo"]))
+      }
+    #error
+    #df with blank dbh, subfrac thats not 1000, crown class thats not DD, CUS, BBD
+    df=blank[which(blank$SubFrac %in% wrongsubfract & blank$CrwnCl %in% diffcc),]
+    #of that df, trees which status are not x
+    df=df[df$Status!="X", ]
+    cat(paste("FALSE, subfrac values for blank dbh trees include", wrongsubfract, "when it should be equal to 1000.(Doesn't have CC DD, CUS, BBD, or status X) Problem events are:", df[, "MacroPlot.Name"],
+              df[, "Monitoring.Status"],"tree",df[, "TagNo"], "\n", collapse=" "))
     cat("\n")
-    flags<-c(flags, paste("FALSE, subfrac values for blank trees include", wrongsubfract, "when it should be equal to 1000. Problem events are:", blank[which(na.omit(blank$SubFrac) %in% wrongsubfract), "MacroPlot.Name"],
-                          blank[which(na.omit(blank$SubFrac) %in% wrongsubfract), "Monitoring.Status"], "tree", blank[which(na.omit(blank$SubFrac) %in% wrongsubfract), "TagNo"], "\n", collapse=" "))
-  }
+    flags<-c(flags, paste("FALSE, subfrac values for blank trees include", wrongsubfract, "when it should be equal to 1000.(Doesn't have CC DD, CUS, BBD, or status X) Problem events are:", df[, "MacroPlot.Name"],
+                          df[, "Monitoring.Status"], "tree", df[, "TagNo"]))
+    }
+
+
+
+
+
+
+
+
+
+
 
   cat("All overstory trees have subplot fraction of 1\n")
   if(length(unique(overstory$SubFrac))==1){
@@ -1960,10 +2043,10 @@ tree_area_multiplier_qc=function(tree){
 }#end function #verified 10/2 by Eva - lots of flags however
 
 
-##Tree header
-#' Tree header
+##Tree sample area
+#' Tree sample area
 #' @description
-#' The `tree_header_qc` function performs quality control checks on the header information of the tree data. It first ensures that all macroplot sizes (`MacroPlotSize`) are either 0.1 or blank, with detailed information about problematic events stored in the `flags` variable. Similarly, it verifies that all snagplot sizes (`SnagPlotSize`) are 0.1 or blank. The function also checks that break point diameters (`BrkPntDia`) are either 15.1 or blank. For each of these checks, it provides a logical value and details about any non-compliance events stored in the `flags` variable, which is returned by the function.
+#' The `tree_sample_area_qc` function performs quality control checks on the sample area information of the tree data. It first ensures that all macroplot sizes (`MacroPlotSize`) are either 0.1 or blank, with detailed information about problematic events stored in the `flags` variable. Similarly, it verifies that all snagplot sizes (`SnagPlotSize`) are 0.1 or blank. The function also checks that break point diameters (`BrkPntDia`) are either 15.1 or blank. For each of these checks, it provides a logical value and details about any non-compliance events stored in the `flags` variable, which is returned by the function.
 #'
 #' @param tree
 #'
@@ -1975,73 +2058,71 @@ tree_area_multiplier_qc=function(tree){
 tree_header_qc=function(tree){
 
   #check for incorrect sampling information
+  #need to filter for only plot level information - all else will be blank
+  #take out rows with tag numbers - these include tree information
+  tree=tree[which(is.na(tree$TagNo)),]
 
   cat("All macroplot sizes are 0.1 or blank...\n")
-  if(length(unique(tree$MacroPlotSize))==2){
-    if(unique(unique(tree$MacroPlotSize) %in% c(0.1, NA))){
+  if(length(unique(tree$MacroPlotSize))==1){
+    if(unique(unique(tree$MacroPlotSize) %in% c(0.1))){
       cat("TRUE\n")
       cat("\n")
     }else{
       #something wrong
-      cat(paste(c("FALSE, macroplot size values for blank trees include", unique(tree$MacroPlotSize), "when it should only be 0.1 or NA, problem events listed in flags\n"), collapse=" "))
+      cat(paste(c("FALSE, macroplot size values for trees include", unique(tree$MacroPlotSize), "when it should only be 0.1, problem events listed in flags\n"), collapse=" "))
       cat("\n")
-      flags<-c(flags, paste("MacroPlotSize values for all tree trees in tree data set is", unique(tree$MacroPlotSize), "when it should only be 0.1 or NA, problem events:", tree[which(tree$MacroPlotSize==setdiff(unique(tree$MacroPlotSize), c(0.1, NA))), "MacroPlot.Name"],
-                            tree[which(tree$MacroPlotSize==setdiff(unique(tree$MacroPlotSize), c(0.1, NA))), "Monitoring.Status"],
-                            collapse=" "))
+      flags<-c(flags, paste("MacroPlotSize values for all trees in tree data set is", unique(tree$MacroPlotSize), "when it should only be 0.1, problem events:", tree[which(tree$MacroPlotSize==setdiff(unique(tree$MacroPlotSize), c(0.1))), "MacroPlot.Name"],
+                            tree[which(tree$MacroPlotSize==setdiff(unique(tree$MacroPlotSize), c(0.1))), "Monitoring.Status"]))
     }
   }else{
     #something wrong
-    cat(paste(c("FALSE, macroplot size values for blank trees include", unique(tree$MacroPlotSize), "when it should only be 0.1 or NA, problem events listed in flags\n"), collapse=" "))
+    cat(paste(c("FALSE, macroplot size values for trees include", unique(tree$MacroPlotSize), "when it should only be 0.1, problem events listed in flags\n"), collapse=" "))
     cat("\n")
-    flags<-c(flags, paste("MacroPlotSize values for all blank trees in tree data set is", unique(tree$MacroPlotSize), "when it should only be 0.1 or NA, problem events:", tree[which(tree$MacroPlotSize==setdiff(unique(tree$MacroPlotSize), c(0.1, NA))), "MacroPlot.Name"],
-                          tree[which(tree$MacroPlotSize==setdiff(unique(tree$MacroPlotSize), c(0.1, NA))), "Monitoring.Status"],
-                          collapse=" "))
+    flags<-c(flags, paste("MacroPlotSize values for all trees in tree data set is", unique(tree$MacroPlotSize), "when it should only be 0.1, problem events:", tree[which(tree$MacroPlotSize==setdiff(unique(tree$MacroPlotSize), c(0.1))), "MacroPlot.Name"],
+                          tree[which(tree$MacroPlotSize==setdiff(unique(tree$MacroPlotSize), c(0.1))), "Monitoring.Status"]))
   }
 
 
-  cat("All snagplot sizes are 0.1 or blank...\n")
-  if(length(unique(tree$SnagPlotSize))==2){
-    if(unique(unique(tree$SnagPlotSize) %in% c(0.1, NA))){
+  cat("All snagplot sizes are 0.1...\n")
+  if(length(unique(tree$SnagPlotSize))==1){
+    if(unique(unique(tree$SnagPlotSize) %in% c(0.1))){
       cat("TRUE\n")
       cat("\n")
     }else{
       #something wrong
-      cat(paste("FALSE, Snagplot size values for blank trees include", unique(tree$SnagPlotSize), "when it should only be 0.1 or NA, problem events listed in flags\n"), collapse=" ")
+      cat(paste("FALSE, Snagplot size values for trees include", unique(tree$SnagPlotSize), "when it should only be 0.1, problem events listed in flags\n"), collapse=" ")
       cat("\n")
-      flags<-c(flags, paste("SnagPlotSize values for all tree trees in tree data set is", unique(tree$SnagPlotSize), "when it should only be 0.1 or NA, problem events:", tree[which(tree$SnagPlotSize==setdiff(unique(tree$SnagPlotSize), c(0.1, NA))), "MacroPlot.Name"],
-                            tree[which(tree$SnagPlotSize==setdiff(unique(tree$SnagPlotSize), c(0.1, NA))), "Monitoring.Status"],
-                            collapse=" "))
+      flags<-c(flags, paste("SnagPlotSize values for all trees in tree data set is", unique(tree$SnagPlotSize), "when it should only be 0.1, problem events:", tree[which(tree$SnagPlotSize==setdiff(unique(tree$SnagPlotSize), c(0.1))), "MacroPlot.Name"],
+                            tree[which(tree$SnagPlotSize==setdiff(unique(tree$SnagPlotSize), c(0.1))), "Monitoring.Status"]))
     }
   }else{
     #something wrong
-    cat(paste("FALSE, Snagplot size values for blank trees include", unique(tree$SnagPlotSize), "when it should only be 0.1 or NA, problem events listed in flags\n"), collapse=" ")
+    cat(paste("FALSE, Snagplot size values for trees include", unique(tree$SnagPlotSize), "when it should only be 0.1, problem events listed in flags\n"), collapse=" ")
     cat("\n")
-    flags<-c(flags, paste("SnagPlotSize values for all blank trees in tree data set is", unique(tree$SnagPlotSize), "when it should only be 0.1 or NA, problem events:", tree[which(tree$SnagPlotSize==setdiff(unique(tree$SnagPlotSize), c(0.1, NA))),"MacroPlot.Name"],
-                          tree[which(tree$SnagPlotSize==setdiff(unique(tree$SnagPlotSize), c(0.1, NA))), "Monitoring.Status"],
-                          collapse=" "))
+    flags<-c(flags, paste("SnagPlotSize values for all trees in tree data set is", unique(tree$SnagPlotSize), "when it should only be 0.1, problem events:", tree[which(tree$SnagPlotSize==setdiff(unique(tree$SnagPlotSize), c(0.1))),"MacroPlot.Name"],
+                          tree[which(tree$SnagPlotSize==setdiff(unique(tree$SnagPlotSize), c(0.1))), "Monitoring.Status"]))
   }
 
 
 
   cat("All Break point diameters are 15.1 or blank...\n")
-  if(length(unique(tree$BrkPntDia))==2){
-    if(unique(unique(tree$BrkPntDia) %in% c(15.1, NA))){
+  if(length(unique(tree$BrkPntDia))==1){
+    if(unique(unique(tree$BrkPntDia) %in% c(15.1))){
       cat("TRUE\n")
       cat("\n")
     }else{
       #something wrong
-      cat(paste(c("FALSE, Break point diameter values for blank trees include", unique(tree$BrkPntDia), "when it should only be 15.1 or NA, problem events listed in flags\n"), collapse=" "))
+      cat(paste(c("FALSE, Break point diameter values for trees include", unique(tree$BrkPntDia), "when it should only be 15.1, problem events listed in flags\n"), collapse=" "))
       cat("\n")
-      flags<-c(flags, paste("Break Point Diameter values for all blank trees in tree data set is", unique(tree$BrkPntDia), "when it should only be 15.1 or NA, problem events:", tree[which(tree$BrkPntDia==setdiff(unique(tree$BrkPntDia), c(15.1, NA))), "MacroPlot.Name"],
-                            tree[which(tree$BrkPntDia==setdiff(unique(tree$BrkPntDia), c(15.1, NA))), "Monitoring.Status"],
-                            collapse=" "))
+      flags<-c(flags, paste("Break Point Diameter values for all trees in tree data set is", unique(tree$BrkPntDia), "when it should only be 15.1, problem events:", tree[which(tree$BrkPntDia==setdiff(unique(tree$BrkPntDia), c(15.1))), "MacroPlot.Name"],
+                            tree[which(tree$BrkPntDia==setdiff(unique(tree$BrkPntDia), c(15.1))), "Monitoring.Status"]))
     }
   }else{
     #something wrong
-    cat(paste(c("FALSE, Break point diameter values for blank trees include", unique(tree$BrkPntDia), "when it should only be 15.1 or NA, problem events listed in flags\n"), collapse=" "))
+    cat(paste(c("FALSE, Break point diameter values for trees include", unique(tree$BrkPntDia), "when it should only be 15.1, problem events listed in flags\n"), collapse=" "))
     cat("\n")
-    flags<-c(flags, paste("Break Point Diameter values for all blank trees in tree data set is", unique(tree$BrkPntDia), "when it should only be 15.1 or NA, problem events:", tree[which(tree$BrkPntDia==setdiff(unique(tree$BrkPntDia), c(15.1, NA))), "MacroPlot.Name"],
-                          tree[which(tree$BrkPntDia==setdiff(unique(tree$BrkPntDia), c(15.1, NA))), "Monitoring.Status"], collapse=" "))
+    flags<-c(flags, paste("Break Point Diameter values for all trees in tree data set is", unique(tree$BrkPntDia), "when it should only be 15.1, problem events:", tree[which(tree$BrkPntDia==setdiff(unique(tree$BrkPntDia), c(15.1))), "MacroPlot.Name"],
+                          tree[which(tree$BrkPntDia==setdiff(unique(tree$BrkPntDia), c(15.1))), "Monitoring.Status"]))
   }
 
   return(flags)
@@ -2377,7 +2458,7 @@ tree_duplicates_qc=function(tree){
 #' @examples
 #' tree_dead_to_alive_DBH_change_qc(tree)
 tree_dead_to_alive_DBH_change_qc=function(tree){
-  events=c("00PR02"   ,  "01Pre"  , "01Post",  "01Year01" ,"01Year05", "01Year10")
+  events=unique(tree$Monitoring.Status)
   plots=unique(tree$MacroPlot.Name)
   results=matrix(nrow =0, ncol = 6)
 
@@ -2598,13 +2679,13 @@ comments=function(cover, fuel1000, duff, fine, saps, seeds, tree){
                    cover[which(cover$Comment %in% cover_comments), "Monitoring.Status"],
                    cover[which(cover$Comment %in% cover_comments), "Comment"], sep=", "),
              "1000 HR FUELS PROTOCOL",
-             paste("Index", fuel1000[which(fuel1000$Comment %in% fuel1000_comments), "Index"],
+             paste(fuel1000[which(fuel1000$Comment %in% fuel1000_comments), "Index"],
                    fuel1000[which(fuel1000$Comment %in% fuel1000_comments), "MacroPlot.Name"],
                    fuel1000[which(fuel1000$Comment %in% fuel1000_comments), "Monitoring.Status"],
                    fuel1000[which(fuel1000$Comment %in% fuel1000_comments), "Comment"], sep=", "),
 
              "DUFF PROTOCOL",
-             paste("Index", duff[which(duff$Comment %in% duff_comments), "Index"],
+             paste(
                    duff[which(duff$Comment %in% duff_comments), "MacroPlot.Name"],
                    duff[which(duff$Comment %in% duff_comments), "Monitoring.Status"],
                    duff[which(duff$Comment %in% duff_comments), "Comment"], sep=", "),
@@ -2618,7 +2699,7 @@ comments=function(cover, fuel1000, duff, fine, saps, seeds, tree){
 
 
              "SAPLINGS PROTOCOL",
-             paste("Index",  saps[which(saps$Comment %in% saps_comments), "Index"],
+             paste(saps[which(saps$Comment %in% saps_comments), "Index"],
                    saps[which(saps$Comment %in% saps_comments), "MacroPlot.Name"],
                    saps[which(saps$Comment %in% saps_comments), "Monitoring.Status"],
                    saps[which(saps$Comment %in% saps_comments), "Comment"], sep=", "),
@@ -2704,10 +2785,11 @@ format_flags=function(flags, samp, mtype, comments){
   }
 
   names(data)=c(plots, "Comments")
+  todaysdate=Sys.Date()
 
   write.xlsx(
     x=data,
-    file = paste(mtype, "flags.xlsx"),
+    file = paste(mtype, todaysdate, "flags.xlsx"),
     col_names = TRUE,
     format_headers = TRUE,
     use_zip64 = FALSE
