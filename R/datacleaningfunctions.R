@@ -2283,6 +2283,41 @@ tree_severity_qc=function(tree){
                             pretree[which(pretree$CrScPct==setdiff(unique(pretree$CrScPct), NA)),"MacroPlot.Name"],
                             pretree[which(pretree$CrScPct==setdiff(unique(pretree$CrScPct), NA)),"Monitoring.Status"], "\n"), collapse=" "))
   }
+
+
+
+  #immediate post read checks
+postread=tree[which(tree$Monitoring.Status=="01Post"),]
+
+#not sure how to check if its max scorch and char or avg
+
+postreadtrees=postread[which(!is.na(postread$TagNo)),]
+cat("CHAR HEIGHT is recorded for all tagged trees, live or dead\n")
+if(anyNA(postreadtrees$CharHt)){
+  #flag
+charnas=postreadtrees[which(is.na(postreadtrees$CharHt)),]
+cat("FALSE, char height missing for trees that are noted in flags")
+flags<- c(flags, paste("FALSE, char height missing for tree", charnas[,"TagNo"], "in 01Post read in plot",
+charnas[,"MacroPlot.Name"]))
+
+}else{
+  #all good
+  cat("TRUE\n")
+}
+
+cat("All trees recorded as 100% torched are also recorded as 100% scorched\n")
+#not sure how to check this
+
+#is previously dead trees = na schgt (scorch height??)
+
+#are these the things that are supposed to be blank with dd cus bbd trees?
+postreadtrees$Ht
+postreadtrees$LiCrBHt
+postreadtrees$CharHt
+postreadtrees$ScorchHt
+postreadtrees$CrScPct
+
+
   return(flags)
 }#end function #verified 10/11 by Eva
 
