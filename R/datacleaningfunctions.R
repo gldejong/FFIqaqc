@@ -2347,6 +2347,8 @@ tree_height_qc=function(tree){
 tree_severity_qc=function(tree){
 
   pretree=tree[which(tree$Monitoring.Status %in% c("00PR01","00PR02","01Pre")),]
+  #need to add everything thats not immediate post *Post(nothing after)
+  #note if monitoring status format is different change code
 
 
 
@@ -2421,9 +2423,14 @@ tree_severity_qc=function(tree){
   }
 
 
+  #immediate post read checks #filter out pole trees!!! - these are not errors
+  #recent data sheets say people should record this data for pole trees,
+  #add argument that asks if user cares if pole trees don't have this data
+    #default should be to include the pole trees
+  #doug fir never has it so manually change for that
+tree=tree[which(tree$DBH<15.1),]
 
-  #immediate post read checks
-postread=tree[which(tree$Monitoring.Status=="01Post"),]
+postread=tree[which(tree$Monitoring.Status=="05Post"),] #*post change
 
 #not sure how to check if its max scorch and char or avg
 
