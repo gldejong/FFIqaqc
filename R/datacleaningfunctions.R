@@ -2114,16 +2114,6 @@ tree_area_multiplier_qc=function(tree){
       flags<-c(flags, paste("FALSE, subfrac values for blank trees include", wrongsubfract, "when it should be equal to 1000.(Doesn't have CC DD, CUS, BBD, or status X) Problem events are:", df[, "MacroPlot.Name"],
                             df[, "Monitoring.Status"], "tree", df[, "TagNo"]))
       }
-    #error
-    #df with blank dbh, subfrac thats not 1000, crown class thats not DD, CUS, BBD
-    df=blank[which(blank$SubFrac %in% wrongsubfract & blank$CrwnCl %in% diffcc),]
-    #of that df, trees which status are not x
-    df=df[df$Status!="X", ]
-    cat(paste("FALSE, subfrac values for blank dbh trees include", wrongsubfract, "when it should be equal to 1000.(Doesn't have CC DD, CUS, BBD, or status X) Problem events are:", df[, "MacroPlot.Name"],
-              df[, "Monitoring.Status"],"tree",df[, "TagNo"], "\n", collapse=" "))
-    cat("\n")
-    flags<-c(flags, paste("FALSE, subfrac values for blank trees include", wrongsubfract, "when it should be equal to 1000.(Doesn't have CC DD, CUS, BBD, or status X) Problem events are:", df[, "MacroPlot.Name"],
-                          df[, "Monitoring.Status"], "tree", df[, "TagNo"]))
     }
 
 
