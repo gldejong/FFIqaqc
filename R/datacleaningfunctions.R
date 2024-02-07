@@ -2118,14 +2118,6 @@ tree_area_multiplier_qc=function(tree){
 
 
 
-
-
-
-
-
-
-
-
   cat("All overstory trees have subplot fraction of 1\n")
   if(length(unique(overstory$SubFrac))==1){
     if(unique(overstory$SubFrac)==1){
@@ -2316,16 +2308,19 @@ tree_height_qc=function(tree){
 
 
 
-##Tree non-post severity
-#' Tree non-post severity
+##Tree severity
+#' Tree severity
 #' @description
-#' The `tree_severity_qc` function focuses on pre-burn trees by extracting relevant data
-#' based on monitoring status. It checks if all characteristic heights, scorch heights,
-#' and scorch percentage heights are blank (NA) for these pre-burn trees, flagging any
-#' discrepancies and providing event details in the `flags` variable returned by the function.
-#'  If the unique values for these attributes are exclusively NA, the function returns "TRUE"
-#'  for each check, indicating conformity. Otherwise, it reports the issues, listing problematic
-#'  events with associated macroplot names and monitoring statuses in the `flags`.
+#' The `tree_severity_qc` function checks if all char heights, scorch heights,
+#' and scorch percentage heights are blank (NA) for pre-burn trees, flagging any
+#' discrepancies and providing event details in the `flags` variable returned by the function. The function
+#' also checks char, scorch and scorch percentage data for the sample events immediately post burn. The user
+#' has the option to filter out pole trees for char data checks (some protocols record this data
+#' for pole trees and some do not) with the argument filterpoles="Y" or filterpoles="N" (default).
+#' The function checks that char height and scorch height are not blank or excessively high for
+#' standing trees post burn, that scorch percentage is not over 100 or blank for live trees, and that trees
+#' with crown class DD, BBD, or CUS have blank char and scorch heights and scorch percentages of
+#' blank or 100. Errors are flagged with details about the problem sample event.
 #'
 #' @param tree
 #'
@@ -2333,8 +2328,8 @@ tree_height_qc=function(tree){
 #' @export
 #'
 #' @examples
-#' tree_severity_qc(tree)
-tree_severity_qc=function(tree){
+#' tree_severity_qc(tree, filterpoles="Y")
+tree_severity_qc=function(tree, filterpoles="N"){
 
   pretree=tree[which(tree$Monitoring.Status %in% c("00PR01","00PR02","01Pre")),]
   #need to add everything thats not immediate post *Post(nothing after)
@@ -2412,43 +2407,147 @@ tree_severity_qc=function(tree){
                             pretree[which(pretree$CrScPct==setdiff(unique(pretree$CrScPct), NA)),"Monitoring.Status"], "\n"), collapse=" "))
   }
 
+  cat("\n")
+  test_for_outliers <- function(data, column_name) {
+    # Display a message indicating the test being performed
+    cat("Are there any outlier values in", column_name, "?\n")
 
-  #immediate post read checks #filter out pole trees!!! - these are not errors
-  #recent data sheets say people should record this data for pole trees,
-  #add argument that asks if user cares if pole trees don't have this data
-    #default should be to include the pole trees
-  #doug fir never has it so manually change for that
-tree=tree[which(tree$DBH<15.1),]
+    # Extract non-missing and non-NA/NaN/Inf values from the specified column
+    column_values <- na.omit(data[[column_name]])
 
-postread=tree[which(tree$Monitoring.Status=="05Post"),] #*post change
+    # Check if there are any valid values for testing
+    if (length(column_values) == 0) {
+      # Print a message if no valid values are available for testing
+      cat("No valid values to test\n")
+      return()  # Exit the function if there are no valid values
+    }
 
-#not sure how to check if its max scorch and char or avg
+    # Perform Rosner test on the valid column values
+    test <- rosnerTest(column_values)
+    test <- test$all.stats
+    outliers <- test[which(test$Outlier == TRUE), 4]
 
-postreadtrees=postread[which(!is.na(postread$TagNo)),]
-cat("CHAR HEIGHT is recorded for all tagged trees, live or dead\n")
-if(anyNA(postreadtrees$CharHt)){
-  #flag
-charnas=postreadtrees[which(is.na(postreadtrees$CharHt)),]
-cat("FALSE, char height missing for trees that are noted in flags")
-flags<- c(flags, paste("FALSE, char height missing for tree", charnas[,"TagNo"], "in 01Post read in plot",
-charnas[,"MacroPlot.Name"]))
+    # Check if any outliers were detected
+    if (length(outliers) == 0) {
+      # Print a message if no outliers were detected
+      cat("No\n")
+    } else {
+      # Print information about the detected outliers and their details
+      cat(paste("Yes, the outlier values according to a Rosner test are", outliers, ". They are in events",
+                data[which(data[[column_name]] %in% outliers),"MacroPlot.Name"],data[which(data[[column_name]] %in% outliers),"Monitoring.Status"], "of the data table. For reference, the max, min, and mean of",
+                column_name, "are", max(column_values), min(column_values), mean(column_values), "respectively",
+                collapse = "\n"), "\n")
+
+      # Add error messages about the detected outliers to the flags vector
+      flags<- c(flags, paste("The", column_name, "has outlier values according to a Rosner test, which are", outliers,
+                             ". They are in events", data[which(data[[column_name]] %in% outliers),"MacroPlot.Name"],data[which(data[[column_name]] %in% outliers),"Monitoring.Status"],
+                             "of the data table. The max, min, and mean of", column_name, "'s are", max(column_values),
+                             min(column_values), mean(column_values), "respectively", collapse = "\n"), "\n")
+    }
+  }
+
+
+#filter for just immediate post reads
+  pattern <- "(0[1-9]|10)Post"
+  postburntrees = tree[grep(pattern, tree$Monitoring.Status),]
+
+  #filter out pole trees
+  if(filterpoles=="Y"){
+    cat("Filtering out pole trees for char data checks\n")
+    postburntrees = postburntrees[which(postburntrees$DBH>15.1),]
+  }else if(filterpoles=="N"){
+    cat("Including pole trees for char data checks (to exclude add argument filterpoles=Y to function.\n")
+  }else{
+    cat("Unknown argument for filterpoles, defaulting to N (not filtering out poles for char data checks)")
+    #error in argument
+  }
+
+
+
+
+  test_for_outliers(postburntrees, "CharHt")
+  `%!in%` <- Negate(`%in%`)
+  cat("All trees in post read have a char height value\n")
+  blank_char=postburntrees[which(postburntrees$CharHt=="" | is.na(postburntrees$CharHt| blank_char$TagNo!="NA")),]
+  if(any(!is.na(blank_char$TagNo) | blank_char$TagNo!="" | blank_char$TagNo!="NA" &
+         blank_char$CrwnCl %!in% c("DD", "BBD", "CUS"))){
+    cat("FALSE, problem sample events listed in flags\n")
+    x=which(!is.na(blank_char$TagNo) | blank_char$TagNo!=""| blank_char$TagNo!="NA" &
+              blank_char$CrwnCl %!in% c("DD", "BBD", "CUS"))
+    flags <- c(flags, paste("Tree", blank_char[x, "TagNo"], " has a blank char height and tag number is not blank and crown class is not DD, BBD, or CUS. Sample event is", blank_char[x, "MacroPlot.Name"],
+                            blank_char[x, "Monitoring.Status"]))
+
+
+  }else{
+    cat("TRUE\n")
+  }
+
+test_for_outliers(postburntrees, "ScorchHt")
+cat("All trees in post read have a scorch height value\n")
+blank_scor=postburntrees[which(postburntrees$ScorchHt=="" | is.na(postburntrees$ScorchHt) | postburntrees$ScorchHt=="NA"),]
+if(any(!is.na(blank_scor$TagNo) | blank_scor$TagNo!="" | blank_scor$TagNo!="NA")){
+  blank_scor_tag=blank_scor[which(!is.na(blank_scor$TagNo) | blank_scor$TagNo!="" | blank_scor$TagNo!="NA"),]
+  if(any(blank_scor_tag$Status!="D")){
+    cat("FALSE, problem sample events listed in flags\n")
+    x=which(!is.na(blank_scor$TagNo) | blank_scor$TagNo!=""| blank_scor$TagNo!="NA")
+    y=which(blank_scor$Status!="D")
+    x=intersect(x,y)
+    flags <- c(flags, paste("Tree", blank_scor[x, "TagNo"], " has a blank scorch height and tag number is not blank and status is not dead. Sample event is", blank_scor[x, "MacroPlot.Name"],
+                            blank_scor[x, "Monitoring.Status"]))
+
+  }else{
+    cat("TRUE\n")
+    #good
+  }
+
+
 
 }else{
-  #all good
   cat("TRUE\n")
 }
 
-cat("All trees recorded as 100% torched are also recorded as 100% scorched\n")
-#not sure how to check this
+cat("All trees in post read have a scorch percentage equal to or under 100%\n")
+if(all(na.omit(postburntrees$CrScPct)<=100)){
+  cat("TRUE\n")
 
-#is previously dead trees = na schgt (scorch height??)
+}else{
+  cat("FALSE, problem sample events listed in flags\n")
+  x=which(na.omit(postburntrees$CrScPct)>100)
+  flags <- c(flags, paste("Tree", postburntrees[x, "TagNo"], " has a a scorch percentage over 100%. Sample event is", postburntrees[x, "MacroPlot.Name"],
+                          postburntrees[x, "Monitoring.Status"]))
 
-#are these the things that are supposed to be blank with dd cus bbd trees?
-postreadtrees$Ht
-postreadtrees$LiCrBHt
-postreadtrees$CharHt
-postreadtrees$ScorchHt
-postreadtrees$CrScPct
+}
+
+cat("All live trees have a scorch percentage value\n")
+blank_scor_p=postburntrees[which(postburntrees$CrScPct=="" | is.na(postburntrees$CrScPct) | postburntrees$CrScPct=="NA"),]
+blank_scor_p=blank_scor_p[which(blank_scor_p$Status=="L"),]
+blank_scor_p=blank_scor_p[which(!is.na(blank_scor_p$TagNo) | blank_scor_p$TagNo!="" | blank_scor_p$TagNo!="NA"),]
+if(nrow(blank_scor_p)>1){
+  cat("FALSE, problem sample events listed in flags\n")
+  flags <- c(flags, paste("Tree", blank_scor_p[, "TagNo"], "is a live tree with a blank scorch percentage. Sample event is", blank_scor_p[, "MacroPlot.Name"],
+                          blank_scor_p[, "Monitoring.Status"]))
+
+}else{
+  cat("TRUE\n")
+}
+
+
+cat("All rows with crown class DD, BBD, or CUS have a blank char and scorch height and a scorch percentage of blank or 100\n")
+postburntrees_cc=postburntrees[(which(postburntrees$CrwnCl %in% c("DD", "BBD", "CUS"))),]
+if(nrow(postburntrees_cc)>1){
+  postburntrees_cc_c=postburntrees_cc[which(!is.na(postburntrees_cc$CharHt) | postburntrees_cc$CharHt!="" | postburntrees_cc$CharHt!="NA"),]
+  flags <- c(flags, paste("Tree", postburntrees_cc_c[, "TagNo"], "has crown class", postburntrees_cc_c[, "CrwnCl"], "and a non blank char height of", postburntrees_cc_c[, "CharHt"],". Sample event is", postburntrees_cc_c[, "MacroPlot.Name"], postburntrees_cc_c[, "Monitoring.Status"]))
+  postburntrees_cc_s=postburntrees_cc[which(!is.na(postburntrees_cc$ScorchHt) | postburntrees_cc$ScorchHt!="" | postburntrees_cc$ScorchHt!="NA"),]
+  flags <- c(flags, paste("Tree", postburntrees_cc_s[, "TagNo"], "has crown class", postburntrees_cc_s[, "CrwnCl"], "and a non blank Scorch height of", postburntrees_cc_s[, "ScorchHt"],". Sample event is", postburntrees_cc_s[, "MacroPlot.Name"], postburntrees_cc_s[, "Monitoring.Status"]))
+  postburntrees_cc_p=postburntrees_cc[which(!is.na(postburntrees_cc$CrScPct) | postburntrees_cc$CrScPct!="" | postburntrees_cc$CrScPct!="NA" | postburntrees_cc$CrScPct==100),]
+  flags <- c(flags, paste("Tree", postburntrees_cc_p[, "TagNo"], "has crown class", postburntrees_cc_p[, "CrwnCl"], "and a non blank or 100 Scorch percentage of", postburntrees_cc_p[, "CrScPct"],". Sample event is", postburntrees_cc_p[, "MacroPlot.Name"], postburntrees_cc_p[, "Monitoring.Status"]))
+
+
+}else{
+  cat("TRUE\n")
+}
+
+
 
 
   return(flags)
