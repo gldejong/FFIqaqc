@@ -1596,7 +1596,7 @@ pbsev_qc=function(pbsev){
   }
 
 
-
+return(flags)
 }
 
 #####Trees - Individuals protocol:
@@ -2408,9 +2408,9 @@ tree_height_qc=function(tree){
 #' Tree severity
 #' @description
 #' The `tree_severity_qc` function checks if all char heights, scorch heights,
-#' and scorch percentage heights are blank (NA) for pre-burn trees, flagging any
+#' and scorch percentage heights are blank (NA) for trees measured before fires, flagging any
 #' discrepancies and providing event details in the `flags` variable returned by the function. The function
-#' also checks char, scorch and scorch percentage data for the sample events immediately post burn. The user
+#' also checks char, scorch and scorch percentage data for the sample events immediately post burn or 1 year after the fire. The user
 #' has the option to filter out pole trees for char data checks (some protocols record this data
 #' for pole trees and some do not) with the argument filterpoles="Y" or filterpoles="N" (default).
 #' The function checks that char height and scorch height are not blank or excessively high for
