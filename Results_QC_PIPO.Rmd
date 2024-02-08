@@ -56,7 +56,7 @@ flags=c()
 ```{r}
 sample_event_qc(samp, mtype)[1]
 flags=sample_event_qc(samp, mtype)[2]
-ggsave("historical_data_viz.png", width=15, height=10)
+ggsave("historical_data_viz.png", width=10, height=5)
 
 
 ```
@@ -98,6 +98,11 @@ flags=saplings_qc(saps)
 flags=seedlings_qc(seeds)
 ```
 
+### Post Burn Severity protocol:
+```{r}
+flags=pbsev_qc(pbsev)
+```
+
 ### Trees - Individuals protocol: 
 
 ```{r}
@@ -112,9 +117,9 @@ flags=tree_dbh_qc(tree)
 
 flags=tree_dd_qc(tree)
 
-flags=tree_fract_qc(tree)
+flags=tree_area_multiplier_qc(tree)
 
-flags=tree_header_qc(tree)
+flags=tree_sample_area_qc(tree)
 
 flags=tree_height_qc(tree)
 

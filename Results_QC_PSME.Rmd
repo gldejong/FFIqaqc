@@ -47,6 +47,8 @@ fine=read.csv("C:/Users/edeegan/OneDrive - DOI/Fire_project/Fire_project/SAGU_da
 saps=read.csv("C:/Users/edeegan/OneDrive - DOI/Fire_project/Fire_project/SAGU_data/PSME/PSME_Trees - Saplings (Diameter Class) (metric)_XPT.csv", na.strings=c("","NA"))
 seeds=read.csv("C:/Users/edeegan/OneDrive - DOI/Fire_project/Fire_project/SAGU_data/PSME/PSME_Trees - Seedlings (Height Class) (metric)_XPT.csv")
 tree=read.csv("C:/Users/edeegan/OneDrive - DOI/Fire_project/Fire_project/SAGU_data/PSME/PSME_Trees - Individuals (metric)_XPT.csv")
+pbsev=read.csv("C:/Users/edeegan/OneDrive - DOI/Fire_project/Fire_project/SAGU_data/PSME/PSME_Post Burn Severity (metric)_XPT.csv")
+
 
 flags=c()
 ```
@@ -97,6 +99,11 @@ flags=saplings_qc(saps)
 flags=seedlings_qc(seeds)
 ```
 
+### Post Burn Severity protocol:
+```{r}
+flags=pbsev_qc(pbsev)
+```
+
 ### Trees - Individuals protocol: 
 
 ```{r}
@@ -111,9 +118,9 @@ flags=tree_dbh_qc(tree)
 
 flags=tree_dd_qc(tree)
 
-flags=tree_fract_qc(tree)
+flags=tree_area_multiplier_qc(tree)
 
-flags=tree_header_qc(tree)
+flags=tree_sample_area_qc(tree)
 
 flags=tree_height_qc(tree)
 

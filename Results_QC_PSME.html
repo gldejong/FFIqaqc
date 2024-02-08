@@ -630,6 +630,8 @@ fine=read.csv(&quot;C:/Users/edeegan/OneDrive - DOI/Fire_project/Fire_project/SA
 saps=read.csv(&quot;C:/Users/edeegan/OneDrive - DOI/Fire_project/Fire_project/SAGU_data/PSME/PSME_Trees - Saplings (Diameter Class) (metric)_XPT.csv&quot;, na.strings=c(&quot;&quot;,&quot;NA&quot;))
 seeds=read.csv(&quot;C:/Users/edeegan/OneDrive - DOI/Fire_project/Fire_project/SAGU_data/PSME/PSME_Trees - Seedlings (Height Class) (metric)_XPT.csv&quot;)
 tree=read.csv(&quot;C:/Users/edeegan/OneDrive - DOI/Fire_project/Fire_project/SAGU_data/PSME/PSME_Trees - Individuals (metric)_XPT.csv&quot;)
+pbsev=read.csv(&quot;C:/Users/edeegan/OneDrive - DOI/Fire_project/Fire_project/SAGU_data/PSME/PSME_Post Burn Severity (metric)_XPT.csv&quot;)
+
 
 flags=c()</code></pre>
 <div id="sample-events" class="section level3">
@@ -770,17 +772,22 @@ flags=c()</code></pre>
 <div id="protocol-surface-fuels---fine-litter" class="section level3">
 <h3>Protocol: Surface Fuels - Fine Litter</h3>
 <pre class="r"><code>flags=fine_fuels_qc(fine)</code></pre>
-<pre><code>## One Hour Transect Length is always 6...
+<pre><code>## One Hour Transect Length is consistent with monitoring protocols...
 ## TRUE
 ## 
-## Ten Hour Transect Length is always 6...
+## Ten Hour Transect Length is consistent with monitoring protocols...
 ## TRUE
 ## 
-## Hundred Hour Transect Length is always 12...
+## Hundred Hour Transect Length is consistent with monitoring protocols...
 ## TRUE
 ## 
 ## Any NA&#39;s for transect where they shouldn&#39;t be?
 ## No
+## Any NA&#39;s for number of transects where they shouldn&#39;t be?
+## No
+## Are all number of transects (NumTran) equal to 4?
+## FALSE, see flagged sample events
+## 
 ## 
 ## Do transect labels match the expected pattern?
 ## Error: Not all fine transect values match the expected pattern.
@@ -830,7 +837,7 @@ flags=c()</code></pre>
 ## All samples with count value 0 have the species symbol TREE1...TRUE No issues with species code when count is 0
 ## 
 ## Checking for extremely high or low values in seedling tree count...
-## Outlier values detected according to Rosner test. They are 18, 17, 17 with events PSME-07 01Year20, PSME-01 01Year20, PSME-04 01Year20 For reference, max, min, and mean of seed counts are 18 0 2.84496124031008 
+## Outlier values detected according to Rosner test. They are 136, 90, 85 with events PSME-07 01Year01, PSME-02 01Year01, PSME-08 01Year01 For reference, max, min, and mean of seed counts are 136 0 5.18636363636364 
 ## 
 ## Are there any issues with the subplot fractions
 ## No issues with SubFrac values.
@@ -854,8 +861,23 @@ flags=c()</code></pre>
 ## Are all blank seedling statuses really no seedlings found or not collected?
 ## TRUE, all blank seedling statuses have 0 counts for seedlings
 ## 
-## The species entered in seedling tree tab are labeled Tree or Shrub in preferred lifeform
-## TRUE</code></pre>
+## The species entered in seedling tree tab are labeled Tree in preferred lifeform
+## TRUE
+## 
+## All seedlings are alive?
+## FALSE, problem sample events listed in flags</code></pre>
+</div>
+<div id="post-burn-severity-protocol" class="section level3">
+<h3>Post Burn Severity protocol:</h3>
+<pre class="r"><code>flags=pbsev_qc(pbsev)</code></pre>
+<pre><code>## All NumTran values are valid: TRUE
+## All TranLen values are valid: TRUE
+## All NumPtsTran values are valid: TRUE
+## All Sub values are valid: TRUE
+## All Veg values are valid: TRUE
+## Validation: postburn sample locations are correct.
+## 
+## Validation: postburn transect values are correct.</code></pre>
 </div>
 <div id="trees---individuals-protocol" class="section level3">
 <h3>Trees - Individuals protocol:</h3>
@@ -896,7 +918,7 @@ flags=c()</code></pre>
 ## Dbh overstory status L trees have crown class C, D, I, O, SC, or blank
 ## FALSE, values of RS X BAD CS recorded for crown class in events listed in flags
 ## 
-## Dbh pole status D trees have crown class bbd, cus, dd, X, or blank
+## Dbh pole trees have crown class X, or blank
 ## FALSE, values of RS recorded for crown class in sample events listed in flags</code></pre>
 <pre class="r"><code>flags=tree_damage_qc(tree)</code></pre>
 <pre><code>## Tree damage codes are all entered correctly...
@@ -919,36 +941,394 @@ flags=c()</code></pre>
 ## 
 ## Values for crown base height have been deleted for trees that are no longer standing...
 ## TRUE</code></pre>
-<pre class="r"><code>flags=tree_fract_qc(tree)</code></pre>
-<pre><code>## All overstory trees have subplot fraction of 1
-## TRUE
-## 
-## All pole trees have subplot fraction of 0.5
-## FALSE, subfrac values for all pole trees is 0.25 when it should be equal to 0.5. Problem events are: PSME-09 00PR01 
-##  FALSE, subfrac values for all pole trees is 1 when it should be equal to 0.5. Problem events are: PSME-07 00PR02 
-##  FALSE, subfrac values for all pole trees is 0.05 when it should be equal to 0.5. Problem events are: PSME-01 01Post 
-##  FALSE, subfrac values for all pole trees is 0.25 when it should be equal to 0.5. Problem events are: PSME-06 01Pre 
-##  FALSE, subfrac values for all pole trees is 1 when it should be equal to 0.5. Problem events are: PSME-04 01Year01 
-##  FALSE, subfrac values for all pole trees is 0.05 when it should be equal to 0.5. Problem events are: PSME-05 01Year05 
-##  FALSE, subfrac values for all pole trees is 0.25 when it should be equal to 0.5. Problem events are: PSME-03 01Year10 
-##  FALSE, subfrac values for all pole trees is 1 when it should be equal to 0.5. Problem events are: PSME-02 01Year20 
-##  FALSE, subfrac values for all pole trees is 0.05 when it should be equal to 0.5. Problem events are: PSME-08 00PR01 
-##  FALSE, subfrac values for all pole trees is 0.25 when it should be equal to 0.5. Problem events are: PSME-10 00PR02 
+<pre class="r"><code>flags=tree_area_multiplier_qc(tree)</code></pre>
+<pre><code>## All pole trees have subplot fraction of 0.25 or 0.5
+## FALSE, subfrac values for pole trees include 1 when it should be equal to 0.25 or 0.5. Problem events are: PSME-09 01Year05 tree 819 
+##  FALSE, subfrac values for pole trees include 0.05 when it should be equal to 0.25 or 0.5. Problem events are: PSME-07 01Year20 tree 7 
+##  FALSE, subfrac values for pole trees include 1 when it should be equal to 0.25 or 0.5. Problem events are: PSME-07 01Year20 tree 8 
+##  FALSE, subfrac values for pole trees include 0.05 when it should be equal to 0.25 or 0.5. Problem events are: PSME-07 01Year20 tree 9 
+##  FALSE, subfrac values for pole trees include 1 when it should be equal to 0.25 or 0.5. Problem events are: PSME-07 01Year20 tree 10 
+##  FALSE, subfrac values for pole trees include 0.05 when it should be equal to 0.25 or 0.5. Problem events are: PSME-07 01Year20 tree 11 
+##  FALSE, subfrac values for pole trees include 1 when it should be equal to 0.25 or 0.5. Problem events are: PSME-07 01Year20 tree 13 
+##  FALSE, subfrac values for pole trees include 0.05 when it should be equal to 0.25 or 0.5. Problem events are: PSME-07 01Year20 tree 15 
+##  FALSE, subfrac values for pole trees include 1 when it should be equal to 0.25 or 0.5. Problem events are: PSME-07 01Year20 tree 16 
+##  FALSE, subfrac values for pole trees include 0.05 when it should be equal to 0.25 or 0.5. Problem events are: PSME-07 01Year20 tree 17 
+##  FALSE, subfrac values for pole trees include 1 when it should be equal to 0.25 or 0.5. Problem events are: PSME-06 01Year20 tree 154 
 ## 
 ## All blank dbh trees have subplot fraction of 1000 or blank
-## FALSE, subfrac values for blank trees include 0.25 when it should be equal to 1000 or blank. Problem events are: PSME-09 01Pre 
-##  FALSE, subfrac values for blank trees include 1 when it should be equal to 1000 or blank. Problem events are: PSME-07 01Year01 
-##  FALSE, subfrac values for blank trees include 0.25 when it should be equal to 1000 or blank. Problem events are: PSME-01 01Year05 
-##  FALSE, subfrac values for blank trees include 1 when it should be equal to 1000 or blank. Problem events are: PSME-06 01Year10 
-##  FALSE, subfrac values for blank trees include 0.25 when it should be equal to 1000 or blank. Problem events are: PSME-04 01Year20 
-##  FALSE, subfrac values for blank trees include 1 when it should be equal to 1000 or blank. Problem events are: PSME-05 00PR01 
-##  FALSE, subfrac values for blank trees include 0.25 when it should be equal to 1000 or blank. Problem events are: PSME-03 00PR02 
-##  FALSE, subfrac values for blank trees include 1 when it should be equal to 1000 or blank. Problem events are: PSME-02 01Post</code></pre>
-<pre class="r"><code>flags=tree_header_qc(tree)</code></pre>
+## FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-09 01Year20 tree 819 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-07 01Year05 tree 242 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-07 01Year05 tree 744 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-07 01Year05 tree 244 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-07 01Year05 tree 775 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-07 01Year05 tree 247 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-07 01Year05 tree 751 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-07 01Year05 tree 248 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-07 01Year05 tree 750 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-07 01Year05 tree 251 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-07 01Year05 tree 872 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-07 01Year05 tree 252 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-07 01Year05 tree 783 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-07 01Year05 tree 253 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-07 01Year05 tree 741 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-07 01Year05 tree 254 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-07 01Year05 tree 864 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-07 01Year05 tree 255 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-07 01Year05 tree 761 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-07 01Year05 tree 257 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-07 01Year05 tree 865 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-07 01Year05 tree 706 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-07 01Year05 tree 869 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-07 01Year05 tree 260 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-07 01Year05 tree 691 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-07 01Year05 tree 871 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-07 01Year05 tree 867 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-07 01Year05 tree 863 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-07 01Year05 tree 874 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-07 01Year05 tree 868 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-07 01Year05 tree 870 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-07 01Year05 tree 866 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-07 01Year05 tree 860 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-07 01Year05 tree 859 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-07 01Year05 tree 861 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-07 01Year05 tree 857 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-07 01Year05 tree 856 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-07 01Year05 tree 855 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-07 01Year05 tree 854 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-07 01Year05 tree 853 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-07 01Year05 tree 852 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-07 01Year05 tree 851 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-07 01Year05 tree 850 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-07 01Year05 tree 849 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-07 01Year05 tree 848 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-07 01Year05 tree 847 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-01 01Year05 tree 303 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-01 01Year05 tree 587 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-01 01Year05 tree 306 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-01 01Year05 tree 588 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-01 01Year05 tree 308 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-01 01Year05 tree 589 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-01 01Year05 tree 309 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-01 01Year05 tree 590 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-01 01Year05 tree 310 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-01 01Year05 tree 591 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-01 01Year05 tree 311 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-01 01Year05 tree 592 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-01 01Year05 tree 312 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-01 01Year05 tree 593 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-01 01Year05 tree 594 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-01 01Year05 tree 315 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-01 01Year05 tree 596 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-01 01Year05 tree 316 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-01 01Year05 tree 600 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-01 01Year05 tree 317 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-01 01Year05 tree 601 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-01 01Year05 tree 318 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-01 01Year05 tree 602 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-01 01Year05 tree 319 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-01 01Year05 tree 603 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-01 01Year05 tree 320 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-01 01Year05 tree 605 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-01 01Year05 tree 321 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-01 01Year05 tree 606 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-01 01Year05 tree 322 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-01 01Year05 tree 607 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-01 01Year05 tree 323 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-01 01Year05 tree 608 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-01 01Year05 tree 324 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-01 01Year05 tree 609 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-01 01Year05 tree 325 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-01 01Year05 tree 1457 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-01 01Year05 tree 326 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-01 01Year05 tree 616 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-01 01Year05 tree 327 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-01 01Year05 tree 305 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-01 01Year05 tree 328 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-01 01Year05 tree 610 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-01 01Year05 tree 329 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-01 01Year05 tree 612 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-01 01Year05 tree 330 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-01 01Year05 tree 613 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-01 01Year05 tree 331 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-01 01Year05 tree 614 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-01 01Year05 tree 615 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-01 01Year05 tree 332 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-01 01Year05 tree 1454 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-01 01Year05 tree 333 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-01 01Year05 tree 618 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-01 01Year05 tree 334 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-01 01Year05 tree 619 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-01 01Year05 tree 620 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-01 01Year05 tree 621 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-01 01Year05 tree 622 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-01 01Year05 tree 623 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-01 01Year05 tree 624 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-01 01Year05 tree 625 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-01 01Year05 tree 628 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-01 01Year05 tree 629 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-01 01Year05 tree 631 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-01 01Year05 tree 632 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-01 01Year05 tree 1458 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-01 01Year05 tree 635 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-01 01Year05 tree 636 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-01 01Year05 tree 637 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-01 01Year05 tree 638 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-01 01Year05 tree 639 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-01 01Year05 tree 640 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-01 01Year05 tree 641 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-01 01Year05 tree 642 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-01 01Year05 tree 643 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-01 01Year05 tree 644 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-01 01Year05 tree 645 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-01 01Year05 tree 646 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-01 01Year05 tree 647 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-01 01Year05 tree 648 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-01 01Year05 tree 660 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-01 01Year05 tree 649 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-01 01Year05 tree 650 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-01 01Year05 tree 652 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-01 01Year05 tree 653 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-01 01Year05 tree 654 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-01 01Year05 tree 655 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-01 01Year05 tree 657 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-01 01Year05 tree 658 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-01 01Year05 tree 659 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-01 01Year05 tree 661 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-01 01Year05 tree 662 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-01 01Year05 tree 656 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-01 01Year05 tree 1456 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-06 01Year05 tree 151 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-06 01Year05 tree 364 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-06 01Year05 tree 152 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-06 01Year05 tree 365 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-06 01Year05 tree 153 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-06 01Year05 tree 376 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-06 01Year05 tree 155 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-06 01Year05 tree 368 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-06 01Year05 tree 156 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-06 01Year05 tree 369 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-06 01Year05 tree 157 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-06 01Year05 tree 370 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-06 01Year05 tree 158 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-06 01Year05 tree 371 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-06 01Year05 tree 159 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-06 01Year05 tree 372 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-06 01Year05 tree 162 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-06 01Year05 tree 373 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-06 01Year05 tree 163 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-06 01Year05 tree 375 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-06 01Year05 tree 164 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-06 01Year05 tree 376 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-06 01Year05 tree 165 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-06 01Year05 tree 377 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-06 01Year05 tree 330 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-06 01Year05 tree 379 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-06 01Year05 tree 168 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-06 01Year05 tree 380 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-06 01Year05 tree 170 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-06 01Year05 tree 381 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-06 01Year05 tree 171 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-06 01Year05 tree 154 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-06 01Year05 tree 172 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-06 01Year05 tree 382 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-06 01Year05 tree 840 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-06 01Year05 tree 383 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-06 01Year05 tree 3631 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-06 01Year05 tree 384 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-06 01Year05 tree 844 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-06 01Year05 tree 385 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-06 01Year05 tree 3651 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-06 01Year05 tree 386 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-06 01Year05 tree 3661 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-06 01Year05 tree 387 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-06 01Year05 tree 673 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-06 01Year05 tree 389 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-06 01Year05 tree 679 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-06 01Year05 tree 390 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-06 01Year05 tree 391 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-06 01Year05 tree 392 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-06 01Year05 tree 394 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-06 01Year05 tree 395 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-06 01Year05 tree 396 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-06 01Year05 tree 397 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-06 01Year05 tree 398 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-06 01Year05 tree 399 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-06 01Year05 tree 400 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-06 01Year05 tree 461 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-06 01Year05 tree 462 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-06 01Year05 tree 463 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-06 01Year05 tree 464 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-06 01Year05 tree 466 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-06 01Year05 tree 467 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-06 01Year05 tree 468 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-06 01Year05 tree 469 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-06 01Year05 tree 470 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-06 01Year05 tree 471 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-06 01Year05 tree 472 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-06 01Year05 tree 473 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-06 01Year05 tree 474 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-06 01Year05 tree 475 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-06 01Year05 tree 476 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-06 01Year05 tree 477 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-06 01Year05 tree 478 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-06 01Year05 tree 1778 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-06 01Year05 tree 479 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-06 01Year05 tree 480 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-06 01Year05 tree 482 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-06 01Year05 tree 484 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-06 01Year05 tree 485 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-06 01Year05 tree 486 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-06 01Year05 tree 487 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-06 01Year05 tree 1779 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-06 01Year05 tree 367 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-06 01Year05 tree 378 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-04 01Year20 tree 404 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-03 01Year05 tree 353 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-03 01Year05 tree 877 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-03 01Year05 tree 354 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-03 01Year05 tree 804 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-03 01Year05 tree 355 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-03 01Year05 tree 801 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-03 01Year05 tree 806 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-03 01Year05 tree 358 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-03 01Year05 tree 807 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-03 01Year05 tree 808 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-03 01Year05 tree 360 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-03 01Year05 tree 805 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-03 01Year05 tree 1777 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-03 01Year05 tree 802 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-03 01Year05 tree 816 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-03 01Year05 tree 810 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-03 01Year05 tree 8111 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-03 01Year05 tree 809 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-03 01Year05 tree 814 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-03 01Year05 tree 812 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-03 01Year05 tree 8131 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-03 01Year05 tree 815 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-03 01Year05 tree 816 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-03 01Year05 tree 817 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-03 01Year05 tree 831 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-03 01Year05 tree 830 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-03 01Year05 tree 818 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-03 01Year05 tree 820 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-03 01Year05 tree 823 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-03 01Year05 tree 824 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-03 01Year05 tree 825 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-03 01Year05 tree 833 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-03 01Year05 tree 827 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-03 01Year05 tree 832 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-03 01Year05 tree 828 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-03 01Year05 tree 8132 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-03 01Year05 tree 840 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-03 01Year05 tree 844 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-03 01Year05 tree 8222 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-03 01Year05 tree 893 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-03 01Year05 tree 885 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-03 01Year05 tree 884 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-03 01Year05 tree 883 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-03 01Year05 tree 8112 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-03 01Year05 tree 882 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-03 01Year05 tree 880 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-03 01Year05 tree 881 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-03 01Year05 tree 835 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-03 01Year05 tree 878 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-03 01Year05 tree 879 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-02 01Year05 tree 347 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-02 01Year05 tree 880 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-02 01Year05 tree 348 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-02 01Year05 tree 883 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-02 01Year05 tree 349 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-02 01Year05 tree 884 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-02 01Year05 tree 350 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-02 01Year05 tree 885 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-02 01Year05 tree 351 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-02 01Year05 tree 886 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-02 01Year05 tree 352 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-02 01Year05 tree 887 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-02 01Year05 tree 391 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-02 01Year05 tree 888 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-02 01Year05 tree 392 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-02 01Year05 tree 889 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-02 01Year05 tree 393 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-02 01Year05 tree 890 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-02 01Year05 tree 891 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-02 01Year05 tree 892 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-02 01Year05 tree 893 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-02 01Year05 tree 894 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-02 01Year05 tree 895 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-02 01Year05 tree 896 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-02 01Year05 tree 897 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-02 01Year05 tree 898 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-02 01Year05 tree 899 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-02 01Year05 tree 901 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-02 01Year05 tree 903 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-02 01Year05 tree 904 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-02 01Year05 tree 905 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-02 01Year05 tree 906 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-02 01Year05 tree 907 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-02 01Year05 tree 900 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-02 01Year05 tree 909 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-02 01Year05 tree 340 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-02 01Year05 tree 912 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-02 01Year05 tree 913 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-02 01Year05 tree 914 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-02 01Year05 tree 916 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-02 01Year05 tree 917 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-02 01Year05 tree 923 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-02 01Year05 tree 924 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-02 01Year05 tree 925 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-02 01Year05 tree 928 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-02 01Year05 tree 921 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-08 01Year05 tree 276 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-08 01Year05 tree 263 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-08 01Year05 tree 766 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-08 01Year05 tree 794 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-08 01Year05 tree 866 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-08 01Year05 tree 876 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-08 01Year05 tree 865 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-08 01Year05 tree 867 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-08 01Year05 tree 800 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-08 01Year05 tree 868 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-08 01Year05 tree 869 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-08 01Year05 tree 872 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-08 01Year05 tree 892 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-08 01Year05 tree 871 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-08 01Year05 tree 873 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-08 01Year05 tree 858 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-08 01Year05 tree 861 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-08 01Year05 tree 860 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-08 01Year05 tree 202 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-08 01Year05 tree 857 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-08 01Year05 tree 863 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-08 01Year05 tree 854 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-08 01Year05 tree 855 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-08 01Year05 tree 864 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-08 01Year05 tree 856 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-08 01Year05 tree 862 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-08 01Year05 tree 838 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-08 01Year05 tree 853 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-08 01Year05 tree 852 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-08 01Year05 tree 850 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-08 01Year05 tree 851 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-08 01Year05 tree 848 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-08 01Year05 tree 849 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-08 01Year05 tree 847 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-08 01Year05 tree 842 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-08 01Year05 tree 841 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-08 01Year05 tree 846 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-08 01Year05 tree 839 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-08 01Year05 tree 840 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-08 01Year05 tree 844 
+##  FALSE, subfrac values for blank dbh trees include 1 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-08 01Year05 tree 843 
+##  FALSE, subfrac values for blank dbh trees include 0.25 when it should be equal to 1000.(Doesn&#39;t have CC DD, CUS, BBD, or status X) Problem events are: PSME-08 01Year05 tree 845 
+## 
+## All overstory trees have subplot fraction of 1
+## TRUE</code></pre>
+<pre class="r"><code>flags=tree_sample_area_qc(tree)</code></pre>
 <pre><code>## All macroplot sizes are 0.1 or blank...
 ## TRUE
 ## 
-## All snagplot sizes are 0.1 or blank...
+## All snagplot sizes are 0.1...
 ## TRUE
 ## 
 ## All Break point diameters are 15.1 or blank...
@@ -965,7 +1345,14 @@ flags=c()</code></pre>
 ## 
 ## All Scorch heights are blank for pre burn trees...TRUE
 ## 
-## All Scorch percentage heights are blank for pre burn trees...TRUE</code></pre>
+## All Scorch percentage heights are blank for pre burn trees...TRUE
+## 
+## 
+## Including pole trees for char data checks (to exclude add argument filterpoles=Y to function.
+## Are there any outlier values in CharHt ?
+## No
+## All trees in post read have a char height value</code></pre>
+<pre><code>## Error in which(postburntrees$CharHt == &quot;&quot; | is.na(postburntrees$CharHt | : object &#39;blank_char&#39; not found</code></pre>
 <pre class="r"><code>flags=tree_status_lifeform_qc(tree)</code></pre>
 <pre><code>## Tree statuses are all L or D...FALSE X values entered which do not fit with acceptable values of L or D, problem events are in flags
 ##   
@@ -988,268 +1375,368 @@ flags=c()</code></pre>
 ## 
 ## Error found in sample event PSME-03 01Year05 tag numbers 816 are duplicated no differences between data exist</code></pre>
 <pre class="r"><code>flags=tree_dead_to_alive_DBH_change_qc(tree)</code></pre>
-<pre><code>## Tree number 731 in plot PSME-09 has been changing DBH when its dead in the following values: 26 25.9 24.1 24.1 24.1 on the following dates 1997-09-09,2001-09-15,2003-09-25,2004-07-16,2008-07-06 
+<pre><code>## Warning in min.default(structure(numeric(0), class = &quot;Date&quot;), na.rm = FALSE):
+## no non-missing arguments to min; returning Inf
+
+## Warning in min.default(structure(numeric(0), class = &quot;Date&quot;), na.rm = FALSE):
+## no non-missing arguments to min; returning Inf
+
+## Warning in min.default(structure(numeric(0), class = &quot;Date&quot;), na.rm = FALSE):
+## no non-missing arguments to min; returning Inf</code></pre>
+<pre><code>## Tree number 731 in plot PSME-09 has been changing DBH when its dead in the following values: 25.8 26 24.1 25.9 24.1 24.1 on the following dates 1992-08-03,1997-09-09,2003-09-25,2001-09-15,2004-07-16,2008-07-06 
 ## 
-## Tree number 817 in plot PSME-09 has been changing DBH when its dead in the following values: 30.5 30.8 28.5 28.5 30.8 on the following dates 1997-09-09,2001-09-15,2003-09-25,2004-07-16,2008-07-06 
+## Tree number 508 in plot PSME-09 has been dead for every sampling event but its DBH changes in the following values: 4.2 4.1 6.3 on the following dates 1992-08-03, 1997-09-09, 2001-09-15 
 ## 
-## Tree number 508 in plot PSME-09 has been dead for every sampling event but its DBH changes in the following values: 4.1 6.3 on the following dates 1997-09-09, 2001-09-15 
+## Tree number 817 in plot PSME-09 has been changing DBH when its dead in the following values: 29.5 30.5 28.5 30.8 28.5 30.8 on the following dates 1992-08-03,1997-09-09,2003-09-25,2001-09-15,2004-07-16,2008-07-06 
 ## 
-## Tree number 307 in plot PSME-01 has been changing DBH when its dead in the following values: 15.4 5.6 5.4 on the following dates 2001-09-14,2003-08-30,2004-07-17 
+## Tree number 307 in plot PSME-01 has been changing DBH when its dead in the following values: 5.6 15.4 5.4 on the following dates 2003-08-30,2001-09-14,2004-07-17 
 ## 
-## Tree number 369 in plot PSME-09 has been changing DBH when its dead in the following values: 49.8 50.5 51.9 51.9 22.2 22.2 on the following dates 1997-09-09,2001-09-15,2003-09-25,2004-07-16,2008-07-06,2013-06-14 
+## Tree number 369 in plot PSME-09 has been changing DBH when its dead in the following values: 47.6 49.8 51.9 50.5 51.9 22.2 22.2 on the following dates 1992-08-03,1997-09-09,2003-09-25,2001-09-15,2004-07-16,2008-07-06,2013-06-14 
 ## 
-## Tree number 518 in plot PSME-09 has been changing DBH when its dead in the following values: 9.5 9.3 8.2 8.1 8.1 8.1 on the following dates 1997-09-09,2001-09-15,2003-09-25,2004-07-16,2008-07-06,2013-06-14 
+## Tree number 890 in plot PSME-02 has been changing DBH when its dead in the following values: 40.3 41.5 42.7 41.8 42.7 42.7 42.5 on the following dates 1991-07-08,1997-09-06,2003-08-29,2001-09-13,2004-07-17,2013-08-06,2023-10-21 
 ## 
-## Tree number 710 in plot PSME-09 has been dead for every sampling event but its DBH changes in the following values: 37.9 37.2 33.3 33.3 33.3 33.3 on the following dates 1997-09-09, 2001-09-15, 2003-09-25, 2004-07-16, 2008-07-06, 2013-06-14 
+## Tree number 518 in plot PSME-09 has been changing DBH when its dead in the following values: 9.1 9.5 8.2 9.3 8.1 8.1 8.1 on the following dates 1992-08-03,1997-09-09,2003-09-25,2001-09-15,2004-07-16,2008-07-06,2013-06-14 
 ## 
-## Tree number 735 in plot PSME-09 has been dead for every sampling event but its DBH changes in the following values: 51.8 52.7 46.9 46.9 46.9 46.9 on the following dates 1997-09-09, 2001-09-15, 2003-09-25, 2004-07-16, 2008-07-06, 2013-06-14 
+## Tree number 521 in plot PSME-09 has been changing DBH when its dead in the following values: 12.6 11.2 10.5 on the following dates 1992-08-03,1997-09-09,2001-09-15 
 ## 
-## Tree number 814 in plot PSME-03 has been dead for every sampling event but its DBH changes in the following values: 22.2 21.3 19.8 19.8 19.8 on the following dates 1997-08-25, 2001-09-27, 2003-08-29, 2004-07-16, 2013-06-11 
+## Tree number 522 in plot PSME-09 has been changing DBH when its dead in the following values: 9.4 11.1 10.8 11.7 10.2 on the following dates 1992-08-03,1997-09-09,2003-09-25,2001-09-15,2004-07-16 
 ## 
-## Tree number 819 in plot PSME-09 has been changing DBH when its dead in the following values: 26.8 26.7 26 26 6 15.1 on the following dates 1997-09-09,2001-09-15,2003-09-25,2004-07-16,2008-07-06,2013-06-14 
+## Tree number 523 in plot PSME-09 has been changing DBH when its dead in the following values: 6.8 8.4 8.1 8.7 8 8 8 on the following dates 1992-08-03,1997-09-09,2003-09-25,2001-09-15,2004-07-16,2008-07-06,2013-06-14 
 ## 
-## Tree number 535 in plot PSME-09 has been dead for every sampling event but its DBH changes in the following values: 45.8 43.9 43.9 on the following dates 1997-09-09, 2001-09-15, 2003-09-25 
+## Tree number 524 in plot PSME-09 has been changing DBH when its dead in the following values: 4.9 7.4 6.1 6.5 6 6 on the following dates 1992-08-03,1997-09-09,2003-09-25,2001-09-15,2004-07-16,2008-07-06 
 ## 
-## Tree number 546 in plot PSME-09 has been dead for every sampling event but its DBH changes in the following values: 19.8 18.8 on the following dates 1997-09-09, 2001-09-15 
+## Tree number 710 in plot PSME-09 has been changing DBH when its dead in the following values: 37 37.9 33.3 37.2 33.3 33.3 33.3 33.3 on the following dates 1992-08-03,1997-09-09,2003-09-25,2001-09-15,2004-07-16,2008-07-06,2013-06-14,2023-10-21 
 ## 
-## Tree number 549 in plot PSME-09 has been dead for every sampling event but its DBH changes in the following values: 18.5 16.6 on the following dates 1997-09-09, 2001-09-15 
+## Tree number 735 in plot PSME-09 has been changing DBH when its dead in the following values: 53 51.8 46.9 52.7 46.9 46.9 46.9 46.9 on the following dates 1992-08-03,1997-09-09,2003-09-25,2001-09-15,2004-07-16,2008-07-06,2013-06-14,2023-10-21 
 ## 
-## Tree number 725 in plot PSME-09 has been dead for every sampling event but its DBH changes in the following values: 23.7 23.4 16.4 16.4 16.4 16.4 on the following dates 1997-09-09, 2001-09-15, 2003-09-25, 2004-07-16, 2008-07-06, 2013-06-14 
+## Tree number 814 in plot PSME-03 has been dead for every sampling event but its DBH changes in the following values: 21.5 22.2 19.8 21.3 19.8 19.8 on the following dates 1991-07-22, 1997-08-25, 2003-08-29, 2001-09-27, 2004-07-16, 2013-06-11 
 ## 
-## Tree number 763 in plot PSME-09 has been changing DBH when its dead in the following values: 16.5 16.7 16.7 14.3 15.1 15.1 on the following dates 1997-09-09,2001-09-15,2003-09-25,2004-07-16,2008-07-06,2013-06-14 
+## Tree number 819 in plot PSME-09 has been changing DBH when its dead in the following values: 25 26.8 26 26.7 26 6 15.1 on the following dates 1992-08-03,1997-09-09,2003-09-25,2001-09-15,2004-07-16,2008-07-06,2013-06-14 
 ## 
-## Tree number 772 in plot PSME-09 has been dead for every sampling event but its DBH changes in the following values: 26.5 26.9 27.9 27.9 27.9 on the following dates 1997-09-09, 2001-09-15, 2003-09-25, 2004-07-16, 2008-07-06 
+## Tree number 535 in plot PSME-09 has been changing DBH when its dead in the following values: 45.5 45.8 43.9 43.9 on the following dates 1992-08-03,1997-09-09,2003-09-25,2001-09-15 
+## 
+## Tree number 546 in plot PSME-09 has been dead for every sampling event but its DBH changes in the following values: 19.5 19.8 18.8 on the following dates 1992-08-03, 1997-09-09, 2001-09-15 
+## 
+## Tree number 549 in plot PSME-09 has been dead for every sampling event but its DBH changes in the following values: 19.4 18.5 16.6 on the following dates 1992-08-03, 1997-09-09, 2001-09-15 
+## 
+## Tree number 725 in plot PSME-09 has been dead for every sampling event but its DBH changes in the following values: 23.5 23.7 16.4 23.4 16.4 16.4 16.4 16.4 on the following dates 1992-08-03, 1997-09-09, 2003-09-25, 2001-09-15, 2004-07-16, 2008-07-06, 2013-06-14, 2023-10-21 
+## 
+## Tree number 763 in plot PSME-09 has been changing DBH when its dead in the following values: 16.3 16.5 16.7 16.7 14.3 15.1 15.1 on the following dates 1992-08-03,1997-09-09,2003-09-25,2001-09-15,2004-07-16,2008-07-06,2013-06-14 
+## 
+## Tree number 772 in plot PSME-09 has been dead for every sampling event but its DBH changes in the following values: 37 26.5 27.9 26.9 27.9 27.9 on the following dates 1992-08-03, 1997-09-09, 2003-09-25, 2001-09-15, 2004-07-16, 2008-07-06 
 ## 
 ## Tree number 778 in plot PSME-09 has been dead for every sampling event but its DBH changes in the following values: 38.6 35 26.8 26.8 on the following dates 1997-09-09, 2001-09-15, 2004-07-16, 2008-07-06 
 ## 
-## Tree number 344 in plot PSME-09 has been changing DBH when its dead in the following values: 15.3 14.1 15.1 15.1 on the following dates 2001-09-15,2004-07-16,2008-07-06,2013-06-14 
+## Tree number 333 in plot PSME-05 has been changing DBH when its dead in the following values: 39 37.1 36.7 36.7 36.7 36.7 36.7 36.7 on the following dates 1992-07-05,1997-08-13,2003-09-26,2001-10-14,2004-07-17,2008-09-06,2013-06-13,2023-10-19 
 ## 
-## Tree number 345 in plot PSME-05 has been changing DBH when its dead in the following values: 45.7 47.9 47.6 47.6 45.6 45.6 on the following dates 1997-08-13,2001-10-14,2003-09-26,2004-07-17,2008-09-06,2013-06-13 
+## Tree number 334 in plot PSME-05 has been dead for every sampling event but its DBH changes in the following values: 23 21.2 on the following dates 1992-07-05, 1997-08-13 
 ## 
 ## Tree number 693 in plot PSME-09 has been dead for every sampling event but its DBH changes in the following values: 13.2 13 15.1 15.1 on the following dates 2003-09-25, 2004-07-16, 2008-07-06, 2013-06-14 
 ## 
-## Tree number 245 in plot PSME-07 has been changing DBH when its dead in the following values: 6.4 6.4 7.2 6.1 on the following dates 1997-08-12,2001-09-12,2003-08-30,2004-07-18 
+## Tree number 344 in plot PSME-09 has been changing DBH when its dead in the following values: 15.3 14.1 15.1 15.1 15.1 on the following dates 2001-09-15,2004-07-16,2008-07-06,2013-06-14,2023-10-21 
 ## 
-## Tree number 238 in plot PSME-07 has been changing DBH when its dead in the following values: 5.1 6.3 5.6 5.7 on the following dates 1997-08-12,2001-09-12,2003-08-30,2004-07-18 
+## Tree number 345 in plot PSME-05 has been changing DBH when its dead in the following values: 45 45.7 47.6 47.9 47.6 45.6 45.6 on the following dates 1992-07-05,1997-08-13,2003-09-26,2001-10-14,2004-07-17,2008-09-06,2013-06-13 
 ## 
-## Tree number 864 in plot PSME-07 has been changing DBH when its dead in the following values: 21 23.3 24.4 24.4 23.3 on the following dates 1997-08-12,2001-09-12,2003-08-30,2004-07-18,2013-06-12 
+## Tree number 751 in plot PSME-07 has been changing DBH when its dead in the following values: 18 18.4 19.7 18.8 19.7 18.8 18.8 on the following dates 1992-07-30,1997-08-12,2003-08-30,2001-09-12,2004-07-18,2013-06-12,2023-10-22 
 ## 
-## Tree number 865 in plot PSME-07 has been changing DBH when its dead in the following values: 35.3 35.6 31 31 35.6 on the following dates 1997-08-12,2001-09-12,2003-08-30,2004-07-18,2013-06-12 
+## Tree number 864 in plot PSME-07 has been changing DBH when its dead in the following values: 19 21 24.4 23.3 24.4 23.3 on the following dates 1992-07-30,1997-08-12,2003-08-30,2001-09-12,2004-07-18,2013-06-12 
 ## 
-## Tree number 247 in plot PSME-07 has been changing DBH when its dead in the following values: 10.5 11.5 11.8 11.4 11.8 on the following dates 1997-08-12,2001-09-12,2003-08-30,2004-07-18,2013-06-12 
+## Tree number 865 in plot PSME-07 has been changing DBH when its dead in the following values: 34 35.3 31 35.6 31 35.6 35.6 on the following dates 1992-07-30,1997-08-12,2003-08-30,2001-09-12,2004-07-18,2013-06-12,2023-10-22 
 ## 
-## Tree number 248 in plot PSME-07 has been changing DBH when its dead in the following values: 3.4 3.7 3.3 4.5 on the following dates 1997-08-12,2001-09-12,2003-08-30,2004-07-18 
+## Tree number 872 in plot PSME-07 has been changing DBH when its dead in the following values: 28 27.9 28.9 28.8 28.9 28.8 on the following dates 1992-07-30,1997-08-12,2003-08-30,2001-09-12,2004-07-18,2013-06-12 
 ## 
-## Tree number 863 in plot PSME-07 has been changing DBH when its dead in the following values: 36.8 37.2 31.7 31.7 37.2 on the following dates 1997-08-12,2001-09-12,2003-08-30,2004-07-18,2013-06-12 
+## Tree number 863 in plot PSME-07 has been changing DBH when its dead in the following values: 37 36.8 31.7 37.2 31.7 37.2 37.2 on the following dates 1992-07-30,1997-08-12,2003-08-30,2001-09-12,2004-07-18,2013-06-12,2023-10-22 
 ## 
-## Tree number 250 in plot PSME-07 has been changing DBH when its dead in the following values: 10.4 11.6 11.5 12.2 on the following dates 1997-08-12,2001-09-12,2003-08-30,2004-07-18 
+## Tree number 869 in plot PSME-07 has been changing DBH when its dead in the following values: 34 32.6 32.8 33.2 32.8 on the following dates 1992-07-30,1997-08-12,2003-08-30,2001-09-12,2004-07-18 
 ## 
-## Tree number 252 in plot PSME-07 has been changing DBH when its dead in the following values: 6.1 6.5 7.2 6.2 on the following dates 1997-08-12,2001-09-12,2003-08-30,2004-07-18 
+## Tree number 854 in plot PSME-07 has been changing DBH when its dead in the following values: 36 38.3 52.5 41.8 52.5 41.8 41.8 on the following dates 1992-07-30,1997-08-12,2003-08-30,2001-09-12,2004-07-18,2013-06-12,2023-10-22 
 ## 
-## Tree number 257 in plot PSME-07 has been changing DBH when its dead in the following values: 8.1 9.7 10.3 9.3 on the following dates 1997-08-12,2001-09-12,2003-08-30,2004-07-18 
+## Tree number 855 in plot PSME-07 has been changing DBH when its dead in the following values: 31 31.1 28.7 31.7 28.7 25 on the following dates 1992-07-30,1997-08-12,2003-08-30,2001-09-12,2004-07-18,2023-10-22 
 ## 
-## Tree number 854 in plot PSME-07 has been changing DBH when its dead in the following values: 38.3 41.8 52.5 52.5 41.8 on the following dates 1997-08-12,2001-09-12,2003-08-30,2004-07-18,2013-06-12 
+## Tree number 856 in plot PSME-07 has been changing DBH when its dead in the following values: 54 59.5 61 59.3 61 59.3 59.3 on the following dates 1992-07-30,1997-08-12,2003-08-30,2001-09-12,2004-07-18,2013-06-12,2023-10-22 
 ## 
-## Tree number 856 in plot PSME-07 has been changing DBH when its dead in the following values: 59.5 59.3 61 61 59.3 on the following dates 1997-08-12,2001-09-12,2003-08-30,2004-07-18,2013-06-12 
+## Tree number 857 in plot PSME-07 has been changing DBH when its dead in the following values: 49 49.5 51.9 50 51.9 50 on the following dates 1992-07-30,1997-08-12,2003-08-30,2001-09-12,2004-07-18,2013-06-12 
 ## 
-## Tree number 857 in plot PSME-07 has been changing DBH when its dead in the following values: 49.5 50 51.9 51.9 50 on the following dates 1997-08-12,2001-09-12,2003-08-30,2004-07-18,2013-06-12 
+## Tree number 859 in plot PSME-07 has been changing DBH when its dead in the following values: 33 32.5 31.4 33.4 31.4 33.4 on the following dates 1992-07-30,1997-08-12,2003-08-30,2001-09-12,2004-07-18,2013-06-12 
 ## 
-## Tree number 859 in plot PSME-07 has been changing DBH when its dead in the following values: 32.5 33.4 31.4 31.4 33.4 on the following dates 1997-08-12,2001-09-12,2003-08-30,2004-07-18,2013-06-12 
+## Tree number 860 in plot PSME-07 has been changing DBH when its dead in the following values: 28 27.2 24.2 26.9 24.2 26.9 26.9 on the following dates 1992-07-30,1997-08-12,2003-08-30,2001-09-12,2004-07-18,2013-06-12,2023-10-22 
 ## 
-## Tree number 860 in plot PSME-07 has been changing DBH when its dead in the following values: 27.2 26.9 24.2 24.2 26.9 on the following dates 1997-08-12,2001-09-12,2003-08-30,2004-07-18,2013-06-12 
+## Tree number 847 in plot PSME-07 has been changing DBH when its dead in the following values: 24 27.2 37.2 29.4 37.2 29.4 on the following dates 1992-07-30,1997-08-12,2003-08-30,2001-09-12,2004-07-18,2013-06-12 
 ## 
-## Tree number 847 in plot PSME-07 has been changing DBH when its dead in the following values: 27.2 29.4 37.2 37.2 29.4 on the following dates 1997-08-12,2001-09-12,2003-08-30,2004-07-18,2013-06-12 
+## Tree number 849 in plot PSME-07 has been changing DBH when its dead in the following values: 28 28.4 29.9 29.4 29.9 29.4 on the following dates 1992-07-30,1997-08-12,2003-08-30,2001-09-12,2004-07-18,2013-06-12 
 ## 
-## Tree number 849 in plot PSME-07 has been changing DBH when its dead in the following values: 28.4 29.4 29.9 29.9 29.4 on the following dates 1997-08-12,2001-09-12,2003-08-30,2004-07-18,2013-06-12 
+## Tree number 850 in plot PSME-07 has been changing DBH when its dead in the following values: 44 43.5 50.2 43 50.2 43 43 on the following dates 1992-07-30,1997-08-12,2003-08-30,2001-09-12,2004-07-18,2013-06-12,2023-10-22 
 ## 
-## Tree number 850 in plot PSME-07 has been changing DBH when its dead in the following values: 43.5 43 50.2 50.2 43 on the following dates 1997-08-12,2001-09-12,2003-08-30,2004-07-18,2013-06-12 
+## Tree number 851 in plot PSME-07 has been changing DBH when its dead in the following values: 33 33.8 30.6 35 30.6 35 on the following dates 1992-07-30,1997-08-12,2003-08-30,2001-09-12,2004-07-18,2013-06-12 
 ## 
-## Tree number 851 in plot PSME-07 has been changing DBH when its dead in the following values: 33.8 35 30.6 30.6 35 on the following dates 1997-08-12,2001-09-12,2003-08-30,2004-07-18,2013-06-12 
+## Tree number 852 in plot PSME-07 has been changing DBH when its dead in the following values: 43 45.1 47.7 46.1 47.7 46.1 46.1 on the following dates 1992-07-30,1997-08-12,2003-08-30,2001-09-12,2004-07-18,2013-06-12,2023-10-22 
 ## 
-## Tree number 852 in plot PSME-07 has been changing DBH when its dead in the following values: 45.1 46.1 47.7 47.7 46.1 on the following dates 1997-08-12,2001-09-12,2003-08-30,2004-07-18,2013-06-12 
+## Tree number 853 in plot PSME-07 has been changing DBH when its dead in the following values: 48 49.9 51.2 52.2 51.2 52.2 52.2 on the following dates 1992-07-30,1997-08-12,2003-08-30,2001-09-12,2004-07-18,2013-06-12,2023-10-22 
 ## 
-## Tree number 853 in plot PSME-07 has been changing DBH when its dead in the following values: 49.9 52.2 51.2 51.2 52.2 on the following dates 1997-08-12,2001-09-12,2003-08-30,2004-07-18,2013-06-12 
+## Tree number 245 in plot PSME-07 has been changing DBH when its dead in the following values: 6.4 7.2 6.4 6.1 on the following dates 1997-08-12,2003-08-30,2001-09-12,2004-07-18 
+## 
+## Tree number 761 in plot PSME-07 has been changing DBH when its dead in the following values: 15.8 17.5 16.7 17.5 16.7 on the following dates 1997-08-12,2003-08-30,2001-09-12,2004-07-18,2013-06-12 
+## 
+## Tree number 247 in plot PSME-07 has been changing DBH when its dead in the following values: 10.5 11.8 11.5 11.4 11.8 on the following dates 1997-08-12,2003-08-30,2001-09-12,2004-07-18,2013-06-12 
+## 
+## Tree number 250 in plot PSME-07 has been changing DBH when its dead in the following values: 10.4 11.5 11.6 12.2 on the following dates 1997-08-12,2003-08-30,2001-09-12,2004-07-18 
+## 
+## Tree number 252 in plot PSME-07 has been changing DBH when its dead in the following values: 6.1 7.2 6.5 6.2 on the following dates 1997-08-12,2003-08-30,2001-09-12,2004-07-18 
+## 
+## Tree number 257 in plot PSME-07 has been changing DBH when its dead in the following values: 8.1 10.3 9.7 9.3 on the following dates 1997-08-12,2003-08-30,2001-09-12,2004-07-18 
+## 
+## Tree number 260 in plot PSME-07 has been changing DBH when its dead in the following values: 14.9 14.3 15 13.9 on the following dates 1997-08-12,2003-08-30,2001-09-12,2004-07-18 
 ## 
 ## Tree number 706 in plot PSME-07 has been dead for every sampling event but its DBH changes in the following values: 3.1 4.8 on the following dates 2003-08-30, 2004-07-18 
 ## 
-## Tree number 595 in plot PSME-01 has been changing DBH when its dead in the following values: 40.2 30.8 38.1 38.1 on the following dates 1997-08-09,2001-09-14,2003-08-30,2004-07-17 
+## Tree number 588 in plot PSME-01 has been changing DBH when its dead in the following values: 21.1 20 21.1 20.8 21.1 21.1 21.1 on the following dates 1990-08-05,1997-08-09,2003-08-30,2001-09-14,2004-07-17,2013-08-07,2023-10-21 
 ## 
-## Tree number 611 in plot PSME-01 has been dead for every sampling event but its DBH changes in the following values: 46.9 45.6 on the following dates 1997-08-09, 2001-09-14 
+## Tree number 591 in plot PSME-01 has been changing DBH when its dead in the following values: 26.7 26.2 25.2 26.1 25.2 25.2 25.2 on the following dates 1990-08-05,1997-08-09,2003-08-30,2001-09-14,2004-07-17,2013-08-07,2023-10-21 
+## 
+## Tree number 595 in plot PSME-01 has been changing DBH when its dead in the following values: 41.8 40.2 38.1 30.8 38.1 on the following dates 1990-08-05,1997-08-09,2003-08-30,2001-09-14,2004-07-17 
+## 
+## Tree number 597 in plot PSME-01 has been changing DBH when its dead in the following values: 30.2 29 28.2 28.9 28.2 on the following dates 1990-08-05,1997-08-09,2003-08-30,2001-09-14,2004-07-17 
+## 
+## Tree number 602 in plot PSME-01 has been changing DBH when its dead in the following values: 30.9 31.3 31.6 31.9 31.6 33 on the following dates 1990-08-05,1997-08-09,2003-08-30,2001-09-14,2004-07-17,2013-08-07 
+## 
+## Tree number 607 in plot PSME-01 has been changing DBH when its dead in the following values: 23.2 23.2 23.1 34.1 23.1 23.1 on the following dates 1990-08-05,1997-08-09,2003-08-30,2001-09-14,2004-07-17,2013-08-07 
+## 
+## Tree number 611 in plot PSME-01 has been dead for every sampling event but its DBH changes in the following values: 46.2 46.9 45.6 on the following dates 1990-08-05, 1997-08-09, 2001-09-14 
 ## 
 ## Tree number 613 in plot PSME-10 has been dead for every sampling event but its DBH changes in the following values: 40 41.2 on the following dates 1997-09-08, 2001-10-13 
 ## 
-## Tree number 1454 in plot PSME-01 has been changing DBH when its dead in the following values: 15.5 17.3 17.6 17.6 on the following dates 1997-08-09,2001-09-14,2003-08-30,2004-07-17 
+## Tree number 624 in plot PSME-01 has been changing DBH when its dead in the following values: 21 23.4 25.2 25.4 25.2 17.6 on the following dates 1990-08-05,1997-08-09,2003-08-30,2001-09-14,2004-07-17,2023-10-21 
 ## 
-## Tree number 624 in plot PSME-01 has been changing DBH when its dead in the following values: 23.4 25.4 25.2 25.2 on the following dates 1997-08-09,2001-09-14,2003-08-30,2004-07-17 
+## Tree number 628 in plot PSME-01 has been changing DBH when its dead in the following values: 19 19 19.1 19 19.1 20 18.6 on the following dates 1990-08-05,1997-08-09,2003-08-30,2001-09-14,2004-07-17,2013-08-07,2023-10-21 
 ## 
-## Tree number 636 in plot PSME-01 has been changing DBH when its dead in the following values: 19.4 21 21.2 21.2 on the following dates 1997-08-09,2001-09-14,2003-08-30,2004-07-17 
+## Tree number 632 in plot PSME-10 has been changing DBH when its dead in the following values: 19.1 20.4 20.1 20.4 20.9 21.7 on the following dates 1997-09-08,2003-09-26,2001-10-13,2004-07-16,2008-09-06,2013-06-12 
 ## 
-## Tree number 637 in plot PSME-01 has been changing DBH when its dead in the following values: 16.5 18 18.1 18.1 on the following dates 1997-08-09,2001-09-14,2003-08-30,2004-07-17 
+## Tree number 633 in plot PSME-01 has been dead for every sampling event but its DBH changes in the following values: 21.9 18.6 18.8 on the following dates 1990-08-05, 1997-08-09, 2001-09-14 
 ## 
-## Tree number 641 in plot PSME-01 has been dead for every sampling event but its DBH changes in the following values: 20 17.7 17.8 17.8 17.8 on the following dates 1997-08-09, 2001-09-14, 2003-08-30, 2004-07-17, 2013-08-07 
+## Tree number 636 in plot PSME-01 has been changing DBH when its dead in the following values: 17.6 19.4 21.2 21 21.2 on the following dates 1990-08-05,1997-08-09,2003-08-30,2001-09-14,2004-07-17 
 ## 
-## Tree number 648 in plot PSME-01 has been changing DBH when its dead in the following values: 37.2 38.3 39 39 39 on the following dates 1997-08-09,2001-09-14,2003-08-30,2004-07-17,2013-08-07 
+## Tree number 637 in plot PSME-01 has been changing DBH when its dead in the following values: 15.1 16.5 18.1 18 18.1 on the following dates 1990-08-05,1997-08-09,2003-08-30,2001-09-14,2004-07-17 
 ## 
-## Tree number 1456 in plot PSME-01 has been changing DBH when its dead in the following values: 15.4 17.7 17.2 17.2 on the following dates 1997-08-09,2001-09-14,2003-08-30,2004-07-17 
+## Tree number 639 in plot PSME-01 has been dead for every sampling event but its DBH changes in the following values: 19.6 18.2 17.6 18.1 17.6 17.6 17.6 on the following dates 1990-08-05, 1997-08-09, 2003-08-30, 2001-09-14, 2004-07-17, 2013-08-07, 2023-10-21 
 ## 
-## Tree number 302 in plot PSME-01 has been changing DBH when its dead in the following values: 3.6 3.7 2.6 on the following dates 2001-09-14,2003-08-30,2004-07-17 
+## Tree number 641 in plot PSME-01 has been changing DBH when its dead in the following values: 21.2 20 17.8 17.7 17.8 17.8 on the following dates 1990-08-05,1997-08-09,2003-08-30,2001-09-14,2004-07-17,2013-08-07 
 ## 
-## Tree number 303 in plot PSME-05 has been changing DBH when its dead in the following values: 62.6 60.1 60.1 60.1 59.5 59.5 on the following dates 1997-08-13,2001-10-14,2003-09-26,2004-07-17,2008-09-06,2013-06-13 
+## Tree number 644 in plot PSME-01 has been changing DBH when its dead in the following values: 22.6 23 22.7 22.7 22.7 23.8 on the following dates 1990-08-05,1997-08-09,2003-08-30,2001-09-14,2004-07-17,2013-08-07 
 ## 
-## Tree number 313 in plot PSME-01 has been dead for every sampling event but its DBH changes in the following values: 9.2 8.2 8.2 on the following dates 2001-09-14, 2003-08-30, 2004-07-17 
+## Tree number 648 in plot PSME-01 has been changing DBH when its dead in the following values: 34.9 37.2 39 38.3 39 39 on the following dates 1990-08-05,1997-08-09,2003-08-30,2001-09-14,2004-07-17,2013-08-07 
 ## 
-## Tree number 314 in plot PSME-05 has been changing DBH when its dead in the following values: 18.2 18.4 18.6 18.6 15.6 15.6 on the following dates 1997-08-13,2001-10-14,2003-09-26,2004-07-17,2008-09-06,2013-06-13 
+## Tree number 651 in plot PSME-01 has been dead for every sampling event but its DBH changes in the following values: 51 46.6 47.4 on the following dates 1990-08-05, 1997-08-09, 2001-09-14 
 ## 
-## Tree number 323 in plot PSME-05 has been changing DBH when its dead in the following values: 19.7 18.7 18.7 18.7 18.9 on the following dates 1997-08-13,2001-10-14,2003-09-26,2004-07-17,2008-09-06 
+## Tree number 653 in plot PSME-01 has been dead for every sampling event but its DBH changes in the following values: 28.6 26.9 28.3 27.7 28.3 28.3 28.3 on the following dates 1990-08-05, 1997-08-09, 2003-08-30, 2001-09-14, 2004-07-17, 2013-08-07, 2023-10-21 
 ## 
-## Tree number 324 in plot PSME-05 has been dead for every sampling event but its DBH changes in the following values: 31 30 30 on the following dates 1997-08-13, 2001-10-14, 2004-07-17 
+## Tree number 661 in plot PSME-01 has been changing DBH when its dead in the following values: 20.8 20.8 19.6 20.3 19.6 19.6 19.6 on the following dates 1990-08-05,1997-08-09,2003-08-30,2001-09-14,2004-07-17,2013-08-07,2023-10-21 
 ## 
-## Tree number 1773 in plot PSME-01 has been changing DBH when its dead in the following values: 11.7 11.5 13.9 13.9 on the following dates 2001-09-14,2003-08-30,2004-07-17,2013-08-07 
+## Tree number 1454 in plot PSME-01 has been changing DBH when its dead in the following values: 15.5 17.6 17.3 17.6 on the following dates 1997-08-09,2003-08-30,2001-09-14,2004-07-17 
 ## 
-## Tree number 363 in plot PSME-06 has been dead for every sampling event but its DBH changes in the following values: 30.5 31.8 31.8 31.8 on the following dates 1997-08-09, 2001-09-28, 2003-09-26, 2004-07-18 
+## Tree number 1456 in plot PSME-01 has been changing DBH when its dead in the following values: 15.4 17.2 17.7 17.2 on the following dates 1997-08-09,2003-08-30,2001-09-14,2004-07-17 
 ## 
-## Tree number 375 in plot PSME-05 has been dead for every sampling event but its DBH changes in the following values: 22.3 25.9 25.9 on the following dates 2001-10-14, 2003-09-26, 2004-07-17 
+## Tree number 302 in plot PSME-01 has been changing DBH when its dead in the following values: 3.7 3.6 2.6 on the following dates 2003-08-30,2001-09-14,2004-07-17 
 ## 
-## Tree number 487 in plot PSME-06 has been dead for every sampling event but its DBH changes in the following values: 67.5 68.7 68.7 68.7 on the following dates 1997-08-09, 2001-09-28, 2003-09-26, 2004-07-18 
+## Tree number 303 in plot PSME-05 has been changing DBH when its dead in the following values: 60 62.6 60.1 60.1 60.1 59.5 59.5 59.5 on the following dates 1992-07-05,1997-08-13,2003-09-26,2001-10-14,2004-07-17,2008-09-06,2013-06-13,2023-10-19 
 ## 
-## Tree number 179 in plot PSME-04 has been changing DBH when its dead in the following values: 8.5 10.4 9.4 9.2 on the following dates 1997-08-22,2001-09-26,2003-08-30,2004-07-15 
+## Tree number 313 in plot PSME-01 has been dead for every sampling event but its DBH changes in the following values: 8.2 9.2 8.2 on the following dates 2003-08-30, 2001-09-14, 2004-07-17 
 ## 
-## Tree number 178 in plot PSME-04 has been changing DBH when its dead in the following values: 5.3 5.8 6.8 5.5 on the following dates 1997-08-22,2001-09-26,2003-08-30,2004-07-15 
+## Tree number 314 in plot PSME-05 has been changing DBH when its dead in the following values: 18 18.2 18.6 18.4 18.6 15.6 15.6 on the following dates 1992-07-05,1997-08-13,2003-09-26,2001-10-14,2004-07-17,2008-09-06,2013-06-13 
 ## 
-## Tree number 180 in plot PSME-04 has been changing DBH when its dead in the following values: 5.2 5 6.2 5 on the following dates 1997-08-22,2001-09-26,2003-08-30,2004-07-15 
+## Tree number 323 in plot PSME-05 has been changing DBH when its dead in the following values: 19 19.7 18.7 18.7 18.7 18.9 on the following dates 1992-07-05,1997-08-13,2003-09-26,2001-10-14,2004-07-17,2008-09-06 
 ## 
-## Tree number 185 in plot PSME-04 has been changing DBH when its dead in the following values: 10.5 9.8 11.2 9.6 on the following dates 1997-08-22,2001-09-26,2003-08-30,2004-07-15 
+## Tree number 324 in plot PSME-05 has been dead for every sampling event but its DBH changes in the following values: 31 31 30 30 on the following dates 1992-07-05, 1997-08-13, 2001-10-14, 2004-07-17 
 ## 
-## Tree number 189 in plot PSME-04 has been changing DBH when its dead in the following values: 6.7 7.9 7.5 7 7 on the following dates 1997-08-22,2001-09-26,2003-08-30,2004-07-15,2008-07-05 
+## Tree number 1773 in plot PSME-01 has been changing DBH when its dead in the following values: 11.5 11.7 13.9 13.9 on the following dates 2003-08-30,2001-09-14,2004-07-17,2013-08-07 
 ## 
-## Tree number 196 in plot PSME-04 has been dead for every sampling event but its DBH changes in the following values: 5 9.2 on the following dates 1997-08-22, 2001-09-26 
+## Tree number 330 in plot PSME-06 has been changing DBH when its dead in the following values: 11 9.8 10.5 9.8 9.8 9.9 on the following dates 1992-07-28,2003-09-26,2001-09-28,2004-07-18,2013-06-13,2023-10-20 
 ## 
-## Tree number 424 in plot PSME-04 has been dead for every sampling event but its DBH changes in the following values: 16.4 15.1 on the following dates 1997-08-22, 2001-09-26 
+## Tree number 363 in plot PSME-06 has been dead for every sampling event but its DBH changes in the following values: 32 30.5 31.8 31.8 31.8 on the following dates 1992-07-28, 1997-08-09, 2003-09-26, 2001-09-28, 2004-07-18 
 ## 
-## Tree number 431 in plot PSME-04 has been dead for every sampling event but its DBH changes in the following values: 66.3 67.1 61 61 61 61 on the following dates 1997-08-22, 2001-09-26, 2003-08-30, 2004-07-15, 2008-07-05, 2013-06-12 
+## Tree number 375 in plot PSME-05 has been dead for every sampling event but its DBH changes in the following values: 25.9 22.3 25.9 on the following dates 2003-09-26, 2001-10-14, 2004-07-17 
 ## 
-## Tree number 439 in plot PSME-04 has been changing DBH when its dead in the following values: 42 47.9 39.5 39.5 39.5 39.5 on the following dates 1997-08-22,2001-09-26,2003-08-30,2004-07-15,2008-07-05,2013-06-12 
+## Tree number 479 in plot PSME-06 has been changing DBH when its dead in the following values: 42 40.4 40.7 40.7 40.7 on the following dates 1992-07-28,1997-08-09,2003-09-26,2001-09-28,2004-07-18 
 ## 
-## Tree number 440 in plot PSME-04 has been dead for every sampling event but its DBH changes in the following values: 23.8 23.7 24.8 24.8 24.8 24.8 on the following dates 1997-08-22, 2001-09-26, 2003-08-30, 2004-07-15, 2008-07-05, 2013-06-12 
+## Tree number 487 in plot PSME-06 has been dead for every sampling event but its DBH changes in the following values: 68 67.5 68.7 68.7 68.7 on the following dates 1992-07-28, 1997-08-09, 2003-09-26, 2001-09-28, 2004-07-18 
 ## 
-## Tree number 456 in plot PSME-04 has been changing DBH when its dead in the following values: 30.7 31 27.9 27.9 27.9 27.9 on the following dates 1997-08-22,2001-09-26,2003-08-30,2004-07-15,2008-07-05,2013-06-12 
+## Tree number 178 in plot PSME-04 has been changing DBH when its dead in the following values: 7 5.3 6.8 5.8 5.5 on the following dates 1992-07-03,1997-08-22,2003-08-30,2001-09-26,2004-07-15 
 ## 
-## Tree number 338 in plot PSME-04 has been dead for every sampling event but its DBH changes in the following values: 13.4 14.2 13.1 13.1 13.1 on the following dates 2001-09-26, 2003-08-30, 2004-07-15, 2008-07-05, 2013-06-12 
+## Tree number 179 in plot PSME-04 has been changing DBH when its dead in the following values: 9 8.5 9.4 10.4 9.2 on the following dates 1992-07-03,1997-08-22,2003-08-30,2001-09-26,2004-07-15 
 ## 
-## Tree number 339 in plot PSME-04 has been changing DBH when its dead in the following values: 3.4 4.5 3.3 3.3 on the following dates 2001-09-26,2003-08-30,2004-07-15,2008-07-05 
+## Tree number 180 in plot PSME-04 has been changing DBH when its dead in the following values: 6.5 5.2 6.2 5 5 on the following dates 1992-07-03,1997-08-22,2003-08-30,2001-09-26,2004-07-15 
 ## 
-## Tree number 352 in plot PSME-02 has been changing DBH when its dead in the following values: 2.6 3.5 2.5 on the following dates 2001-09-13,2003-08-29,2004-07-17 
+## Tree number 184 in plot PSME-04 has been changing DBH when its dead in the following values: 3.5 3.7 4.7 4.2 4.1 on the following dates 1992-07-03,1997-08-22,2003-08-30,2001-09-26,2004-07-15 
 ## 
-## Tree number 353 in plot PSME-05 has been dead for every sampling event but its DBH changes in the following values: 44.8 46.8 46.8 on the following dates 1997-08-13, 2001-10-14, 2004-07-17 
+## Tree number 185 in plot PSME-04 has been changing DBH when its dead in the following values: 10 10.5 11.2 9.8 9.6 on the following dates 1992-07-03,1997-08-22,2003-08-30,2001-09-26,2004-07-15 
 ## 
-## Tree number 136 in plot PSME-05 has been dead for every sampling event but its DBH changes in the following values: 7.3 9.3 7.9 on the following dates 2001-10-14, 2003-09-26, 2004-07-17 
+## Tree number 187 in plot PSME-04 has been changing DBH when its dead in the following values: 5 6.2 7.3 7.1 7 7 on the following dates 1992-07-03,1997-08-22,2003-08-30,2001-09-26,2004-07-15,2008-07-05 
 ## 
-## Tree number 808 in plot PSME-03 has been changing DBH when its dead in the following values: 17.7 17.7 16.2 16.2 16.2 on the following dates 1997-08-25,2001-09-27,2003-08-29,2004-07-16,2013-06-11 
+## Tree number 189 in plot PSME-04 has been changing DBH when its dead in the following values: 4.7 6.7 7.5 7.9 7 7 on the following dates 1992-07-03,1997-08-22,2003-08-30,2001-09-26,2004-07-15,2008-07-05 
 ## 
-## Tree number 933 in plot PSME-03 has been dead for every sampling event but its DBH changes in the following values: 56.8 63.2 on the following dates 1997-08-25, 2001-09-27 
+## Tree number 192 in plot PSME-04 has been changing DBH when its dead in the following values: 14 6.2 6.1 6.1 5.9 on the following dates 1992-07-03,1997-08-22,2003-08-30,2001-09-26,2004-07-15 
 ## 
-## Tree number 935 in plot PSME-03 has been dead for every sampling event but its DBH changes in the following values: 35.5 37.4 on the following dates 1997-08-25, 2001-09-27 
+## Tree number 419 in plot PSME-04 has been dead for every sampling event but its DBH changes in the following values: 77 64.6 on the following dates 1992-07-03, 2001-09-26 
 ## 
-## Tree number 8111 in plot PSME-03 has been changing DBH when its dead in the following values: 31.6 34.5 24.3 24.3 24.3 on the following dates 1997-08-25,2001-09-27,2003-08-29,2004-07-16,2013-06-11 
+## Tree number 196 in plot PSME-04 has been dead for every sampling event but its DBH changes in the following values: 5 5 9.2 on the following dates 1992-07-03, 1997-08-22, 2001-09-26 
 ## 
-## Tree number 826 in plot PSME-03 has been dead for every sampling event but its DBH changes in the following values: 31.6 29.8 28.5 28.5 on the following dates 1997-08-25, 2001-09-27, 2003-08-29, 2004-07-16 
+## Tree number 424 in plot PSME-04 has been dead for every sampling event but its DBH changes in the following values: 16 16.4 15.1 on the following dates 1992-07-03, 1997-08-22, 2001-09-26 
 ## 
-## Tree number 8221 in plot PSME-03 has been dead for every sampling event but its DBH changes in the following values: 41.7 40.1 33.9 33.9 on the following dates 1997-08-25, 2001-09-27, 2003-08-29, 2004-07-16 
+## Tree number 431 in plot PSME-04 has been dead for every sampling event but its DBH changes in the following values: 67 66.3 61 67.1 61 61 61 on the following dates 1992-07-03, 1997-08-22, 2003-08-30, 2001-09-26, 2004-07-15, 2008-07-05, 2013-06-12 
 ## 
-## Tree number 8222 in plot PSME-03 has been dead for every sampling event but its DBH changes in the following values: 32.4 32.9 40.1 27.1 27.1 on the following dates 1997-08-25, 2001-09-27, 2003-08-29, 2004-07-16, 2013-06-11 
+## Tree number 435 in plot PSME-04 has been changing DBH when its dead in the following values: 21 19 20 19.7 20 20 21.8 on the following dates 1992-07-03,1997-08-22,2003-08-30,2001-09-26,2004-07-15,2008-07-05,2013-06-12 
 ## 
-## Tree number 8112 in plot PSME-03 has been changing DBH when its dead in the following values: 33.7 32.7 34.5 36.8 36.8 on the following dates 1997-08-25,2001-09-27,2003-08-29,2004-07-16,2013-06-11 
+## Tree number 439 in plot PSME-04 has been changing DBH when its dead in the following values: 43 42 39.5 47.9 39.5 39.5 39.5 39.5 on the following dates 1992-07-03,1997-08-22,2003-08-30,2001-09-26,2004-07-15,2008-07-05,2013-06-12,2023-10-24 
 ## 
-## Tree number 989 in plot PSME-03 has been dead for every sampling event but its DBH changes in the following values: 24.8 28 on the following dates 1997-08-25, 2001-09-27 
+## Tree number 440 in plot PSME-04 has been dead for every sampling event but its DBH changes in the following values: 44 23.8 24.8 23.7 24.8 24.8 24.8 on the following dates 1992-07-03, 1997-08-22, 2003-08-30, 2001-09-26, 2004-07-15, 2008-07-05, 2013-06-12 
 ## 
-## Tree number 914 in plot PSME-02 has been dead for every sampling event but its DBH changes in the following values: 20 17.2 17.2 17.2 17.2 on the following dates 1997-09-06, 2001-09-13, 2003-08-29, 2004-07-17, 2013-08-06 
+## Tree number 456 in plot PSME-04 has been changing DBH when its dead in the following values: 31 30.7 27.9 31 27.9 27.9 27.9 27.9 on the following dates 1992-07-03,1997-08-22,2003-08-30,2001-09-26,2004-07-15,2008-07-05,2013-06-12,2023-10-24 
 ## 
-## Tree number 919 in plot PSME-02 has been changing DBH when its dead in the following values: 26.7 26.3 22.4 22.4 on the following dates 1997-09-06,2001-09-13,2003-08-29,2004-07-17 
+## Tree number 339 in plot PSME-04 has been changing DBH when its dead in the following values: 4.5 3.4 3.3 3.3 on the following dates 2003-08-30,2001-09-26,2004-07-15,2008-07-05 
 ## 
-## Tree number 920 in plot PSME-02 has been changing DBH when its dead in the following values: 40.1 40.5 41.8 41.8 on the following dates 1997-09-06,2001-09-13,2003-08-29,2004-07-17 
+## Tree number 136 in plot PSME-05 has been changing DBH when its dead in the following values: 8 9.3 7.3 7.9 on the following dates 1992-07-05,2003-09-26,2001-10-14,2004-07-17 
 ## 
-## Tree number 925 in plot PSME-02 has been changing DBH when its dead in the following values: 29 31 31.1 31.1 on the following dates 1997-09-06,2001-09-13,2003-08-29,2004-07-17 
+## Tree number 353 in plot PSME-05 has been dead for every sampling event but its DBH changes in the following values: 46 44.8 46.8 46.8 on the following dates 1992-07-05, 1997-08-13, 2001-10-14, 2004-07-17 
 ## 
-## Tree number 261 in plot PSME-08 has been changing DBH when its dead in the following values: 9.5 8.5 2.8 on the following dates 1997-08-06,2001-09-13,2013-06-11 
+## Tree number 356 in plot PSME-03 has been changing DBH when its dead in the following values: 12.7 13.5 12.3 on the following dates 2003-08-29,2001-09-27,2004-07-16 
 ## 
-## Tree number 262 in plot PSME-08 has been dead for every sampling event but its DBH changes in the following values: 10.8 9.5 on the following dates 1997-08-06, 2001-09-13 
+## Tree number 358 in plot PSME-03 has been changing DBH when its dead in the following values: 8.8 9.6 8.6 on the following dates 2003-08-29,2001-09-27,2004-07-16 
+## 
+## Tree number 360 in plot PSME-05 has been dead for every sampling event but its DBH changes in the following values: 23 21.2 21.5 21.5 on the following dates 1992-07-05, 1997-08-13, 2001-10-14, 2004-07-17 
+## 
+## Tree number 808 in plot PSME-03 has been changing DBH when its dead in the following values: 17.5 17.7 16.2 17.7 16.2 16.2 16.2 on the following dates 1991-07-22,1997-08-25,2003-08-29,2001-09-27,2004-07-16,2013-06-11,2023-10-24 
+## 
+## Tree number 933 in plot PSME-03 has been dead for every sampling event but its DBH changes in the following values: 61.5 56.8 63.2 on the following dates 1991-07-22, 1997-08-25, 2001-09-27 
+## 
+## Tree number 935 in plot PSME-03 has been dead for every sampling event but its DBH changes in the following values: 35.3 35.5 37.4 on the following dates 1991-07-22, 1997-08-25, 2001-09-27 
+## 
+## Tree number 8111 in plot PSME-03 has been changing DBH when its dead in the following values: 32.2 31.6 24.3 34.5 24.3 24.3 on the following dates 1991-07-22,1997-08-25,2003-08-29,2001-09-27,2004-07-16,2013-06-11 
+## 
+## Tree number 947 in plot PSME-03 has been dead for every sampling event but its DBH changes in the following values: 50.5 52 52 on the following dates 1991-07-22, 1997-08-25, 2001-09-27 
+## 
+## Tree number 826 in plot PSME-03 has been changing DBH when its dead in the following values: 32.8 31.6 28.5 29.8 28.5 on the following dates 1991-07-22,1997-08-25,2003-08-29,2001-09-27,2004-07-16 
+## 
+## Tree number 8221 in plot PSME-03 has been dead for every sampling event but its DBH changes in the following values: 39.8 41.7 33.9 40.1 33.9 on the following dates 1991-07-22, 1997-08-25, 2003-08-29, 2001-09-27, 2004-07-16 
+## 
+## Tree number 966 in plot PSME-03 has been dead for every sampling event but its DBH changes in the following values: 21.2 26.9 on the following dates 1991-07-22, 2001-09-27 
+## 
+## Tree number 8222 in plot PSME-03 has been changing DBH when its dead in the following values: 32.5 32.4 40.1 32.9 27.1 27.1 on the following dates 1991-07-22,1997-08-25,2003-08-29,2001-09-27,2004-07-16,2013-06-11 
+## 
+## Tree number 8112 in plot PSME-03 has been changing DBH when its dead in the following values: 30.5 33.7 34.5 32.7 36.8 36.8 on the following dates 1991-07-22,1997-08-25,2003-08-29,2001-09-27,2004-07-16,2013-06-11 
+## 
+## Tree number 989 in plot PSME-03 has been dead for every sampling event but its DBH changes in the following values: 24.8 24.8 28 on the following dates 1991-07-22, 1997-08-25, 2001-09-27 
+## 
+## Tree number 906 in plot PSME-02 has been changing DBH when its dead in the following values: 31.6 32.5 35.4 34.6 35.4 35.4 on the following dates 1991-07-08,1997-09-06,2003-08-29,2001-09-13,2004-07-17,2013-08-06 
+## 
+## Tree number 913 in plot PSME-02 has been dead for every sampling event but its DBH changes in the following values: 32.1 30.5 29.9 29.6 29.9 29.9 29.9 on the following dates 1991-07-08, 1997-09-06, 2003-08-29, 2001-09-13, 2004-07-17, 2013-08-06, 2023-10-21 
+## 
+## Tree number 914 in plot PSME-02 has been changing DBH when its dead in the following values: 20.2 20 17.2 17.2 17.2 17.2 17.2 on the following dates 1991-07-08,1997-09-06,2003-08-29,2001-09-13,2004-07-17,2013-08-06,2023-10-21 
+## 
+## Tree number 919 in plot PSME-02 has been changing DBH when its dead in the following values: 26.8 26.7 22.4 26.3 22.4 on the following dates 1991-07-08,1997-09-06,2003-08-29,2001-09-13,2004-07-17 
+## 
+## Tree number 920 in plot PSME-02 has been changing DBH when its dead in the following values: 37.2 40.1 41.8 40.5 41.8 on the following dates 1991-07-08,1997-09-06,2003-08-29,2001-09-13,2004-07-17 
+## 
+## Tree number 925 in plot PSME-02 has been changing DBH when its dead in the following values: 27 29 31.1 31 31.1 on the following dates 1991-07-08,1997-09-06,2003-08-29,2001-09-13,2004-07-17 
+## 
+## Tree number 261 in plot PSME-08 has been changing DBH when its dead in the following values: 10 9.5 8.5 2.8 8.1 on the following dates 1992-08-01,1997-08-06,2001-09-13,2013-06-11,2023-10-22 
+## 
+## Tree number 262 in plot PSME-08 has been dead for every sampling event but its DBH changes in the following values: 10 10.8 9.5 on the following dates 1992-08-01, 1997-08-06, 2001-09-13 
+## 
+## Tree number 267 in plot PSME-08 has been dead for every sampling event but its DBH changes in the following values: 11 10 on the following dates 1992-08-01, 1997-08-06 
+## 
+## Tree number 979 in plot PSME-08 has been dead for every sampling event but its DBH changes in the following values: 28 25.7 on the following dates 1992-08-01, 1997-08-06 
 ## 
 ## 
-## Tree number 999 in plot PSME-01 has two different entries for the min date - one alive and one dead, min date is 10082 
+## Tree number 999 in plot PSME-01 has two different entries for the min date - one alive and one dead, min date is 7521 
 ## 
 ## Tree number 999 in plot PSME-06 has two different entries for the min date - one alive and one dead, min date is 10082 
 ## 
 ## Tree number 999 in plot PSME-05 has two different entries for the min date - one alive and one dead, min date is 10086 
 ## 
-## Tree number 999 in plot PSME-03 has two different entries for the min date - one alive and one dead, min date is 10098 
+## Tree number 999 in plot PSME-03 has two different entries for the min date - one alive and one dead, min date is 7872 
 ## 
-## Tree number 333 in plot PSME-05 started out dead in 1997-08-13 and then recorded to be alive again in 2003-09-26 
+## Tree number 333 in plot PSME-05 started out dead in 1992-07-05 and then recorded to be alive again in 2003-09-26 
 ## 
-## Tree number 872 in plot PSME-07 started out alive in 1997-08-12 was recorded dead in 2003-08-30 and then recorded to be alive again in 2004-07-18 
+## Tree number 0 in plot PSME-03 started out dead in 2004-07-16 and then recorded to be alive again in 2023-10-24 
 ## 
-## Tree number 868 in plot PSME-07 started out alive in 1997-08-12 was recorded dead in 2003-08-30 and then recorded to be alive again in 2004-07-18 
+## Tree number 0 in plot PSME-08 started out alive in 2004-07-30 was recorded dead in 2013-06-11 and then recorded to be alive again in 2023-10-22 
 ## 
-## Tree number 595 in plot PSME-01 started out dead in 1997-08-09 and then recorded to be alive again in 2001-09-14 
+## Tree number 872 in plot PSME-07 started out alive in 1992-07-30 was recorded dead in 2003-08-30 and then recorded to be alive again in 2004-07-18 
 ## 
-## Tree number 604 in plot PSME-01 started out dead in 1997-08-09 and then recorded to be alive again in 2001-09-14 
+## Tree number 868 in plot PSME-07 started out alive in 1992-07-30 was recorded dead in 2003-08-30 and then recorded to be alive again in 2004-07-18 
 ## 
-## Tree number 606 in plot PSME-01 started out alive in 1997-08-09 was recorded dead in 2001-09-14 and then recorded to be alive again in 2003-08-30 2004-07-17 2008-07-07 2013-08-07 
+## Tree number 595 in plot PSME-01 started out dead in 1990-08-05 and then recorded to be alive again in 2001-09-14 
 ## 
-## Tree number 626 in plot PSME-01 started out alive in 1997-08-09 was recorded dead in 2003-08-30 and then recorded to be alive again in 2004-07-17 
+## Tree number 604 in plot PSME-01 started out alive in 1990-08-05 was recorded dead in 1997-08-09 and then recorded to be alive again in 2001-09-14 
 ## 
-## Tree number 628 in plot PSME-01 started out dead in 1997-08-09 and then recorded to be alive again in 2003-08-30 
+## Tree number 606 in plot PSME-01 started out alive in 1990-08-05 was recorded dead in 2001-09-14 and then recorded to be alive again in 2003-08-30 2004-07-17 2008-07-07 2013-08-07 2023-10-21 
 ## 
-## Tree number 640 in plot PSME-01 started out dead in 1997-08-09 and then recorded to be alive again in 2001-09-14 
+## Tree number 614 in plot PSME-01 started out alive in 1990-08-05 was recorded dead in 2008-07-07 and then recorded to be alive again in 2023-10-21 
 ## 
-## Tree number 642 in plot PSME-10 started out alive in 1997-09-08 was recorded dead in 2003-09-26 and then recorded to be alive again in 2004-07-16 2008-09-06 2013-06-12 
+## Tree number 624 in plot PSME-01 started out alive in 1990-08-05 was recorded dead in 2008-07-07 and then recorded to be alive again in 2023-10-21 
 ## 
-## Tree number 648 in plot PSME-01 started out alive in 1997-08-09 was recorded dead in 2008-07-07 and then recorded to be alive again in 2013-08-07 
+## Tree number 626 in plot PSME-01 started out alive in 1990-08-05 was recorded dead in 2003-08-30 and then recorded to be alive again in 2004-07-17 
 ## 
-## Tree number 661 in plot PSME-01 started out dead in 1997-08-09 and then recorded to be alive again in 2001-09-14 
+## Tree number 628 in plot PSME-01 started out alive in 1990-08-05 was recorded dead in 1997-08-09 and then recorded to be alive again in 2003-08-30 2004-07-17 2023-10-21 
+## 
+## Tree number 640 in plot PSME-01 started out alive in 1990-08-05 was recorded dead in 1997-08-09 and then recorded to be alive again in 2003-08-30 2001-09-14 2004-07-17 2008-07-07 2013-08-07 2023-10-21 
+## 
+## Tree number 641 in plot PSME-01 started out dead in 1990-08-05 and then recorded to be alive again in Inf 
+## 
+## Tree number 642 in plot PSME-10 started out alive in 1997-09-08 was recorded dead in 2003-09-26 and then recorded to be alive again in 2004-07-16 2008-09-06 2013-06-12 2023-10-23 
+## 
+## Tree number 648 in plot PSME-01 started out alive in 1990-08-05 was recorded dead in 2008-07-07 and then recorded to be alive again in 2013-08-07 
+## 
+## Tree number 661 in plot PSME-01 started out alive in 1990-08-05 was recorded dead in 1997-08-09 and then recorded to be alive again in 2001-09-14 
 ## 
 ## Tree number 305 in plot PSME-01 started out dead in 2001-09-14 and then recorded to be alive again in 2003-08-30 
 ## 
-## Tree number 322 in plot PSME-01 started out alive in 2001-09-14 was recorded dead in 2004-07-17 and then recorded to be alive again in 2008-07-07 2013-08-07 
+## Tree number 322 in plot PSME-01 started out alive in 2001-09-14 was recorded dead in 2004-07-17 and then recorded to be alive again in 2008-07-07 2013-08-07 2023-10-21 
 ## 
-## Tree number 328 in plot PSME-05 started out dead in 1997-08-13 and then recorded to be alive again in 2003-09-26 
+## Tree number 328 in plot PSME-05 started out dead in 1992-07-05 and then recorded to be alive again in 2003-09-26 
 ## 
 ## Tree number 329 in plot PSME-01 started out dead in 2001-09-14 and then recorded to be alive again in 2003-08-30 
 ## 
 ## Tree number 1773 in plot PSME-01 started out dead in 2001-09-14 and then recorded to be alive again in 2004-07-17 
 ## 
-## Tree number 394 in plot PSME-06 started out alive in 1997-08-09 was recorded dead in 2001-09-28 and then recorded to be alive again in 2003-09-26 2004-07-18 
+## Tree number 158 in plot PSME-06 started out alive in 1992-07-28 was recorded dead in 2001-09-28 and then recorded to be alive again in 2003-09-26 
 ## 
-## Tree number 466 in plot PSME-06 started out dead in 1997-08-09 and then recorded to be alive again in 2003-09-26 
+## Tree number 394 in plot PSME-06 started out alive in 1992-07-28 was recorded dead in 2001-09-28 and then recorded to be alive again in 2003-09-26 2004-07-18 
 ## 
-## Tree number 472 in plot PSME-06 started out alive in 1997-08-09 was recorded dead in 2003-09-26 and then recorded to be alive again in 2004-07-18 
+## Tree number 466 in plot PSME-06 started out alive in 1992-07-28 was recorded dead in 1997-08-09 and then recorded to be alive again in 2003-09-26 
 ## 
-## Tree number 158 in plot PSME-06 started out dead in 2001-09-28 and then recorded to be alive again in 2003-09-26 
+## Tree number 472 in plot PSME-06 started out alive in 1992-07-28 was recorded dead in 2003-09-26 and then recorded to be alive again in 2004-07-18 
 ## 
-## Tree number 181 in plot PSME-04 started out alive in 1997-08-22 was recorded dead in 2003-08-30 and then recorded to be alive again in 2004-07-15 2008-07-05 2013-06-12 
+## Tree number 181 in plot PSME-04 started out alive in 1992-07-03 was recorded dead in 2003-08-30 and then recorded to be alive again in 2004-07-15 2008-07-05 2013-06-12 2023-10-24 
 ## 
-## Tree number 429 in plot PSME-04 started out alive in 1997-08-22 was recorded dead in 2003-08-30 and then recorded to be alive again in 2004-07-15 2008-07-05 2013-06-12 
+## Tree number 193 in plot PSME-04 started out dead in 1992-07-03 and then recorded to be alive again in 1997-08-22 
 ## 
-## Tree number 451 in plot PSME-04 started out alive in 1997-08-22 was recorded dead in 2003-08-30 and then recorded to be alive again in 2004-07-15 
+## Tree number 429 in plot PSME-04 started out alive in 1992-07-03 was recorded dead in 2003-08-30 and then recorded to be alive again in 2004-07-15 2008-07-05 2013-06-12 2023-10-24 
 ## 
-## Tree number 454 in plot PSME-04 started out alive in 1997-08-22 was recorded dead in 2003-08-30 and then recorded to be alive again in 2004-07-15 
+## Tree number 439 in plot PSME-04 started out dead in 1992-07-03 and then recorded to be alive again in 1997-08-22 
 ## 
-## Tree number 348 in plot PSME-05 started out alive in 1997-08-13 was recorded dead in 2003-09-26 and then recorded to be alive again in 2004-07-17 2008-09-06 
+## Tree number 451 in plot PSME-04 started out alive in 1992-07-03 was recorded dead in 2003-08-30 and then recorded to be alive again in 2004-07-15 
 ## 
-## Tree number 76 in plot PSME-05 started out alive in 2001-10-14 was recorded dead in 2004-07-17 and then recorded to be alive again in 2008-09-06 2013-06-13 
+## Tree number 454 in plot PSME-04 started out alive in 1992-07-03 was recorded dead in 2003-08-30 and then recorded to be alive again in 2004-07-15 
 ## 
-## Tree number 1787 in plot PSME-05 started out alive in 2001-10-14 was recorded dead in 2004-07-17 and then recorded to be alive again in 2008-09-06 2013-06-13 
+## Tree number 76 in plot PSME-05 started out alive in 1992-07-05 was recorded dead in 2004-07-17 and then recorded to be alive again in 2008-09-06 2013-06-13 2023-10-19 
 ## 
-## Tree number 8111 in plot PSME-03 started out dead in 1997-08-25 and then recorded to be alive again in 2001-09-27 
+## Tree number 348 in plot PSME-05 started out alive in 1992-07-05 was recorded dead in 2003-09-26 and then recorded to be alive again in 2004-07-17 2008-09-06 
 ## 
-## Tree number 909 in plot PSME-02 started out alive in 1997-09-06 was recorded dead in 2001-09-13 and then recorded to be alive again in 2003-08-29 
+## Tree number 1787 in plot PSME-05 started out alive in 2001-10-14 was recorded dead in 2004-07-17 and then recorded to be alive again in 2008-09-06 2013-06-13 2023-10-19 
 ## 
-## Tree number 912 in plot PSME-02 started out alive in 1997-09-06 was recorded dead in 2008-07-07 and then recorded to be alive again in 2013-08-06 
+## Tree number 8111 in plot PSME-03 started out dead in 1991-07-22 and then recorded to be alive again in 2001-09-27 
 ## 
-## Tree number 919 in plot PSME-02 started out dead in 1997-09-06 and then recorded to be alive again in 2004-07-17 
+## Tree number 1777 in plot PSME-03 started out alive in 2001-09-27 was recorded dead in 2003-08-29 and then recorded to be alive again in 2023-10-24 
 ## 
-## Tree number 261 in plot PSME-08 started out dead in 1997-08-06 and then recorded to be alive again in 2013-06-11 
+## Tree number 909 in plot PSME-02 started out alive in 1991-07-08 was recorded dead in 2001-09-13 and then recorded to be alive again in 2003-08-29 
 ## 
-## Tree number 263 in plot PSME-08 started out alive in 1997-08-06 was recorded dead in 2003-08-30 and then recorded to be alive again in 2004-07-30</code></pre>
+## Tree number 912 in plot PSME-02 started out alive in 1991-07-08 was recorded dead in 2008-07-07 and then recorded to be alive again in 2013-08-06 2023-10-21 
+## 
+## Tree number 919 in plot PSME-02 started out alive in 1991-07-08 was recorded dead in 1997-09-06 and then recorded to be alive again in 2004-07-17 
+## 
+## Tree number 261 in plot PSME-08 started out dead in 1992-08-01 and then recorded to be alive again in 2013-06-11 
+## 
+## Tree number 263 in plot PSME-08 started out alive in 1992-08-01 was recorded dead in 2003-08-30 and then recorded to be alive again in 2004-07-30</code></pre>
 </div>
 <div id="flags" class="section level3">
 <h3>Flags</h3>
