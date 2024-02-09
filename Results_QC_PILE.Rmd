@@ -100,7 +100,7 @@ flags=seedlings_qc(seeds)
 
 ### Post Burn Severity protocol:
 ```{r}
-flags=pbsev_qc(pbsev)
+#flags=pbsev_qc(pbsev) no PILE data
 ```
 
 ### Trees - Individuals protocol: 

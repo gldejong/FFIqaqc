@@ -46,6 +46,7 @@ duff=read.csv("C:/Users/edeegan/OneDrive - DOI/Fire_project/Fire_project/SAGU_da
 fine=read.csv("C:/Users/edeegan/OneDrive - DOI/Fire_project/Fire_project/SAGU_data/PIPO/PIPO_Surface Fuels - Fine_XPT.csv", na.strings=c("","NA"))
 saps=read.csv("C:/Users/edeegan/OneDrive - DOI/Fire_project/Fire_project/SAGU_data/PIPO/PIPO_Trees - Saplings (Diameter Class) (metric)_XPT.csv", na.strings=c("","NA"))
 seeds=read.csv("C:/Users/edeegan/OneDrive - DOI/Fire_project/Fire_project/SAGU_data/PIPO/PIPO_Trees - Seedlings (Height Class) (metric)_XPT.csv")
+pbsev=read.csv("C:/Users/edeegan/OneDrive - DOI/Fire_project/Fire_project/SAGU_data/PIPO/PIPO_Post Burn Severity (metric)_XPT.csv")
 tree=read.csv("C:/Users/edeegan/OneDrive - DOI/Fire_project/Fire_project/SAGU_data/PIPO/PIPO_Trees - Individuals (metric)_XPT.csv")
 
 flags=c()
