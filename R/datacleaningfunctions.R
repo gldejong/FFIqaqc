@@ -3173,7 +3173,7 @@ format_flags=function(flags, samp, mtype, comments){
 
   write.xlsx(
     x=data,
-    file = paste(mtype, todaysdate, "flags.xlsx"),
+    file = paste(mtype,"flags_QAQC", todaysdate, ".xlsx"),
     col_names = TRUE,
     format_headers = TRUE,
     use_zip64 = FALSE

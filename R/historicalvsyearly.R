@@ -2,6 +2,7 @@ library(readxl)
 library(tidyverse)
 library(xtable)
 library(openxlsx)
+library(fuzzyjoin)
 setwd("C:/Users/edeegan/OneDrive - DOI/FFIqaqc/")
 
 rm(list = ls())
@@ -23,7 +24,6 @@ yearly <- lapply(sheet_names_y, function(x) {          # Read all sheets to list
 
 names(yearly) <- sheet_names_y
 
-
 #comparing the two excel sheets
 for(i in 1:length(yearly)){
   sheet_names_h[i]==sheet_names_y[i]
@@ -31,19 +31,16 @@ for(i in 1:length(yearly)){
   h_df=historical[[i]]
   y_df=yearly[[i]]
 
-  #finds rows in yearly that are not in historical
-  new=setdiff(y_df$Issue, h_df$Issue)
-  #finds rows in historical that have been resolved that are in yearly
-  resolved=intersect(h_df[which(h_df$Resolved=="Yes"), "Issue"], y_df$Issue)
-  #finds rows in historical that have NOT been resolved that are in yearly
-  unresolved=intersect(h_df[which(h_df$Resolved=="No"), "Issue"], y_df$Issue)
+  new=stringdist_right_join(h_df, y_df, by="Issue", method='dl', max_dist=20)
 
+  new=new[!duplicated(new$Issue.y),]
+  sum(is.na(new$Issue.x))
+  new[which(is.na(new$Issue.x)),"Status"]="New"
+  new[which(!is.na(new$Issue.x) & new$Resolved.x=="No" | new$Resolved.x=="no"),"Status"]="Previously flagged and unresolved"
+  new[which(!is.na(new$Issue.x) & new$Resolved.x=="Yes" | new$Resolved.x=="yes"),"Status"]="Previously flagged and resolved"
+  new[which(!is.na(new$Issue.x) & new$Resolved.x=="Yes" | new$Resolved.x=="yes"),"Resolved.y"]="Previously flagged and resolved"
+  y_df=new[,-which(grepl("x", colnames(new)))]
 
-y_df$Status=NA
-#can be Previously flagged and resolved, Previously flagged and unresolved, or New issue
-y_df[which(y_df$Issue %in% new),"Status"]="New"
-y_df[which(y_df$Issue %in% resolved),"Status"]="Previously flagged and resolved"
-y_df[which(y_df$Issue %in% unresolved),"Status"]="Previously flagged and unresolved"
 
 y_df=y_df %>% arrange(Status)
 
@@ -56,14 +53,14 @@ todaysdate=Sys.Date()
 mtype="PSME"
 write.xlsx(
   x=yearly,
-  file = paste(mtype, todaysdate, "flags.xlsx"),
+  file = paste(mtype, "flags_wStatus", todaysdate, ".xlsx"),
   col_names = TRUE,
   format_headers = TRUE,
   use_zip64 = FALSE
 )
 
 
-library(fuzzyjoin)
 
-stringdist_inner_join(h_df, y_df)
+
+
 
