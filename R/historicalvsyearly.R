@@ -37,6 +37,7 @@ for(i in 1:length(yearly)){
   sum(is.na(new$Issue.x))
   new[which(is.na(new$Issue.x)),"Status"]="New"
   new[which(!is.na(new$Issue.x) & new$Resolved.x=="No" | new$Resolved.x=="no"),"Status"]="Previously flagged and unresolved"
+  new[which(!is.na(new$Issue.x) & new$Resolved.x=="No" | new$Resolved.x=="no"),"Resolved.y"]="No"
   new[which(!is.na(new$Issue.x) & new$Resolved.x=="Yes" | new$Resolved.x=="yes"),"Status"]="Previously flagged and resolved"
   new[which(!is.na(new$Issue.x) & new$Resolved.x=="Yes" | new$Resolved.x=="yes"),"Resolved.y"]="Yes"
   y_df=new[,-which(grepl("x", colnames(new)))]
