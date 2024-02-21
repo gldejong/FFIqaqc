@@ -2554,7 +2554,7 @@ tree_severity_qc=function(tree, filterpoles="N"){
     cat("Filtering out pole trees for char data checks\n")
     postburntrees = postburntrees[which(postburntrees$DBH>15.1),]
   }else if(filterpoles=="N"){
-    cat("Including pole trees for char data checks (to exclude add argument filterpoles=Y to function.\n")
+    cat("Including pole trees for char data checks (to exclude add argument filterpoles=Y to function.)\n")
   }else{
     cat("Unknown argument for filterpoles, defaulting to N (not filtering out poles for char data checks)")
     #error in argument
@@ -2566,8 +2566,8 @@ tree_severity_qc=function(tree, filterpoles="N"){
   test_for_outliers(postburntrees, "CharHt")
   `%!in%` <- Negate(`%in%`)
   cat("All trees in post read have a char height value\n")
-  blank_char=postburntrees[which(postburntrees$CharHt=="" | is.na(postburntrees$CharHt| blank_char$TagNo!="NA")),]
-  if(any(!is.na(blank_char$TagNo) | blank_char$TagNo!="" | blank_char$TagNo!="NA" &
+  blank_char=postburntrees[which(postburntrees$CharHt=="" | is.na(postburntrees$CharHt| postburntrees$TagNo!="NA")),]
+  if(any(!is.na(blank_char$TagNo) &
          blank_char$CrwnCl %!in% c("DD", "BBD", "CUS"))){
     cat("FALSE, problem sample events listed in flags\n")
     x=which(!is.na(blank_char$TagNo) | blank_char$TagNo!=""| blank_char$TagNo!="NA" &
