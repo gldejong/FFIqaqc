@@ -542,7 +542,7 @@ transect_slope_azimuth_qc <- function(fuel1000, fine) {
   cat("Plots are the same in 1000Hr fuels and fine fuels...\n")
 
   # Check if all unique MacroPlot names in 'fuel1000' are the same as in 'fine'
-  if (all(unique(fuel1000$MacroPlot.Name) == unique(fine$MacroPlot.Name))) {
+  if (all(unique(fuel1000$MacroPlot.Name) %in% unique(fine$MacroPlot.Name))) {
     cat("TRUE\n")
     cat("\n")
   } else {
@@ -1637,7 +1637,7 @@ tree_CBH_qc=function(tree){
   }
 
   #check that living trees have reasonable live crown base height values
-  if(length(unique(tree$LiCrBHt))>1){
+  if(length(unique(tree$LiCrBHt))>4){
 
     cat("Do living trees have any unreasonably high or low live crown base height values?\n")
 
@@ -1656,8 +1656,10 @@ tree_CBH_qc=function(tree){
     }
 
   }else{
-    cat("No live crown base height values recorded\n")
+    cat(paste(c("Not enough samples to conduct a rosner test (<4) for the outlier values for live crown base height in the tree dataset. Values are ", na.omit(tree$LiCrBHt),"\n"), collapse=" "))
     cat("\n")
+    flags<-c(flags, paste(c("Not enough samples to conduct a rosner test (<4) for the outlier values for live crown base height in the tree dataset. Values are ", na.omit(tree$LiCrBHt)), collapse=" "))
+
   }
   #check that living trees have reasonable range (min to max) of live crown base height values and that the range of crown base height values is entered correctly
 
