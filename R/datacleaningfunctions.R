@@ -2856,8 +2856,10 @@ tree_dead_to_alive_DBH_change_qc=function(tree){
         for(r in 1:nrow(tab)){
 
           results=rbind(results,
-                        c(tab[r,8], tab[r,1], tab[r,2], "Status", tab[r,9], tab[r,3]),
-                        c(tab[r,8], tab[r,1], tab[r,2], "DBH", tab[r,10], tab[r,3]))
+                        c(tab[r,"TagNo"], tab[r,"MacroPlot.Name"],
+                          tab[r,"Monitoring.Status"], "Status", tab[r,"Status"], tab[r,"Date"]),
+                        c(tab[r,"TagNo"], tab[r,"MacroPlot.Name"],
+                          tab[r,"Monitoring.Status"], "DBH", tab[r,"DBH"], tab[r,"Date"]))
         }
       }
 
@@ -2871,7 +2873,19 @@ tree_dead_to_alive_DBH_change_qc=function(tree){
   results=na.omit(results)
 
   results$Date <- as.Date(results$Date, format = "%m/%d/%Y %I:%M:%S %p")
-
+  #if length of unique status is 1 - either all dead or alive
+    #if all alive - nothing
+     #if all dead - dbh check
+      #flag any changes in DBH with dates
+     #else(length is greater than 1) - switching it up
+        #if min date has live status
+          #find min dead status  - save date
+          #find live status greater than save date - flag as date tree came back alive
+        #else min date has dead status
+           #find min live status - flag as date tree came back alive
+          ##DBH check
+            #isolate years where tree is dead
+            #flag any changes in DBH with dates
   error_messages_DBH=c()
   error_messages_resurrections=c()
   tags=unique(results$TagNo)
@@ -2880,123 +2894,70 @@ tree_dead_to_alive_DBH_change_qc=function(tree){
     plots=unique(tagnumber$Plot)
     for(plot in 1:length(plots)){
       individual_tree=tagnumber[which(tagnumber$Plot==plots[plot]),]
-
-
       individual_tree_s=individual_tree[which(individual_tree$Variable=="Status"),]
       individual_tree_d=individual_tree[which(individual_tree$Variable=="DBH"),]
-
-      if(tags[check] %in% badtags){
-        #SKIP TOO MESSY SOMETHING IS WRONG
-      }else{
-
-
-        if(length(unique(individual_tree_s$Value))==1){
-          #either all dead or all alive
-          if(unique(individual_tree_s$Value)=="L"){
-            #all alive - nothing to do
-          }else{
-            #all dead - DBH check
-            if(length(unique(individual_tree_d$Value))==1){
-              #DBH doesn't change, nothing to do
-            }else{
-              #DBH DOES change - flag
-              #add threshold here
+      if(tags[check] %in% badtags){#SKIP TOO MESSY SOMETHING IS WRONG
+      }else{ #running checks
+        if(length(unique(individual_tree_s$Value))==1){ print("either all dead or all alive")
+          if(unique(individual_tree_s$Value)=="L"){#all alive - nothing to do
+          }else{#all dead - DBH change check
+            if(length(unique(individual_tree_d$Value))==1){#DBH doesn't change, nothing to do
+            }else{#DBH DOES change - flag if the difference is greater than 1
               individual_tree_d$Value=as.numeric(individual_tree_d$Value)
-              if(all(abs(diff(unique(individual_tree_d$Value)))<1)){
-                #doesn't meet threshold of concern
-              }else{
-                #meets threshold - flag
+              if(all(abs(diff(unique(individual_tree_d$Value)))<1)){#doesn't meet threshold of concern
+              }else{#meets threshold - flag
                 dates=unique(format(individual_tree_d$Date, "%Y-%m-%d"))
                 error_messages_DBH=c(error_messages_DBH, paste(c("Tree number", tags[check],"in plot", unique(individual_tree$Plot),
                                                                  "has been dead for every sampling event but its DBH changes in the following values:",
                                                                  paste(individual_tree_d$Value, sep=", "),
                                                                  "on the following dates", paste(dates, collapse=", ")),collapse=" "))
-              }
-            }
-          }
-        }else{
-
-          #new if else for if there are 2 entries for min date - probably two trees with same tag
-          if(length(which(individual_tree_s$Date==min(individual_tree_s$Date)))>1){
-
+              } #closing flag
+            } #closing DBH does change
+          } #closing all dead dbh check
+        }else{  print("not all dead or alive, some entries dead some alive")
+          if(length(which(individual_tree_s$Date==min(individual_tree_s$Date)))>1){#2 entries for min date? - probably two trees with same tag
             error_messages_resurrections=c(error_messages_resurrections, paste(c("Tree number", tags[check],"in plot", unique(individual_tree$Plot), "has two different entries for the min date - one alive and one dead, min date is", min(individual_tree_s$Date)), collapse = " "))
-          }else{
-
-
-
-
-
-
-
-
-
-            #length is great than 1 - switches between dead and alive
-            if(individual_tree_s[which(individual_tree_s$Date==min(individual_tree_s$Date)),5]=="L"){#tree starts out alive - switches to dead then alive (MAYBE??)
-
-              min_dead_date=min(individual_tree_s[which(individual_tree_s$Value=="D"),6])
+          }else{#only one entry for min date
+            if(individual_tree_s[which(individual_tree_s$Date==min(individual_tree_s$Date)),"Value"]=="L"){#tree starts out alive - switches to dead then alive
+              min_dead_date=min(individual_tree_s[which(individual_tree_s$Value=="D"),"Date"]) #record min dead date
               min_dead_date=as.Date(min_dead_date)
-              new_alive_date=individual_tree_s[which(individual_tree_s$Value=="L" & individual_tree_s$Date>min_dead_date),6]
+              new_alive_date=individual_tree_s[which(individual_tree_s$Value=="L" & individual_tree_s$Date>min_dead_date),"Date"] #record which dates are greater than min dead date with live status
               new_alive_date=as.Date(new_alive_date)
-              if(length(new_alive_date)==0){
-                #nothing to worry about
-              }else{
+              if(length(new_alive_date)==0){ #no dates where tree is alive and was previously dead
+              }else{ #there ARE dates where tree is alive and was previously dead
                 error_messages_resurrections=c(error_messages_resurrections, paste(c("Tree number", tags[check],"in plot", unique(individual_tree$Plot), "started out alive in", format(min(individual_tree_s$Date), "%Y-%m-%d"), "was recorded dead in", format(min_dead_date, "%Y-%m-%d"), "and then recorded to be alive again in", format(new_alive_date, "%Y-%m-%d")), collapse = " "))
-              }
-
+              }#close error message
             }else{#tree starts out dead - switches to alive
-              new_alive_date=min(individual_tree_s[which(individual_tree_s$Value=="L"),6])
+              new_alive_date=min(individual_tree_s[which(individual_tree_s$Value=="L"),"Date"]) #min alive date
               new_alive_date=as.Date(new_alive_date)
               error_messages_resurrections=c(error_messages_resurrections, paste(c("Tree number", tags[check], "in plot", unique(individual_tree$Plot),"started out dead in", format(min(individual_tree_s$Date), "%Y-%m-%d"), "and then recorded to be alive again in", format(new_alive_date, "%Y-%m-%d")), collapse = " "))
-            }
-            #DBH check for fluctuating trees
-            dead_tree_dates=individual_tree_s[which(individual_tree_s$Value=="D"),6]
-            if(length(unique(individual_tree_d[which(individual_tree_d$Date %in% dead_tree_dates),5]))==1){
-              #no change in DBH - nothing to do
-            }else{
+            }#DBH check for fluctuating trees
+            dead_tree_dates=individual_tree_s[which(individual_tree_s$Value=="D"),"Date"]
+            if(length(unique(individual_tree_d[which(individual_tree_d$Date %in% dead_tree_dates),5]))==1){ #no change in DBH - nothing to do
+            }else{ #change in dbh
               individual_tree_d$Value=as.numeric(individual_tree_d$Value)
-              if(all(abs(diff(unique(individual_tree_d$Value)))<1)){
-                #doesn't meet threshold of concern
-              }else{
-                #meets threshold
+              if(all(abs(diff(unique(individual_tree_d$Value)))<1)){ #doesn't meet threshold of concern (1)
+              }else{#meets threshold - difference is greater than 1
                 dates=unique(format(individual_tree_d$Date, "%Y-%m-%d"))
                 error_messages_DBH=c(error_messages_DBH, paste(c("Tree number", tags[check],"in plot", unique(individual_tree$Plot),
                                                                  "has been changing DBH when its dead in the following values:",
                                                                  paste(individual_tree_d$Value, sep=", "),
                                                                  "on the following dates",paste(dates, collapse=",")),  collapse=" "))
-              }
-            }
-
-          }
-        }
-      }
-
-
-      #if length of unique status is 1 - either all dead or alive
-      #if all alive - nothing
-      #if all dead - dbh check
-      #flag any changes in DBH with dates
-
-      #else(length is greater than 1) - switching it up
-      #if min date has live status
-      #find min dead status  - save date
-      #find live status greater than save date - flag as date tree came back alive
-      #else min date has dead status
-      #find min live status - flag as date tree came back alive
-      ##DBH check
-      #isolate years where tree is dead
-      #flag any changes in DBH with dates
-
-
-    }
-
-  }
+              }#closing error message
+            }#closing change in dbh while dead
+        }#closing only one entry for min date
+        }#closing fluctuating from dead to alive
+      }#closing not a bad tag - running checks
+    }#closing loop through plots
+  }#closing loop through tags
+#flagging errors
   flags<-c(flags, error_messages_DBH) #add dates #check for increase in dbh which would be weird
   flags<-c(flags, error_messages_resurrections)
   cat(paste(error_messages_DBH,"\n"), sep="\n")
   cat("\n")
   cat(paste(error_messages_resurrections,"\n"), sep="\n")
 
-
+#INFO ABOUT TREE RESURRECTIONS
   #tree data - trees are tagged, in theory once that tree dies it shouldn't come back alive, it shouldn't shrink - make sure it doesn't
   #how much should it matter for density calculations...
   #case by case, look at data sheet and see what happened, could be a different tree but trees have tags in them. sometimes duplicate numbers
