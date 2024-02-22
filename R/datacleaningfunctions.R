@@ -3001,7 +3001,7 @@ tree_dead_to_alive_DBH_change_qc=function(tree){
 #'
 #' @examples
 #' comments(cover, fuel1000,duff, fine, saps, seeds, tree)
-comments=function(cover, fuel1000, duff, fine, saps, seeds, tree){
+comments=function(cover, fuel1000, duff, fine, saps=NA, seeds, tree){
   comments=c()
   cover_comments=unique(na.omit(cover$Comment))
   cover_comments=cover_comments[! cover_comments %in% c('no data collected', 'data not collected', '')]
@@ -3011,8 +3011,12 @@ comments=function(cover, fuel1000, duff, fine, saps, seeds, tree){
   duff_comments=duff_comments[! duff_comments %in% c('no data collected', 'data not collected', '')]
   fine_comments=unique(na.omit(fine$Comment))
   fine_comments=fine_comments[! fine_comments %in% c('no data collected', 'data not collected', '')]
+  if(is.vector(saps)){
+    #skip
+  }else{
   saps_comments=unique(na.omit(saps$Comment))
   saps_comments=saps_comments[! saps_comments %in% c('no data collected', 'data not collected', '')]
+  }
   seeds_comments=unique(na.omit(seeds$Comment))
   seeds_comments=seeds_comments[! seeds_comments %in% c('no data collected', 'data not collected', '')]
   tree_comments=unique(na.omit(tree$Comment))
@@ -3041,13 +3045,6 @@ comments=function(cover, fuel1000, duff, fine, saps, seeds, tree){
                    fine[which(fine$Comment %in% fine_comments), "Comment"], sep=", "),
 
 
-             "SAPLINGS PROTOCOL",
-             paste(saps[which(saps$Comment %in% saps_comments), "Index"],
-                   saps[which(saps$Comment %in% saps_comments), "MacroPlot.Name"],
-                   saps[which(saps$Comment %in% saps_comments), "Monitoring.Status"],
-                   saps[which(saps$Comment %in% saps_comments), "Comment"], sep=", "),
-
-
              "SEEDLINGS PROTOCOL",
              paste("Index",  seeds[which(seeds$Comment %in% seeds_comments), "Index"],
                    seeds[which(seeds$Comment %in% seeds_comments), "MacroPlot.Name"],
@@ -3064,6 +3061,17 @@ comments=function(cover, fuel1000, duff, fine, saps, seeds, tree){
 
   )
 
+  if(is.vector(saps)){
+    #skip
+  }else{
+
+  comments=c(comments,
+  "SAPLINGS PROTOCOL",
+  paste(saps[which(saps$Comment %in% saps_comments), "Index"],
+        saps[which(saps$Comment %in% saps_comments), "MacroPlot.Name"],
+        saps[which(saps$Comment %in% saps_comments), "Monitoring.Status"],
+        saps[which(saps$Comment %in% saps_comments), "Comment"], sep=", "))
+}
   return(comments)
 }
 
