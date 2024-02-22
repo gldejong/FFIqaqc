@@ -2898,7 +2898,7 @@ tree_dead_to_alive_DBH_change_qc=function(tree){
       individual_tree_d=individual_tree[which(individual_tree$Variable=="DBH"),]
       if(tags[check] %in% badtags){#SKIP TOO MESSY SOMETHING IS WRONG
       }else{ #running checks
-        if(length(unique(individual_tree_s$Value))==1){ print("either all dead or all alive")
+        if(length(unique(individual_tree_s$Value))==1){ #either all dead or all alive"
           if(unique(individual_tree_s$Value)=="L"){#all alive - nothing to do
           }else{#all dead - DBH change check
             if(length(unique(individual_tree_d$Value))==1){#DBH doesn't change, nothing to do
@@ -2914,7 +2914,7 @@ tree_dead_to_alive_DBH_change_qc=function(tree){
               } #closing flag
             } #closing DBH does change
           } #closing all dead dbh check
-        }else{  print("not all dead or alive, some entries dead some alive")
+        }else{  #not all dead or alive, some entries dead some alive
           if(length(which(individual_tree_s$Date==min(individual_tree_s$Date)))>1){#2 entries for min date? - probably two trees with same tag
             error_messages_resurrections=c(error_messages_resurrections, paste(c("Tree number", tags[check],"in plot", unique(individual_tree$Plot), "has two different entries for the min date - one alive and one dead, min date is", min(individual_tree_s$Date)), collapse = " "))
           }else{#only one entry for min date
