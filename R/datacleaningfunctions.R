@@ -3102,8 +3102,11 @@ format_flags=function(flags, samp, mtype, comments){
   #blank list
 
   plots=unique(samp[which(samp$ProjectUnit_Name == mtype), "MacroPlot_Name"])
+
+
+
   df_flags <- data.frame(matrix(ncol = length(plots), nrow = 0))
-  colnames(df_flags)=plots
+
   for(i in 1:length(flags)){
     for(x in 1:length(plots)){
       if(grepl(plots[x], flags[i])){
@@ -3113,7 +3116,8 @@ format_flags=function(flags, samp, mtype, comments){
       }
     }
   }
-
+  plots=gsub(pattern=":", x=plots, replacement="_")
+  colnames(df_flags)=plots
   df_flags$Comments=c(comments_list, rep(NA,nrow(df_flags)-length(comments_list)))
 
   data = list()
@@ -3141,6 +3145,7 @@ format_flags=function(flags, samp, mtype, comments){
 
   names(data)=c(plots, "Comments")
   todaysdate=Sys.Date()
+
 
   write.xlsx(
     x=data,

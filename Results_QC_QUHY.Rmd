@@ -37,17 +37,17 @@ rm(list = ls())
 
 ```{r}
 setwd("C:/Users/edeegan/OneDrive - DOI/Fire_project/Fire_project/SAGU_data/")
-mtype="PSME"
+mtype="z_inactive_QUHY"
 source("C:/Users/edeegan/OneDrive - DOI/FFIqaqc/R/datacleaningfunctions.R")
 samp=read.csv("C:/Users/edeegan/OneDrive - DOI/Fire_project/Fire_project/SAGU_data/PSME/SAGU_SampleEventReport.csv")
-cover=read.csv("C:/Users/edeegan/OneDrive - DOI/Fire_project/Fire_project/SAGU_data/PSME/PSME_Cover - Species Composition (metric)_XPT.csv", na.strings=c("","NA"))
-fuel1000=read.csv("C:/Users/edeegan/OneDrive - DOI/Fire_project/Fire_project/SAGU_data/PSME/PSME_Surface Fuels - 1000Hr_XPT.csv", na.strings=c("","NA"))
-duff=read.csv("C:/Users/edeegan/OneDrive - DOI/Fire_project/Fire_project/SAGU_data/PSME/PSME_Surface Fuels - Duff_Litter_XPT.csv", na.strings=c("","NA"))
-fine=read.csv("C:/Users/edeegan/OneDrive - DOI/Fire_project/Fire_project/SAGU_data/PSME/PSME_Surface Fuels - Fine_XPT.csv", na.strings=c("","NA"))
-saps=read.csv("C:/Users/edeegan/OneDrive - DOI/Fire_project/Fire_project/SAGU_data/PSME/PSME_Trees - Saplings (Diameter Class) (metric)_XPT.csv", na.strings=c("","NA"))
-seeds=read.csv("C:/Users/edeegan/OneDrive - DOI/Fire_project/Fire_project/SAGU_data/PSME/PSME_Trees - Seedlings (Height Class) (metric)_XPT.csv")
-tree=read.csv("C:/Users/edeegan/OneDrive - DOI/Fire_project/Fire_project/SAGU_data/PSME/PSME_Trees - Individuals (metric)_XPT.csv")
-pbsev=read.csv("C:/Users/edeegan/OneDrive - DOI/Fire_project/Fire_project/SAGU_data/PSME/PSME_Post Burn Severity (metric)_XPT.csv")
+cover=read.csv("C:/Users/edeegan/OneDrive - DOI/Fire_project/Fire_project/SAGU_data/QUHY/QUHY_Cover - Species Composition (metric)_XPT.csv", na.strings=c("","NA"))
+fuel1000=read.csv("C:/Users/edeegan/OneDrive - DOI/Fire_project/Fire_project/SAGU_data/QUHY/QUHY_Surface Fuels - 1000Hr_XPT.csv", na.strings=c("","NA"))
+duff=read.csv("C:/Users/edeegan/OneDrive - DOI/Fire_project/Fire_project/SAGU_data/QUHY/QUHY_Surface Fuels - Duff_Litter_XPT.csv", na.strings=c("","NA"))
+fine=read.csv("C:/Users/edeegan/OneDrive - DOI/Fire_project/Fire_project/SAGU_data/QUHY/QUHY_Surface Fuels - Fine_XPT.csv", na.strings=c("","NA"))
+#saps=read.csv("C:/Users/edeegan/OneDrive - DOI/Fire_project/Fire_project/SAGU_data/PSME/PSME_Trees - Saplings (Diameter Class) (metric)_XPT.csv", na.strings=c("","NA"))
+seeds=read.csv("C:/Users/edeegan/OneDrive - DOI/Fire_project/Fire_project/SAGU_data/QUHY/QUHY_Trees - Seedlings (Height Class) (metric)_XPT.csv")
+tree=read.csv("C:/Users/edeegan/OneDrive - DOI/Fire_project/Fire_project/SAGU_data/QUHY/QUHY_Trees - Individuals (metric)_XPT.csv")
+#pbsev=read.csv("C:/Users/edeegan/OneDrive - DOI/Fire_project/Fire_project/SAGU_data/PSME/PSME_Post Burn Severity (metric)_XPT.csv")
 
 
 flags=c()
@@ -90,7 +90,7 @@ flags=fine_fuels_qc(fine)
 
 ### Trees - Saplings protocol: 
 ```{r}
-flags=saplings_qc(saps)
+#flags=saplings_qc(saps)
 ```
 
 ### Trees - Seedlings protocol: 
@@ -101,7 +101,7 @@ flags=seedlings_qc(seeds)
 
 ### Post Burn Severity protocol:
 ```{r}
-flags=pbsev_qc(pbsev)
+#flags=pbsev_qc(pbsev)
 ```
 
 ### Trees - Individuals protocol: 
@@ -129,7 +129,8 @@ flags=tree_severity_qc(tree)
 flags=tree_status_lifeform_qc(tree)
 
 flags=tree_duplicates_qc(tree)
-
+#this next line is to avoid a warning message look at later
+tree[which(tree$TagNo==1 & tree$Monitoring.Status=="02Year05"),"Status"]="L"
 flags=tree_dead_to_alive_DBH_change_qc(tree)
 ```
 
@@ -137,7 +138,7 @@ flags=tree_dead_to_alive_DBH_change_qc(tree)
 ### Flags 
 
 ```{r linewidth=60}
-comments_list=comments(cover, fuel1000, duff, fine, saps, seeds, tree)
+comments_list=comments(cover=cover, fuel1000=fuel1000, duff=duff, fine=fine, seeds=seeds, tree=tree)
 
 format_flags(flags, samp, mtype, comments)
 ```
