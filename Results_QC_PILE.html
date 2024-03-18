@@ -856,7 +856,7 @@ flags=c()</code></pre>
 <pre><code>## All dead trees have a blank live crown base height...
 ## TRUE
 ## 
-## No live crown base height values recorded
+## Not enough samples to conduct a rosner test (&lt;4) for the outlier values for live crown base height in the tree dataset. Values are  
 ## 
 ## Are there values for live crown base height in this dataset?
 ## No</code></pre>
@@ -925,14 +925,27 @@ flags=c()</code></pre>
 ## All Scorch percentage heights are blank for pre burn trees...TRUE
 ## 
 ## 
-## Including pole trees for char data checks (to exclude add argument filterpoles=Y to function.
+## Including pole trees for char data checks (to exclude add argument filterpoles=Y to function.)
 ## Are there any outlier values in CharHt ?</code></pre>
 <pre><code>## Warning in rosnerTest(column_values): The true Type I error may be larger than
 ## assumed. See the help file for &#39;rosnerTest&#39; for a table with information on the
 ## estimated Type I error level.</code></pre>
 <pre><code>## Yes, the outlier values according to a Rosner test are 4 . They are in events PILE-05 01Post of the data table. For reference, the max, min, and mean of CharHt are 4 0 0.589473684210526 respectively 
-## All trees in post read have a char height value</code></pre>
-<pre><code>## Error in which(postburntrees$CharHt == &quot;&quot; | is.na(postburntrees$CharHt | : object &#39;blank_char&#39; not found</code></pre>
+## All trees in post read have a char height value
+## TRUE
+## Are there any outlier values in ScorchHt ?</code></pre>
+<pre><code>## Warning in rosnerTest(column_values): The true Type I error may be larger than
+## assumed. See the help file for &#39;rosnerTest&#39; for a table with information on the
+## estimated Type I error level.</code></pre>
+<pre><code>## No
+## All trees in post read have a scorch height value
+## TRUE
+## All trees in post read have a scorch percentage equal to or under 100%
+## TRUE
+## All live trees have a scorch percentage value
+## TRUE
+## All rows with crown class DD, BBD, or CUS have a blank char and scorch height and a scorch percentage of blank or 100
+## TRUE</code></pre>
 <pre class="r"><code>flags=tree_status_lifeform_qc(tree)</code></pre>
 <pre><code>## Tree statuses are all L or D...TRUE
 ## 

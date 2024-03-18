@@ -8,7 +8,7 @@ setwd("C:/Users/edeegan/OneDrive - DOI/FFIqaqc/")
 rm(list = ls())
 
 
-#reading in historical tracker sheet
+#reading in historical tracker sheet - 2023 for example
 sheet_names_h <- excel_sheets("C:/Users/edeegan/OneDrive - DOI/Fire_project/Fire_project/QAQC/PSME_Flags_tracking.xlsx")
 historical <- lapply(sheet_names_h, function(x) {          # Read all sheets to list
   as.data.frame(read_excel("C:/Users/edeegan/OneDrive - DOI/Fire_project/Fire_project/QAQC/PSME_Flags_tracking.xlsx", sheet = x)) } )
@@ -17,7 +17,7 @@ names(historical) <- sheet_names_h
 
 
 
-#reading in yearly tracker sheet
+#reading in yearly tracker sheet - 2024 for example
 sheet_names_y <- excel_sheets("C:/Users/edeegan/OneDrive - DOI/Fire_project/Fire_project/QAQC/PSME 2024-02-08 flags.xlsx")
 yearly <- lapply(sheet_names_y, function(x) {          # Read all sheets to list
   as.data.frame(read_excel("C:/Users/edeegan/OneDrive - DOI/Fire_project/Fire_project/QAQC/PSME 2024-02-08 flags.xlsx", sheet = x)) } )
