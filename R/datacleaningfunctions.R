@@ -173,7 +173,7 @@ sample_event_qc <- function(samp, mtype) {
   samples[which(samples$fire %in% c("fire+1","fire+2","fire+5","fire+10")), "fire"]="fire"
 
   #plotting stuff
-  protocols <- c("Cover - Points (metric)", "Trees (metric)", "Surface Fuels", "Density - Belts (metric)", "Cover - Species Composition (metric)", "Post Burn Severity")
+  protocols <- c("Cover - Points (metric)", "Trees (metric)", "Surface Fuels", "Density - Belts (metric)", "Cover - Species Composition (metric)", "Post Burn Severity (metric)")
 
 
   a=samples[which(samples$Protocols=="all"),]
@@ -187,7 +187,7 @@ sample_event_qc <- function(samp, mtype) {
   e=samples[which(samples$Protocols=="all"),]
   e$Protocols="Cover - Species Composition (metric)"
   f=samples[which(samples$Protocols=="all"),]
-  f$Protocols="Post Burn Severity"
+  f$Protocols="Post Burn Severity (metric)"
 
   samples=rbind(samples, a,b,c,d,e,f)
   samples=samples[-which(samples$Protocols=="all"),]
@@ -3156,3 +3156,4 @@ format_flags=function(flags, samp, mtype, comments){
   )
 
 }
+
