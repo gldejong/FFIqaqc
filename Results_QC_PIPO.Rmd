@@ -57,7 +57,7 @@ flags=c()
 ```{r}
 sample_event_qc(samp, mtype)[1]
 flags=sample_event_qc(samp, mtype)[2]
-ggsave("historical_data_viz.png", width=10, height=5)
+ggsave("historical_data_viz.png", width=15, height=10)
 
 
 ```

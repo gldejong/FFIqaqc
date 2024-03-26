@@ -1408,7 +1408,7 @@ flags=c()</code></pre>
 ## All Scorch percentage heights are blank for pre burn trees...TRUE
 ## 
 ## 
-## Including pole trees for char data checks (to exclude add argument filterpoles=Y to function.
+## Including pole trees for char data checks (to exclude add argument filterpoles=Y to function.)
 ## Are there any outlier values in CharHt ?
 ## Yes, the outlier values according to a Rosner test are 22 . They are in events PIPO-13 02Post of the data table. For reference, the max, min, and mean of CharHt are 22 0 1.63577193439209 respectively
 ## Yes, the outlier values according to a Rosner test are 20 . They are in events PIPO-14 01Post of the data table. For reference, the max, min, and mean of CharHt are 22 0 1.63577193439209 respectively
@@ -1417,8 +1417,17 @@ flags=c()</code></pre>
 ## Yes, the outlier values according to a Rosner test are 20 . They are in events PIPO-14 01Post of the data table. For reference, the max, min, and mean of CharHt are 22 0 1.63577193439209 respectively
 ## Yes, the outlier values according to a Rosner test are 20 . They are in events PIPO-14 01Post of the data table. For reference, the max, min, and mean of CharHt are 22 0 1.63577193439209 respectively
 ## Yes, the outlier values according to a Rosner test are 22 . They are in events PIPO-14 01Post of the data table. For reference, the max, min, and mean of CharHt are 22 0 1.63577193439209 respectively 
-## All trees in post read have a char height value</code></pre>
-<pre><code>## Error in which(postburntrees$CharHt == &quot;&quot; | is.na(postburntrees$CharHt | : object &#39;blank_char&#39; not found</code></pre>
+## All trees in post read have a char height value
+## TRUE
+## Are there any outlier values in ScorchHt ?
+## No
+## All trees in post read have a scorch height value
+## FALSE, problem sample events listed in flags
+## All trees in post read have a scorch percentage equal to or under 100%
+## TRUE
+## All live trees have a scorch percentage value
+## FALSE, problem sample events listed in flags
+## All rows with crown class DD, BBD, or CUS have a blank char and scorch height and a scorch percentage of blank or 100</code></pre>
 <pre class="r"><code>flags=tree_status_lifeform_qc(tree)</code></pre>
 <pre><code>## Tree statuses are all L or D...FALSE X values entered which do not fit with acceptable values of L or D, problem events are in flags
 ##   
