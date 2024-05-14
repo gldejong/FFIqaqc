@@ -24,7 +24,6 @@ library(openxlsx)
 
 ### Setting Working Directory
 
-
 ```{r}
 rm(list = ls())
 #knitr::opts_knit$set(root.dir="C:/Users/edeegan/OneDrive - DOI/Fire_project/Fire_project/tmp")
@@ -32,8 +31,6 @@ rm(list = ls())
 ```
 
 ## Reading in data {.tabset}
-
-
 
 ```{r}
 setwd("C:/Users/edeegan/OneDrive - DOI/Fire_project/Fire_project/SAGU_data/")
@@ -53,7 +50,8 @@ pbsev=read.csv("C:/Users/edeegan/OneDrive - DOI/Fire_project/Fire_project/SAGU_d
 flags=c()
 ```
 
-### Sample Events 
+### Sample Events
+
 ```{r}
 sample_event_qc(samp, mtype)[1]
 flags=sample_event_qc(samp, mtype)[2]
@@ -63,13 +61,15 @@ ggsave("historical_data_viz.png", width=10, height=5)
 ```
 
 ### Cover - Species Composition
+
 ```{r}
 flags=cover_qc(cover)
 
 flags=cover_uvs_qc(cover)
 ```
 
-### Protocol: Surface Fuels - 1000Hr 
+### Protocol: Surface Fuels - 1000Hr
+
 ```{r}
 flags=fuel1000_qc(fuel1000)
 ```
@@ -79,32 +79,36 @@ flags=transect_slope_azimuth_qc(fuel1000,fine)
 ```
 
 ### Protocol: Surface Fuels - Duff Litter
+
 ```{r}
 flags=duff_qc(duff)
 ```
 
-### Protocol: Surface Fuels - Fine Litter 
+### Protocol: Surface Fuels - Fine Litter
+
 ```{r}
 flags=fine_fuels_qc(fine)
 ```
 
-### Trees - Saplings protocol: 
+### Trees - Saplings protocol:
+
 ```{r}
 flags=saplings_qc(saps)
 ```
 
-### Trees - Seedlings protocol: 
+### Trees - Seedlings protocol:
 
 ```{r}
 flags=seedlings_qc(seeds)
 ```
 
 ### Post Burn Severity protocol:
+
 ```{r}
 flags=pbsev_qc(pbsev)
 ```
 
-### Trees - Individuals protocol: 
+### Trees - Individuals protocol:
 
 ```{r}
 
@@ -133,8 +137,7 @@ flags=tree_duplicates_qc(tree)
 flags=tree_dead_to_alive_DBH_change_qc(tree)
 ```
 
-
-### Flags 
+### Flags
 
 ```{r linewidth=60}
 comments_list=comments(cover, fuel1000, duff, fine, saps, seeds, tree)
