@@ -3001,77 +3001,87 @@ tree_dead_to_alive_DBH_change_qc=function(tree){
 #'
 #' @examples
 #' comments(cover, fuel1000,duff, fine, saps, seeds, tree)
-comments=function(cover, fuel1000, duff, fine, saps=NA, seeds, tree){
+comments=function(cover=NA, fuel1000=NA, duff=NA, fine=NA, saps=NA, seeds=NA, tree=NA){
   comments=c()
-  cover_comments=unique(na.omit(cover$Comment))
-  cover_comments=cover_comments[! cover_comments %in% c('no data collected', 'data not collected', '')]
-  fuel1000_comments=unique(na.omit(fuel1000$Comment))
-  fuel1000_comments=fuel1000_comments[! fuel1000_comments %in% c('no data collected', 'data not collected', '')]
-  duff_comments=unique(na.omit(duff$Comment))
-  duff_comments=duff_comments[! duff_comments %in% c('no data collected', 'data not collected', '')]
-  fine_comments=unique(na.omit(fine$Comment))
-  fine_comments=fine_comments[! fine_comments %in% c('no data collected', 'data not collected', '')]
+  if(is.vector(cover)){
+    #skip
+  }else{
+    cover_comments=unique(na.omit(cover$Comment))
+    cover_comments=cover_comments[! cover_comments %in% c('no data collected', 'data not collected', '')]
+    comments=c("COVER PROTOCOL",
+               paste(cover[which(cover$Comment %in% cover_comments), "MacroPlot.Name"],
+                     cover[which(cover$Comment %in% cover_comments), "Monitoring.Status"],
+                     cover[which(cover$Comment %in% cover_comments), "Comment"], sep=", "))
+    }
+  if(is.vector(fuel1000)){
+    #skip
+  }else{
+    fuel1000_comments=unique(na.omit(fuel1000$Comment))
+    fuel1000_comments=fuel1000_comments[! fuel1000_comments %in% c('no data collected', 'data not collected', '')]
+    comments=c(comments,
+      "1000 HR FUELS PROTOCOL",
+      paste(fuel1000[which(fuel1000$Comment %in% fuel1000_comments), "Index"],
+            fuel1000[which(fuel1000$Comment %in% fuel1000_comments), "MacroPlot.Name"],
+            fuel1000[which(fuel1000$Comment %in% fuel1000_comments), "Monitoring.Status"],
+            fuel1000[which(fuel1000$Comment %in% fuel1000_comments), "Comment"], sep=", "))
+     }
+  if(is.vector(duff)){
+    #skip
+  }else{
+    duff_comments=unique(na.omit(duff$Comment))
+    duff_comments=duff_comments[! duff_comments %in% c('no data collected', 'data not collected', '')]
+    comments=c(comments,"DUFF PROTOCOL",
+               paste(
+                 duff[which(duff$Comment %in% duff_comments), "MacroPlot.Name"],
+                 duff[which(duff$Comment %in% duff_comments), "Monitoring.Status"],
+                 duff[which(duff$Comment %in% duff_comments), "Comment"], sep=", "))
+               }
+  if(is.vector(fine)){
+    #skip
+  }else{
+    fine_comments=unique(na.omit(fine$Comment))
+    fine_comments=fine_comments[! fine_comments %in% c('no data collected', 'data not collected', '')]
+    comments=c(comments, "FINE FUELS PROTOCOL",
+                paste("Index",  fine[which(fine$Comment %in% fine_comments), "Index"],
+                      fine[which(fine$Comment %in% fine_comments), "MacroPlot.Name"],
+                      fine[which(fine$Comment %in% fine_comments), "Monitoring.Status"],
+                      fine[which(fine$Comment %in% fine_comments), "Comment"], sep=", "))
+    }
   if(is.vector(saps)){
     #skip
   }else{
   saps_comments=unique(na.omit(saps$Comment))
   saps_comments=saps_comments[! saps_comments %in% c('no data collected', 'data not collected', '')]
+  comments=c(comments,
+             "SAPLINGS PROTOCOL",
+             paste(saps[which(saps$Comment %in% saps_comments), "Index"],
+                   saps[which(saps$Comment %in% saps_comments), "MacroPlot.Name"],
+                   saps[which(saps$Comment %in% saps_comments), "Monitoring.Status"],
+                   saps[which(saps$Comment %in% saps_comments), "Comment"], sep=", "))
   }
-  seeds_comments=unique(na.omit(seeds$Comment))
-  seeds_comments=seeds_comments[! seeds_comments %in% c('no data collected', 'data not collected', '')]
-  tree_comments=unique(na.omit(tree$Comment))
-  tree_comments=tree_comments[! tree_comments %in% c('no data collected', 'data not collected', '', 'missing tag', 'NEEDS DBH', 'Tag missing')]
-  comments=c("COVER PROTOCOL",
-             paste(cover[which(cover$Comment %in% cover_comments), "MacroPlot.Name"],
-                   cover[which(cover$Comment %in% cover_comments), "Monitoring.Status"],
-                   cover[which(cover$Comment %in% cover_comments), "Comment"], sep=", "),
-             "1000 HR FUELS PROTOCOL",
-             paste(fuel1000[which(fuel1000$Comment %in% fuel1000_comments), "Index"],
-                   fuel1000[which(fuel1000$Comment %in% fuel1000_comments), "MacroPlot.Name"],
-                   fuel1000[which(fuel1000$Comment %in% fuel1000_comments), "Monitoring.Status"],
-                   fuel1000[which(fuel1000$Comment %in% fuel1000_comments), "Comment"], sep=", "),
-
-             "DUFF PROTOCOL",
-             paste(
-                   duff[which(duff$Comment %in% duff_comments), "MacroPlot.Name"],
-                   duff[which(duff$Comment %in% duff_comments), "Monitoring.Status"],
-                   duff[which(duff$Comment %in% duff_comments), "Comment"], sep=", "),
-
-
-             "FINE FUELS PROTOCOL",
-             paste("Index",  fine[which(fine$Comment %in% fine_comments), "Index"],
-                   fine[which(fine$Comment %in% fine_comments), "MacroPlot.Name"],
-                   fine[which(fine$Comment %in% fine_comments), "Monitoring.Status"],
-                   fine[which(fine$Comment %in% fine_comments), "Comment"], sep=", "),
-
-
-             "SEEDLINGS PROTOCOL",
-             paste("Index",  seeds[which(seeds$Comment %in% seeds_comments), "Index"],
-                   seeds[which(seeds$Comment %in% seeds_comments), "MacroPlot.Name"],
-                   seeds[which(seeds$Comment %in% seeds_comments), "Monitoring.Status"],
-                   seeds[which(seeds$Comment %in% seeds_comments), "Comment"], sep=", "),
-
-
-             "TREES PROTOCOL",
-             paste( tree[which(tree$Comment %in% tree_comments), "TagNo"],
-                    tree[which(tree$Comment %in% tree_comments), "MacroPlot.Name"],
-                    tree[which(tree$Comment %in% tree_comments), "Monitoring.Status"],
-                    tree[which(tree$Comment %in% tree_comments), "Comment"], sep=", ")
-
-
-  )
-
-  if(is.vector(saps)){
+  if(is.vector(seeds)){
     #skip
   }else{
+    seeds_comments=unique(na.omit(seeds$Comment))
+    seeds_comments=seeds_comments[! seeds_comments %in% c('no data collected', 'data not collected', '')]
+    comments=c(comments, "SEEDLINGS PROTOCOL",
+                paste("Index",  seeds[which(seeds$Comment %in% seeds_comments), "Index"],
+                      seeds[which(seeds$Comment %in% seeds_comments), "MacroPlot.Name"],
+                      seeds[which(seeds$Comment %in% seeds_comments), "Monitoring.Status"],
+                      seeds[which(seeds$Comment %in% seeds_comments), "Comment"], sep=", "))
+                }
+  if(is.vector(tree)){
+    #skip
+  }else{
+    tree_comments=unique(na.omit(tree$Comment))
+    tree_comments=tree_comments[! tree_comments %in% c('no data collected', 'data not collected', '', 'missing tag', 'NEEDS DBH', 'Tag missing')]
+    comments=c(comments,"TREES PROTOCOL",
+               paste( tree[which(tree$Comment %in% tree_comments), "TagNo"],
+                      tree[which(tree$Comment %in% tree_comments), "MacroPlot.Name"],
+                      tree[which(tree$Comment %in% tree_comments), "Monitoring.Status"],
+                      tree[which(tree$Comment %in% tree_comments), "Comment"], sep=", "))
+    }
 
-  comments=c(comments,
-  "SAPLINGS PROTOCOL",
-  paste(saps[which(saps$Comment %in% saps_comments), "Index"],
-        saps[which(saps$Comment %in% saps_comments), "MacroPlot.Name"],
-        saps[which(saps$Comment %in% saps_comments), "Monitoring.Status"],
-        saps[which(saps$Comment %in% saps_comments), "Comment"], sep=", "))
-}
   return(comments)
 }
 
@@ -3098,7 +3108,7 @@ comments=function(cover, fuel1000, duff, fine, saps=NA, seeds, tree){
 #'
 #' @examples
 #' format_flags(flags, samp, mtype, comments)
-format_flags=function(flags, samp, mtype, comments){
+format_flags=function(flags, samp, mtype, comments_list=NA){
   #blank list
 
   plots=unique(samp[which(samp$ProjectUnit_Name == mtype), "MacroPlot_Name"])
@@ -3149,7 +3159,7 @@ format_flags=function(flags, samp, mtype, comments){
 
   write.xlsx(
     x=data,
-    file = paste(mtype,"flags_QAQC", todaysdate, ".xlsx"),
+    file = paste(todaysdate, mtype,"flags_QAQC", ".xlsx"),
     col_names = TRUE,
     format_headers = TRUE,
     use_zip64 = FALSE

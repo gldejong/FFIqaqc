@@ -142,5 +142,5 @@ flags=tree_dead_to_alive_DBH_change_qc(tree)
 ```{r linewidth=60}
 comments_list=comments(cover, fuel1000, duff, fine, saps, seeds, tree)
 
-format_flags(flags, samp, mtype, comments)
+format_flags(flags, samp, mtype, comments_list)
 ```
