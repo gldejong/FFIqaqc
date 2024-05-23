@@ -2736,8 +2736,8 @@ tree_status_lifeform_qc=function(tree){
 tree_duplicates_qc=function(tree){
   #group by macro plot and sample event date (monitoring status)
   treedates=as.data.frame(str_split(unique(paste(tree$MacroPlot.Name, tree$Monitoring.Status, sep =",")), ","))
-  tree[which(tree$TagNo==999),55]="Tag number 999 replaced with NA"
-  tree[which(tree$TagNo==999),8]=NA
+  tree[which(tree$TagNo==999),"SaComment"]="Tag number 999 replaced with NA"
+  tree[which(tree$TagNo==999),"TagNo"]=NA
 
   verf=c()
   error_events=c()
@@ -2745,18 +2745,19 @@ tree_duplicates_qc=function(tree){
   badtags=c()
   #for loop
   for(i in 1:ncol(treedates)){
-    rows=which((tree[,1]==treedates[1,i]) & (tree[,2]==treedates[2,i]))
+    rows=which((tree[,"MacroPlot.Name"]==treedates[1,i]) & (tree[,"Monitoring.Status"]==treedates[2,i]))
     eve=tree[rows,]
     if(length(unique(na.omit(eve$TagNo)))==length(na.omit(eve$TagNo))){
       verf[i]="verified"
     }else{
       verf[i]="error found"
-      ers=unique(na.omit(eve[which(duplicated(eve$TagNo)==TRUE), 8]))
+      ers=unique(na.omit(eve[which(duplicated(eve$TagNo)==TRUE), "TagNo"]))
       error_events=c(error_events, paste(c("Error found in sample event", treedates[,i], "tag numbers", unique(na.omit(eve[which(duplicated(eve$TagNo)==TRUE), 8])), "are duplicated"), collapse=" "))
 
       for(t in 1:length(ers)){
-        duplicates=c(duplicates, eve[which(eve$TagNo==ers[t]),c(1,2,3,8,9,10,11)])
-        badtags=c(badtags,unique(eve[which(eve$TagNo==ers[t]),8]))
+        duplicates=c(duplicates, eve[which(eve$TagNo==ers[t]),c("MacroPlot.Name",    "Monitoring.Status" ,"Date"   ,           "TagNo",
+                                                                "Status"  ,          "DBH"   ,            "Ht"  )])
+        badtags=c(badtags,unique(eve[which(eve$TagNo==ers[t]),"TagNo"]))
       }
 
     }
@@ -2769,7 +2770,8 @@ tree_duplicates_qc=function(tree){
   diff=c()
   diff2=c()
   norm=c()
-  rep=rep(colnames(tree)[c(1,2,3,8,9,10,11)],length(duplicates)/7) #FIX THIS
+  rep=rep(colnames(tree)[c("MacroPlot.Name",    "Monitoring.Status" ,"Date"   ,           "TagNo",
+                           "Status"  ,          "DBH"   ,            "Ht"  )],length(duplicates)/7) #FIX THIS
 
 
   for(x in 1:length(duplicates)){
@@ -2785,27 +2787,28 @@ tree_duplicates_qc=function(tree){
 
   }
 
-  #this is so messy but it works I promise
+  #this is so messy but it works I promise - no longer works
   results=as.data.frame(rbind(rep, norm, diff, diff2))
   results[,which(!is.na(results[3,]))]
 
-  for(g in 1:length(error_events)){
-    m=seq(1,length(duplicates),7)[g]
-    bad=which(!is.na(results[3,m:(m+6)]))
-    bad=bad+(m-1)
-    if(length(bad)==0){
-      error_events[g]=paste(error_events[g],"no differences between data exist")
-    }else{
-      error_events[g]=paste(c(error_events[g],"; differences between data are in", results[1,bad], "which have different values of" , results[3,bad], "and", results[4,bad]),collapse=" ")
-    }
 
-  }
 
   cat("Any duplicate tree tags?\n")
   if(length(error_events)==0){
     cat("No\n")
     cat("\n")
   }else{
+    for(g in 1:length(error_events)){
+      m=seq(1,length(duplicates),7)[g]
+      bad=which(!is.na(results[3,m:(m+6)]))
+      bad=bad+(m-1)
+      if(length(bad)==0){
+        error_events[g]=paste(error_events[g],"no differences between data exist")
+      }else{
+        error_events[g]=paste(c(error_events[g],"; differences between data are in", results[1,bad], "which have different values of" , results[3,bad], "and", results[4,bad]),collapse=" ")
+      }
+
+    }
     cat(paste(error_events, "\n"), sep="\n")
     cat("\n")
   }
