@@ -7,6 +7,7 @@ setwd("C:/Users/edeegan/OneDrive - DOI/FFIqaqc/")
 
 rm(list = ls())
 #need to work on this script! - still working on it!
+#working on pulls
 
 #reading in historical tracker sheet - 2023 for example
 sheet_names_h <- excel_sheets("C:/Users/edeegan/OneDrive - DOI/FFIqaqc/PSME flags_newissues 2024-02-12 .xlsx")
