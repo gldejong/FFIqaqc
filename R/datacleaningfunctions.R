@@ -2004,6 +2004,27 @@ tree_dbh_qc=function(tree){
                          tree[which(tree$DBH %in% outliers), "Monitoring.Status"],
                          "of the duff data table. For reference, the max, min, and mean of tree DBH's are", max(na.omit(tree$DBH)), min(na.omit(tree$DBH)), mean(na.omit(tree$DBH)), "respectively", collapse=" ") )
   }
+
+  cat("Are there any trees missing a DBH?\n")
+  #every tree should have a dbh that isn't dead and down, canopy, or plot info
+  tree2=tree[-which(tree$CrwnCl=="DD" | tree$CrwnCl=="BBD"),]
+  tree2=tree2[-which(tree$Species.Symbol=="CANOPY"),]
+  tree2=tree2[which(is.na(tree2$MacroPlotSize)&is.na(tree2$SnagPlotSize)&is.na(tree2$BrkPntDia)),]
+  no_dbh=tree2[which(is.na(tree2$DBH)),]
+
+  if(nrow(no_dbh)==0){
+    cat("No\n")
+    cat("\n")
+  }else{
+cat("Yes some trees are missing DBHs - problem trees are listed in flags\n")
+  #also status of X - didn't find or measure
+  flags<- c(flags, paste(c("Some trees are missing DBHs - tag numbers:",
+                           paste(no_dbh[, "TagNo"]), "in events",
+                           paste(no_dbh[, "MacroPlot.Name"],no_dbh[, "Monitoring.Status"], " , ")), collapse = " "))
+
+}
+
+
   return(flags)
 } #end function #verified 9/12 by Eva
 
@@ -2072,6 +2093,59 @@ tree_dd_qc=function(tree){
   return(flags)
 }#end function #verified 10/2 by Eva
 
+##species change
+#' species change
+#' @description
+#' The tree_species_qc() function checks if any trees in a plot have been recorded as
+#' different species over time.
+#' If any issues are present, it flags the events with details on the
+#' specific species observations, tag numbers, and associated events (MacroPlot.Name and
+#' Monitoring.Status). The quality control results are stored in the `flags` variable
+#' and returned by the function.
+#'
+#' @param tree
+#'
+#' @return A list of flags or data issues with species changing trees in the tree csv
+#' @export
+#'
+#' @examples
+#' tree_species_qc(tree)
+tree_species_qc=function(tree){
+cat("Are there any trees that have been recorded as different species?\n")
+
+  plots=unique(tree$MacroPlot.Name)
+issues=c()
+  for(p in 1:length(plots)){
+    plots_i=tree[which(tree$MacroPlot.Name==plots[p]),]
+
+    tags=unique(plots_i$TagNo)
+    tags=tags[-which(tags==999)]
+    for(x in 1:length(tags)){
+      tree_i=plots_i[which(plots_i$TagNo==tags[x]),]
+      if(length(unique(tree_i$Species.Symbol))==1){
+        #all good
+
+      }else{
+        issues=c(1)
+        #flag
+        flags<-c(flags, paste(c("Tag number ", tags[x],
+                                " in tree data set switches species:", paste(tree_i$Species.Symbol, sep=", "),
+                                "recorded for species in sample events",
+                                paste(tree_i[which(tree_i$TagNo==tags[x]),"MacroPlot.Name"],
+                                      tree_i[which(tree_i$TagNo==tags[x]),"Monitoring.Status"], collapse=", ")), collapse=" "))
+      }
+    }
+  }
+if(length(issues)==0){
+  cat("No\n")
+  cat("\n")
+}else{
+  cat("Yes, problem tag numbers and events are recorded in flags. \n")
+  cat("\n")
+}
+
+  return(flags)
+}#end function #verified 10/2 by Eva
 
 
 ##Tree area multiplier

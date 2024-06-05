@@ -16,20 +16,32 @@ pbsev=read.csv("C:/Users/edeegan/OneDrive - DOI/Fire_project/Fire_project/SAGU_d
 flags=c()
 #new functions
 
-#missing dbh
+#missing dbh - in datacleaningfunctions now!
 
 #every tree should have a dbh that isn't dead and down
 tree=tree[-which(tree$CrwnCl=="DD" | tree$CrwnCl=="BBD"),]
 tree=tree[-which(tree$Species.Symbol=="CANOPY"),]
+tree=tree[which(is.na(tree$MacroPlotSize)&is.na(tree$SnagPlotSize)&is.na(tree$BrkPntDia)),]
 no_dbh=tree[which(is.na(tree$DBH)),]
 #also status of X - didn't find or measure
+flags<- c(flags, paste(c("Some trees are missing DBHs - tag numbers:",
+                         paste(no_dbh[, "TagNo"]), "in events",
+                         paste(no_dbh[, "MacroPlot.Name"],no_dbh[, "Monitoring.Status"], " , ")), collapse = " "))
 
-unique(no_dbh$Species.Symbol)
 
-#species change - CHANGE TO PER PLOT
-tags=unique(tree$TagNo)
+
+
+#species change - CHANGE TO PER PLOT- in datacleaningfunctions now!
+
+plots=unique(tree$MacroPlot.Name)
+
+for(p in 1:length(plots)){
+  plots_i=tree[which(tree$MacroPlot.Name==plots[p]),]
+
+tags=unique(plots_i$TagNo)
+tags=tags[-which(tags==999)]
 for(x in 1:length(tags)){
-  tree_i=tree[which(tree$TagNo==tags[x]),]
+  tree_i=plots_i[which(plots_i$TagNo==tags[x]),]
   if(length(unique(tree_i$Species.Symbol))==1){
     #all good
   }else{
@@ -41,14 +53,6 @@ for(x in 1:length(tags)){
                           tree_i[which(tree_i$TagNo==tags[x]),"Monitoring.Status"], collapse=", ")), collapse=" "))
   }
 }
+}
 
-
-
-#correct subfraction
-poles=tree[which(tree$DBH<15.1),]
-overstory=tree[which(tree$DBH>=15.1),]
-
-poles[which(poles$SubFrac!=0.25),]
-overstory[which(overstory$SubFrac!=1),]
-#shrub functions
 

@@ -118,6 +118,8 @@ flags=tree_dbh_qc(tree)
 
 flags=tree_dd_qc(tree)
 
+flags=tree_species_qc(tree)
+
 flags=tree_area_multiplier_qc(tree)
 
 flags=tree_sample_area_qc(tree)

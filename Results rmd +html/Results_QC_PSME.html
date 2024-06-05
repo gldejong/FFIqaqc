@@ -1096,7 +1096,10 @@ flags=c()</code></pre>
 ## TRUE
 ## 
 ## Are there any outlier values in tree DBH?
-## Yes, the outlier values in the tree dbh according to a rosner test are 102.6 101.5 101.5 . They are in sample events listed in flags of the tree data table. For reference, the max, min, and mean of tree DBH are 102.6 2.5 25.6654091700522 respectively</code></pre>
+## Yes, the outlier values in the tree dbh according to a rosner test are 102.6 101.5 101.5 . They are in sample events listed in flags of the tree data table. For reference, the max, min, and mean of tree DBH are 102.6 2.5 25.6654091700522 respectively
+## 
+## Are there any trees missing a DBH?
+## Yes some trees are missing DBHs - problem trees are listed in flags</code></pre>
 <pre class="r"><code>flags=tree_dd_qc(tree)</code></pre>
 <pre><code>## Values for DBH have been deleted for trees that are no longer standing...
 ## TRUE
@@ -1106,6 +1109,9 @@ flags=c()</code></pre>
 ## 
 ## Values for crown base height have been deleted for trees that are no longer standing...
 ## TRUE</code></pre>
+<pre class="r"><code>flags=tree_species_qc(tree)</code></pre>
+<pre><code>## Are there any trees that have been recorded as different species?
+## Yes, problem tag numbers and events are recorded in flags.</code></pre>
 <pre class="r"><code>flags=tree_area_multiplier_qc(tree)</code></pre>
 <pre><code>## All pole trees have subplot fraction of 0.25 or 0.5
 ## TRUE
@@ -1165,7 +1171,8 @@ flags=c()</code></pre>
 ##   
 ## All preferred lifeforms are tree for trees...FALSE, preferred lifeform values fortrees in tree data set include  Tree when it should only be tree, problem events listed in flags</code></pre>
 <pre class="r"><code>flags=tree_duplicates_qc(tree)</code></pre>
-<pre><code>## Error in seq.default(1, length(duplicates), 7): wrong sign in &#39;by&#39; argument</code></pre>
+<pre><code>## Any duplicate tree tags?
+## No</code></pre>
 <pre class="r"><code>flags=tree_dead_to_alive_DBH_change_qc(tree)</code></pre>
 <pre><code>## Tree number 731 in plot PSME-09 has been changing DBH when its dead in the following values: 25.8 26 24.1 25.9 24.1 24.1 on the following dates 1992-08-03,1997-09-09,2003-09-25,2001-09-15,2004-07-16,2008-07-06 
 ## 
@@ -1482,7 +1489,7 @@ flags=c()</code></pre>
 <h3>Flags</h3>
 <pre class="r"><code>comments_list=comments(cover, fuel1000, duff, fine, saps, seeds, tree)
 
-format_flags(flags, samp, mtype, comments)</code></pre>
+format_flags(flags, samp, mtype, comments_list)</code></pre>
 </div>
 </div>
 
