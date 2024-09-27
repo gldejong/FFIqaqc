@@ -1,0 +1,165 @@
+---
+title: "QC_Results"
+output: 
+  html_document:
+    theme:
+      bootswatch: simplex
+date: "2023-10-12"
+---
+
+```{r setup, include=FALSE}
+install.packages("tidylog")
+knitr::opts_chunk$set(echo = TRUE, error = TRUE)
+library(stringr)
+library(outliers)
+library(EnvStats)
+library(tidyverse)
+library(tidylog)
+library(miniUI)
+library(bslib)
+library(dplyr)
+library(knitr)
+library(DT)
+library(xtable)
+library(openxlsx)
+library(purrr)
+```
+
+### Setting Working Directory
+
+```{r}
+rm(list = ls())
+#knitr::opts_knit$set(root.dir="C:/Users/jsontag/Documents/CHIR Project/")
+
+```
+
+## Reading in data {.tabset}
+
+```{r}
+setwd("C:/Users/jsontag/Documents/CHIR Project/CHIR Data")
+
+mtype="PIPO"
+source("C:/Users/jsontag/Documents/CHIR Project/Scripts/datacleaningfunctions.R")
+
+source("C:/Users/jsontag/Documents/CHIR Project/Scripts/CHIR_newfunctionsJustin.R")
+
+samp=read.csv("C:/Users/jsontag/Documents/CHIR Project/CHIR Data/CHIR_SampleEventReport.csv")
+cover=read.csv("C:/Users/jsontag/Documents/CHIR Project/CHIR Data/PIPO/CHIR_PIPO_Cover-Species_Composition(metric)_XPT.csv", na.strings=c("","NA"))
+fuel1000=read.csv("C:/Users/jsontag/Documents/CHIR Project/CHIR Data/PIPO/CHIR_PIPO_Surface_Fuels-1000Hr_XPT.csv", na.strings=c("","NA"))
+duff=read.csv("C:/Users/jsontag/Documents/CHIR Project/CHIR Data/PIPO/CHIR_PIPO_Surface_Fuels-Duff_Litter_XPT.csv", na.strings=c("","NA"))
+fine=read.csv("C:/Users/jsontag/Documents/CHIR Project/CHIR Data/PIPO/CHIR_PIPO_Surface Fuels-Fine_XPT.csv", na.strings=c("","NA"))
+saps=read.csv("C:/Users/jsontag/Documents/CHIR Project/CHIR Data/PIPO/CHIR_PIPO_Trees-Saplings(Diameter_Class)(metric)_XPT.csv", na.strings=c("","NA"))
+seeds=read.csv("C:/Users/jsontag/Documents/CHIR Project/CHIR Data/PIPO/CHIR_PIPO_Trees-Seedlings(Height_Class)(metric)_XPT.csv")
+tree=read.csv("C:/Users/jsontag/Documents/CHIR Project/CHIR Data/PIPO/CHIR_PIPO_Trees-Individuals(metric)_XPT.csv")
+pbsev=read.csv("C:/Users/jsontag/Documents/CHIR Project/CHIR Data/PIPO/PIPO_Post Burn Severity_XPT.csv")
+covpts=read.csv("C:/Users/jsontag/Documents/CHIR Project/CHIR Data/PIPO/PIPO_Cover - Points (metric)_XPT.csv")
+densbelts=read.csv("C:/Users/jsontag/Documents/CHIR Project/CHIR Data/PIPO/PIPO_Density - Belts (metric)_XPT.csv")
+
+flags=c()
+```
+
+### Sample Events
+
+```{r}
+sample_event_qc(samp, mtype)[1]
+flags=sample_event_qc(samp, mtype)[2]
+ggsave("historical_data_viz.png", width=10, height=5)
+
+
+```
+
+### Cover - Species Composition
+
+```{r}
+flags=cover_qc(cover)
+
+flags=cover_uvs_qc(cover)
+```
+
+### Protocol: Surface Fuels - 1000Hr
+
+```{r}
+flags=fuel1000_qc(fuel1000)
+```
+
+```{r}
+flags=transect_slope_azimuth_qc(fuel1000,fine)
+```
+
+### Protocol: Surface Fuels - Duff Litter
+
+```{r}
+flags=duff_qc(duff)
+```
+
+### Protocol: Surface Fuels - Fine Litter
+
+```{r}
+flags=fine_fuels_qc(fine)
+```
+
+### Protocol: Trees - Saplings
+
+```{r}
+flags=saplings_qc(saps)
+```
+
+### Protocol: Trees - Seedlings
+
+```{r}
+flags=seedlings_qc(seeds)
+```
+
+### Protocol: Post Burn Severity
+
+```{r}
+flags=pbsev_qc(pbsev)
+```
+
+### Protocol: Trees - Individuals
+
+```{r}
+
+flags=tree_CBH_qc(tree)
+
+flags=tree_crown_class_qc(tree)
+
+flags=tree_damage_qc(tree)
+
+flags=tree_dbh_qc(tree)
+
+flags=tree_dd_qc(tree)
+
+flags=tree_species_qc(tree)
+
+flags=tree_area_multiplier_qc(tree)
+
+flags=tree_sample_area_qc(tree)
+
+flags=tree_height_qc(tree)
+
+flags=tree_severity_qc(tree)
+
+flags=tree_status_lifeform_qc(tree)
+
+flags=tree_duplicates_qc(tree)
+
+flags=tree_dead_to_alive_DBH_change_qc(tree)
+```
+
+### Protocol: Cover - Points
+```{r}
+flags=covpts_qc(covpts)
+```
+
+### Protocol: Density - Belts
+```{r}
+flags=densbelts_qc(densbelts)
+```
+
+### Flags
+```{r linewidth=60}
+
+comments_list <- comments(cover, fuel1000, duff, fine, saps, seeds, tree)
+format_flags(flags, samp, mtype, comments_list)
+```
